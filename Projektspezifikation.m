@@ -43,8 +43,8 @@ specs.flight_level = 340;
 
 specs.bypass = 10;                                  % Bypassverhaeltnis 
 specs.n_TW = 2;      % Anzahl Triebwerke
-specs.m_TW = 6500;   % Masse eines TW in kg bsp GE genX
-
+m_TW = 6636;   
+specs.m_TW = m_TW * 0.05 + m_TW; % Masse eines TW in kg bsp terd XWB
 
 % Landespezifikationen
 

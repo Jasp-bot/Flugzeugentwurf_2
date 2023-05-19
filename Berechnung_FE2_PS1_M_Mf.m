@@ -398,6 +398,8 @@ W_sc = W_sc_initial + W_sc_initial * 0.2 + W_sc_initial *0.15 + m_cockpitcontrol
 
 % Test
 
+% test2
+
 
 
 

@@ -20,7 +20,7 @@ W_flight_deck_acc = 16.5 * W_DeliveryEmpty^0.285;
 %% PAX Cabin Accomodities S.291
 % Pax Sitze gemäß Torenbeek Table 3-2 S.76
 
-seats = [[10.9 21.3 29.9]; [13.6 25.4 35.4]; [21.3 31.8 0]]
+seats = [[10.9 21.3 29.9]; [13.6 25.4 35.4]; [21.3 31.8 0]];
 % Spalten Eco bis Firts- Jewils single bis triple Seat
 
 % ATT Seats
@@ -28,8 +28,9 @@ n_flight_att = 8;           %% Bei All Eco ist es 9
 W_Flight_att = 8.2 * 8;     
 
 % PAX Seats                 %% Bei All ECO ist es 432 
-W_PAX_seats_ECO = (432 / 3) * seats(1,3); 
-%W_PAX_seats_Basic =
+%W_PAX_seats_ECO = (432 / 3) * seats(1,3); 
+W_PAX_seats_Basic = (30/2) * seats(3,2) + 10 * seats(2,3) + 16 * seats(2,2) + (219/3) *seats(1,3);
+                        %First Class            %business Class % Economy
 
 % Galley/Pantry
 Galley_main = 113.4;
@@ -66,6 +67,6 @@ W_fireDetect = 0.0012 * W_to;
 % Evacuation
 W_evac = 0.453 * 432;
 
-%% Air conditioning
+%% Air conditioning S.293
 %A.C.
 W_AirCond = 14 * 57.34^1.28;

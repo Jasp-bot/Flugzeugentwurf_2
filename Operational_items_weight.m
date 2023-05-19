@@ -3,7 +3,8 @@ clear
 close
 load Projekt_specs.mat
 
-W_DeliveryEmpty = 150000;
+format long g
+W_DeliveryEmpty = 170000;
 
 %% Instrumente S.289
 W_ieg = 0.347 * W_DeliveryEmpty^(5/9) * 9352.6;
@@ -14,7 +15,7 @@ W_hyd = 0.015 * W_DeliveryEmpty + 272;
 
 
 %% Flight Deck Accomodation S.291
-W_flight_deck_acc = 16.5 * W_DeliveryEmpty;
+W_flight_deck_acc = 16.5 * W_DeliveryEmpty^0.285;
 
 %% PAX Cabin Accomodities S.291
 % Pax Sitze gemäß Torenbeek Table 3-2 S.76
@@ -64,3 +65,7 @@ W_fireDetect = 0.0012 * W_to;
 
 % Evacuation
 W_evac = 0.453 * 432;
+
+%% Air conditioning
+%A.C.
+W_AirCond = 14 * 57.34^1.28;

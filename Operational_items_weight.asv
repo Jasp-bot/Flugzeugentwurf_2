@@ -3,16 +3,25 @@ clear
 close
 load Projekt_specs.mat
 
-W_DeliveryEmpty = 150000;
+format long g
+W_DeliveryEmpty = 170000;
+
+%% Instrumente S.289
+W_ieg = 0.347 * W_DeliveryEmpty^(5/9) * 9352.6;
 
 
-% Flight Deck Accomodation
-W_flight_deck_acc = 16.5 * W_DeliveryEmpty;
+%% Hydraulic / Pneumatic S.290
+W_hyd = 0.015 * W_DeliveryEmpty + 272;
 
-%% PAX Cabin Accomodities
+
+%% Flight Deck Accomodation S.291
+W_flight_deck_acc = 16.5 * W_DeliveryEmpty^0.285;
+
+%% PAX Cabin Accomodities S.291
 % Pax Sitze gemäß Torenbeek Table 3-2 S.76
 
 seats = [[10.9 21.3 29.9]; [13.6 25.4 35.4]; [21.3 31.8 0]]
+% Spalten Eco bis Firts- Jewils single bis triple Seat
 
 % ATT Seats
 n_flight_att = 8;           %% Bei All Eco ist es 9
@@ -41,18 +50,22 @@ V_pax = 5.85 * 57.34 * 1.676;
 V_ch  = 1.68 * 4.15 * 57.34;
 W_soundProof = 6.17 * (V_pax + V_ch)^(1.07);
 
-%% Cargo Accomodations
+%% Cargo Accomodations S.291
 % Cargo Retraint + Handling Provisions
 W_cargo_restraint = 1.28 * V_ch;
 W_cargo_palletprov = 13.67 * V_ch;
 
-%% Standard Emergency Equipment
+%% Standard Emergency Equipment S.291
 % Fixed Oxygen System
-W_oxygenSys = 18.1 + 1.09 * 432; % 
+W_oxygenSys = 18.1 + 1.09 * 432; % Pax 
 
 % Fire Detection
-W_firedetect = 0.0012 * W_to;
+W_to = 300000;
+W_fireDetect = 0.0012 * W_to;
 
 % Evacuation
 W_evac = 0.453 * 432;
 
+%% Air conditioning
+%A.C.
+W_AirCond = 14 * 5

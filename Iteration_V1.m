@@ -40,3 +40,5 @@ Endwerte_Iteration = Berechnungen_PS10_Widerstand;
 
 
 save Ergebnisse_Endwerte_Iteration_V1.mat Endwerte_Iteration
+
+%HAllo 

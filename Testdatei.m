@@ -1,0 +1,3 @@
+%% Testdatei
+
+a = 3;

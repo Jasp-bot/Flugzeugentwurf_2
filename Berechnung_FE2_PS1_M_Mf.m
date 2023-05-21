@@ -344,6 +344,8 @@ M_Fluegel.W_SP = 0.015 * NR_M_Fluegel.W_F_initial; % oder 12.2[kg/m^2]
 W_F = M_Fluegel.W_F_basic + 1.2 * (M_Fluegel.W_high_lift_div + M_Fluegel.W_SP); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Ergebnis sehr gering
  
 
+% Masse TailGroup S.281 annahme aus Text leicht opimistischer (technologiefaktor)
+W_tail = 0.02 * Ergebnis_basis_m.m_To;
 
 % W undercarriage Torenbeek S282 A,B,C,D S283
 k_uc = 1;
@@ -394,7 +396,34 @@ W_sc = W_sc_initial + W_sc_initial * 0.2 + W_sc_initial *0.15 + m_cockpitcontrol
     m_maneuver_control + m_trailing_edge(1,1) + m_slat_control + m_HLW_control + m_speed_brake + m_lift_dampner; %%%%%%%%% Ergebnis in einem plausibelem bereich kein plan ob richtig (etwas hoch im vergleich 747-400)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% Engine section nacelle group
+%% Engine section nacelle group (Ole)
+
+
+%% Opperational Items Tabelle (8-13) S.292
+
+% Crew Provisions
+m_opp_items.m_prov_crew = 93 * specs.n_flight + 68 * specs.n_crew; 
+
+% Passenger Cabin suppys
+m_opp_items.m_computer = 0.453 * specs.n_pax_all_eco;
+m_opp_items.m_snacks = 2.27 * specs.n_pax_all_eco;
+m_opp_items.m_main_meal = 8.62 * specs.n_pax_all_eco;
+
+% Portable Wather / Toilet Chemicals
+m_opp_items.m_port_water = 90.7 * specs.n_Toilette;
+
+% Safy equip
+m_opp_items.m_safty_equip = 3.4 * specs.n_pax_all_eco;
+
+% Residual Fuel 
+m_opp_items.m_residual_fuel = 0.151 * Tank.V_Tank^(2/3);
+
+
+
+
+
+
+
 
 
 

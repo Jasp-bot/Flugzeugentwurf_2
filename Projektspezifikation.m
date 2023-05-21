@@ -28,6 +28,12 @@ specs.m_pax = 97 * specs.n_pax;                     % m_pax = (Gewicht Passagier
 specs.m_cargo = 14000;                              % Masse Cargo in[kg]
 specs.m_bag = 17;                                   % Masse Cargo pro pax [kg]
 specs.n_pax_shrink = 249;                           % Paxanzahl shrink
+specs.n_flight = 2;                                 % Anzahl Piloten
+specs.n_crew = 9;                                   % Anzahl Crew
+specs.n_pax_all_eco = 432;                          % Anzahl passagiere All eco
+specs.n_Toilette = 8;                               % Anzahl Toiletten
+
+
 
 specs.delta_m_p = -0.2;                             % Verringerung von Basis nach shrink (20% kleiner) [1]
 specs.k_vOE = 0.5;                                  % Rüstmassenfaktor [1]
@@ -66,7 +72,7 @@ specs.HLW_beginn = 6.6;
 
 specs.m_APU = 335; % [kg] HGT1700 Auxiliary Power Unit
 
-
+% Crew
 
 
 

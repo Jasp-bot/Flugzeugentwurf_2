@@ -258,7 +258,7 @@ M_Rumpf.l_t = NR_l_t.versatz_phi25_DTF_VK + HLW.r - NR_l_t.versatz_phi25_HLW_VK;
 M_Rumpf.W_Rumpf = 0.23 * sqrt(M_Rumpf.v_D_EAS * (M_Rumpf.l_t)/(specs.D_rumpf + specs.h_rumpf)) * (M_Rumpf.Sg_12)^1.2; 
 
 
-
+M_Airframe_Structur.Fuselage_Group = M_Rumpf.W_Rumpf;
 
 
 %% Fluegelmasse ueber Bruchlastvielfaches
@@ -299,10 +299,6 @@ M_Fluegel.W_F_basic = NR_M_Fluegel.const * NR_M_Fluegel.k_no * NR_M_Fluegel.k *.
     Ergebnisse_Fluegel.b^(1.675) * NR_M_Fluegel.d_l_root^(-0.45) * cos(NR_M_Fluegel.Lambda_50)^(-1.325); % Annahme d_l_root = (t/c)_r = 0.13
 
 
-
-
-
-
 pauschaler_Wert_VK = 0.9; % Wert angenommen als flaeche, die nicht in klappen/ slpats umgewandet werden kann
 pauschaler_Wert_HK = 0.15;
 ende_querruder = 0.3;
@@ -338,14 +334,18 @@ M_Fluegel.W_high_lift_div = NR_M_Fluegel.W_tef + NR_M_Fluegel.W_lef;
 % Formel Torenbeek S 454
 M_Fluegel.W_SP = 0.015 * NR_M_Fluegel.W_F_initial; % oder 12.2[kg/m^2]
 % 
-% 
+
+
 % Initiales Gewicht der Fluegelgruppe W_W im Torenbeek oder W_F
 % Formel Torenbeek S 455 c-11
-W_F = M_Fluegel.W_F_basic + 1.2 * (M_Fluegel.W_high_lift_div + M_Fluegel.W_SP); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Ergebnis sehr gering
- 
+M_Fluegel.W_F = M_Fluegel.W_F_basic + 1.2 * (M_Fluegel.W_high_lift_div + M_Fluegel.W_SP); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Ergebnis sehr gering
+
+M_Airframe_Structur.Wing_Group = M_Fluegel.W_F;
 
 % Masse TailGroup S.281 annahme aus Text leicht opimistischer (technologiefaktor)
 W_tail = 0.02 * Ergebnis_basis_m.m_To;
+
+M_Airframe_Structur.Tail_Group = W_tail;
 
 % W undercarriage Torenbeek S282 A,B,C,D S283
 k_uc = 1;
@@ -357,6 +357,7 @@ D = [2.23*10^(-5); 2.97*10^(-6)];
 W_uc_teilergebnis = (k_uc .* (A + B .* Ergebnis_basis_m.m_To.^(3/4) + C .* Ergebnis_basis_m.m_To + D .* Ergebnis_basis_m.m_To.^(3/2)));
 W_uc = sum(W_uc_teilergebnis); %%%%%%%%%%%%%%%%%%%% Ergebnis Plausibel
 
+M_Airframe_Structur.Undercarriage_Group = W_uc;
 
 
 % W_sc Surface control group S.283
@@ -396,7 +397,178 @@ W_sc = W_sc_initial + W_sc_initial * 0.2 + W_sc_initial *0.15 + m_cockpitcontrol
     m_maneuver_control + m_trailing_edge(1,1) + m_slat_control + m_HLW_control + m_speed_brake + m_lift_dampner; %%%%%%%%% Ergebnis in einem plausibelem bereich kein plan ob richtig (etwas hoch im vergleich 747-400)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+M_Airframe_Structur.Surface_Control_Group = W_sc;
+
 %% Engine section nacelle group (Ole)
+% nach verfahren Appendix B P. 449 zur bestimmung der umspuehlten
+% Oberflaeche
+
+% ???????????????????????????????? Quelle der Werte ???????????????????
+% deklarationen
+feat = 3.28084;     %% Umrechnungsfactor
+ln = 4 * feat;        %%länge fan cowling
+lh = 2.3 * feat;      %%länge zur größten Stelle an der urbine
+Dn = 3.3 * feat;      %%größter Durchmesser Engine
+Dh = 3 * feat;        %%Durchmesser Eingang Engine
+Gesamtlaenge = 4.49 * feat;
+beta_c = ln / Gesamtlaenge;   %%Gesamtlänge des Triebwerkes
+
+% (B-13)
+A_cowling_sqFeet = ln * Dn * (2 + 0.35 * beta_c * (Dh / Dn) + 1.15 * (1 - beta_c));
+A_cowling = A_cowling_sqFeet * 0.092903; % umrechnung in m^2
+
+% Gas Generator section
+lg = 0.3 * feat;     %%Länge section
+Dg = 1.3 * feat;     %%größter Durchmesser section
+Deg = 0.9 * feat;    %%KLeinster Durchmesser section
+
+% Formel (B-14)
+A_generator_sqFeet = pi * lg * Dg * (1 -(1 / 3) * (1 -(Deg / Dg))) * 1 - 0.18 *((Dg / lg)^(5/3));
+A_generator = A_generator_sqFeet * 0.092903; % umrechnung in m^2
+
+
+%Plug
+lp = 0.9 * feat;    %%Länge section
+Dp = 0.5 * feat;     %%Anfangs Durchmesser
+% Formel (B-15)
+A_plug_sqFeet = 0.7 * pi * lp * Dp;
+A_plug = A_plug_sqFeet * 0.092903; % umrechnung in m^2
+
+%Alles zsm
+
+A_Turbine_sqFeet = (A_generator_sqFeet + A_cowling_sqFeet + A_plug_sqFeet); % Achtung Ergebnis in Feet
+
+A_Turbine = A_Turbine_sqFeet * 0.092903; % umrechnung in m^2
+
+%Gewicht berechnen nach:
+% Commercinal airplane design principals
+%  Refined Weight and Balance Estimate  s.317
+
+W_e = 2.20462 * specs.m_TW;       %%Gewicht Triebwerk
+S_p = 10.3 * feat^2;              %%umspülte fläche des pilon
+n_ult = M_Fluegel.n_ult;                    %%Danach soll itteriert werden sagt jasper
+
+
+W_n = 35.45 * 2 *((2.33 * (1.1 * W_e) * A_Turbine_sqFeet)/(10000))^(0.59);    %%Ausrechnen in pounds
+W_p = 24.11 * 2 * S_p^(0.381) * ((1.46 * n_ult * 1.1 * W_e * ln * Dn)/(10^6 * cos(deg2rad(80)))^(0.952));% 
+
+% Gewicht = W_n / 2.20462
+% Gewicht = W_p / 2.20462
+
+% Gewicht nach Torenbeek Tabelle 8-8 P.284
+
+m_nacell_stuktur = 0.405 * sqrt(M_Rumpf.v_D_EAS) * A_Turbine^(1.3);
+
+m_gas_gen_couling = 14.6 * (A_plug + A_generator);
+
+m_noisesuppression = 1.71 * A_cowling;
+
+M_Airframe_Structur.Engine_saction_nacelle_group = (m_nacell_stuktur + m_gas_gen_couling + m_noisesuppression) * specs.n_TW;
+
+
+%%%%%%%% Wo wird die Masse der Pylons Eingerechnet ??????????????????????????
+M_Airframe_Structur.Zwischensumme = M_Airframe_Structur.Wing_Group +...
+    M_Airframe_Structur.Tail_Group + M_Airframe_Structur.Fuselage_Group +...
+    M_Airframe_Structur.Undercarriage_Group + M_Airframe_Structur.Surface_Control_Group +...
+    M_Airframe_Structur.Engine_saction_nacelle_group;
+
+
+
+
+%% Propulsion group
+
+M_Propulsion_Group = specs.n_TW * specs.m_TW;
+
+%% Airframe Service and equipment (Mac)
+
+W_DeliveryEmpty = 140000;
+
+% Instrumente S.289
+W_ieg_alt = 0.347 * W_DeliveryEmpty^(5/9) * specs.max_range_basis_km^(1/4);
+% ????????????????????????????????????????????????????????????????????
+Technologiefaktor_W_ieg = 0.8;
+W_ieg = W_ieg_alt * Technologiefaktor_W_ieg;
+
+
+% Absolut nicht sicher !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+% Electronics P.290
+v_cabine = 62.1 * pi * (specs.R_rumpf^2) /2;
+
+% (8-43)
+P_el_APU = 3.64 * v_cabine^0.7;
+% (8-41)
+W_el_AC = 16.3 * P_el_APU * (1 - 0.033 * sqrt(P_el_APU));
+
+% (8-40)
+W_el_DC = 0.02 * Ergebnis_basis_m.m_To + 181;
+W_el_ges = W_el_AC + W_el_DC;
+
+% Hydraulic / Pneumatic S.290 (8-39)
+W_hyd = 0.015 * W_DeliveryEmpty + 272;
+
+
+%% Flight Deck Accomodation S.291
+W_flight_deck_acc = 16.5 * W_DeliveryEmpty^(0.285);
+
+% PAX Cabin Accomodities S.291
+
+% Pax Sitze gemäß Torenbeek Table 3-2 S.76
+seats = [[10.9 21.3 29.9]; [13.6 25.4 35.4]; [21.3 31.8 0]];
+% Spalten Eco bis Firts- Jewils single bis triple Seat
+
+% ATT Seats
+n_flight_att = 9;           %% Bei All Eco ist es 9
+W_Flight_att = 8.2 * n_flight_att;     
+
+
+% Galley/Pantry
+Galley_main = 113.4;
+Galley_medium = 45.3;
+Galley_small = 29.5;
+
+W_Galley = Galley_main * 2 + Galley_medium * 4 + Galley_small * 5;
+
+%Lavatory/ Toiletts
+lavatory = 136;
+W_lavatory = lavatory * 7 + lavatory * 0.2 * 1; 
+
+%Floor Covering
+W_floor = 1.25 * (5.85 * 57.34)^(1.15);
+
+% Sound Proofing and Insulation ??????????????????????????????????????
+V_pax = 5.85 * 57.34 * 1.676;
+V_ch  = 1.68 * 4.15 * 57.34;
+W_soundProof = 6.17 * (V_pax + V_ch)^(1.07);
+
+% Cargo Accomodations S.291
+% Cargo Retraint + Handling Provisions
+W_cargo_restraint = 1.28 * V_ch;
+W_cargo_palletprov = 13.67 * V_ch;
+
+% Standard Emergency Equipment S.291
+% Fixed Oxygen System
+W_oxygenSys = 18.1 + 1.09 * specs.n_pax_all_eco; % Pax 
+
+% Fire Detection
+W_to = Ergebnis_basis_m.m_To;
+W_fireDetect = 0.0012 * W_to;
+
+% Evacuation
+W_evac = 0.453 * specs.n_pax_all_eco;
+
+% Aircon
+% (8-45) P.293
+W_aircon = 14 * 57.34^1.28; % Annahme l_pc =57.34m
+
+% Misscellaneous Weight
+   % Wird weggelassen als Technologiefaktor, aufgrund seines geringen
+   % Außmaßes von 1% Delivery empty mass
+
+
+M_Airframe_service_and_equipment = W_hyd + W_flight_deck_acc + W_Flight_att + W_Galley + W_lavatory + W_floor +...
+    W_soundProof + W_cargo_restraint + W_cargo_palletprov + W_oxygenSys + W_fireDetect +W_evac + W_aircon + W_el_ges;
+
 
 
 %% Opperational Items Tabelle (8-13) S.292
@@ -408,7 +580,7 @@ m_opp_items.m_prov_crew = 93 * specs.n_flight + 68 * specs.n_crew;
 m_opp_items.m_computer = 0.453 * specs.n_pax_all_eco;
 m_opp_items.m_snacks = 2.27 * specs.n_pax_all_eco;
 m_opp_items.m_main_meal = 8.62 * specs.n_pax_all_eco;
-
+m_opp_items.passenger_cabin_supp = m_opp_items.m_computer + m_opp_items.m_snacks + m_opp_items.m_main_meal;
 % Portable Wather / Toilet Chemicals
 m_opp_items.m_port_water = 90.7 * specs.n_Toilette;
 
@@ -418,12 +590,19 @@ m_opp_items.m_safty_equip = 3.4 * specs.n_pax_all_eco;
 % Residual Fuel 
 m_opp_items.m_residual_fuel = 0.151 * Tank.V_Tank^(2/3);
 
+% Seating 
+% PAX Seats                 %% Bei All ECO ist es 432 
+m_opp_items.W_PAX_seats_ECO = (specs.n_pax_all_eco / 3) * seats(1,3); 
+
+m_opp_items.Zusammen = m_opp_items.m_prov_crew + m_opp_items.m_computer +...
+    m_opp_items.m_snacks + m_opp_items.m_main_meal + m_opp_items.m_port_water +...
+    m_opp_items.m_safty_equip + m_opp_items.m_residual_fuel + m_opp_items.W_PAX_seats_ECO;
 
 
 
-
-
-
+Masse_opperating_empty = m_opp_items.Zusammen + M_Airframe_service_and_equipment + M_Propulsion_Group + M_Airframe_Structur.Zwischensumme;
+% Speicher Zwischenergebnis stand 21.5.23 nicht itteriert
+% Masse_opperating_empty = 1.480585 *e+05
 
 
 

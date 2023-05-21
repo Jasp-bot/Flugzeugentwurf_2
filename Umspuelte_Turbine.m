@@ -48,7 +48,7 @@ A_Turbine=(A_plug+A_cowling+A_plug);
 %%Commercinal airplane design principals
 %%  Refined Weight and Balance Estimate  s.317
 
-W_e=2.20462*specs.m_TW;       %%Gewicht Triebwerk
+W_e= 2.20462 * specs.m_TW;       %%Gewicht Triebwerk
 S_p=10.3*feat^2;              %%umspülte fläche des pilon
 n_ult=3.2;                    %%Danach soll itteriert werden sagt jasper
 

@@ -49,8 +49,8 @@ specs.flight_level = 340;
 
 specs.bypass = 10;                                  % Bypassverhaeltnis 
 specs.n_TW = 2;      % Anzahl Triebwerke
-m_TW = 6636;   
-specs.m_TW = m_TW * 0.05 + m_TW; % Masse eines TW in kg bsp terd XWB
+m_TW = 7549;   % Quelle: https://www.easa.europa.eu/sites/default/files/dfu/EASA%20E111%20TCDS%20issue%2012_Trent%20XWB.pdf
+specs.m_TW = m_TW * 0.10 + m_TW; % Masse eines TW in kg bsp terd XWB
 
 % Landespezifikationen
 
@@ -71,8 +71,6 @@ specs.HLW_beginn = 6.6;
 % Massenanteile 
 
 specs.m_APU = 335; % [kg] HGT1700 Auxiliary Power Unit
-
-% Crew
 
 
 

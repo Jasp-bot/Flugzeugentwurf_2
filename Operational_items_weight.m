@@ -45,7 +45,8 @@ W_Flight_att = 8.2 * n_flight_att;
 
 % PAX Seats                 %% Bei All ECO ist es 432 
 W_PAX_seats_ECO = (specs.n_pax_all_eco / 3) * seats(1,3); 
-%W_PAX_seats_Basic =
+W_PAX_seats_Basic = (30/2) * seats(3,2) + 10 * seats(2,3) + 16 * seats(2,2) + (219/3) *seats(1,3); 
+                        %First Class            %business Class % Economy 
 
 % Galley/Pantry
 Galley_main = 113.4;

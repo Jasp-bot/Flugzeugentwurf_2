@@ -529,7 +529,7 @@ NR_Airframe_service.seats = [[10.9 21.3 29.9]; [13.6 25.4 35.4]; [21.3 31.8 0]];
 % Spalten Eco bis Firts- Jewils single bis triple Seat
 
 % ATT Seats
-NR_Airframe_service.n_flight_att = 9;           %% Bei All Eco ist es 9
+NR_Airframe_service.n_flight_att = 8;           %% unter der Annahme einer Flugzeit/ Arbeitszeit
 NR_Airframe_service.W_Flight_att = 8.2 * NR_Airframe_service.n_flight_att;     
 
 
@@ -559,14 +559,14 @@ NR_Airframe_service.W_cargo_palletprov = 13.67 * V_ch;
 
 % Standard Emergency Equipment S.291
 % Fixed Oxygen System
-NR_Airframe_service.W_oxygenSys = 18.1 + 1.09 * specs.n_pax_all_eco; % Pax 
+NR_Airframe_service.W_oxygenSys = 18.1 + 1.09 * specs.n_pax; % Pax 
 
 % Fire Detection
 W_to = Ergebnis_basis_m.m_To;
 NR_Airframe_service.W_fireDetect = 0.0012 * W_to;
 
 % Evacuation
-NR_Airframe_service.W_evac = 0.453 * specs.n_pax_all_eco;
+NR_Airframe_service.W_evac = 0.453 * specs.n_pax;
 
 M_Airframe_service_and_equipment.M_Furnishing_equip = NR_Airframe_service.W_flight_deck_acc + ...
     NR_Airframe_service.W_Flight_att + NR_Airframe_service.W_Galley + NR_Airframe_service.W_lavatory +...
@@ -597,26 +597,28 @@ M_Airframe_service_and_equipment.Zusammen = M_Airframe_service_and_equipment.M_M
 m_opp_items.m_prov_crew = 93 * specs.n_flight + 68 * specs.n_crew; 
 
 % Passenger Cabin suppys
-m_opp_items.m_computer = 0.453 * specs.n_pax_all_eco;
-m_opp_items.m_snacks = 2.27 * specs.n_pax_all_eco;
-m_opp_items.m_main_meal = 8.62 * specs.n_pax_all_eco;
+m_opp_items.m_computer = 0.453 * specs.n_pax;
+m_opp_items.m_snacks = 2.27 * specs.n_pax;
+m_opp_items.m_main_meal = 8.62 * specs.n_pax;
 m_opp_items.passenger_cabin_supp = m_opp_items.m_computer + m_opp_items.m_snacks + m_opp_items.m_main_meal;
 % Portable Wather / Toilet Chemicals
 m_opp_items.m_port_water = 90.7 * specs.n_Toilette;
 
 % Safy equip
-m_opp_items.m_safty_equip = 3.4 * specs.n_pax_all_eco;
+m_opp_items.m_safty_equip = 3.4 * specs.n_pax;
 
 % Residual Fuel 
 m_opp_items.m_residual_fuel = 0.151 * Tank.V_Tank^(2/3);
 
 % Seating 
 % PAX Seats                 %% Bei All ECO ist es 432 
-m_opp_items.W_PAX_seats_ECO = (specs.n_pax_all_eco / 3) * NR_Airframe_service.seats(1,3); 
+ 
+m_opp_items.W_PAX_seats_Basic = (30/2) * NR_Airframe_service.seats(3,2) + 10 * NR_Airframe_service.seats(2,3) + 16 * NR_Airframe_service.seats(2,2) + (219/3) *NR_Airframe_service.seats(1,3); 
+                        %First Class            %business Class % Economy 
 
 m_opp_items.Zusammen = m_opp_items.m_prov_crew + m_opp_items.m_computer +...
     m_opp_items.m_snacks + m_opp_items.m_main_meal + m_opp_items.m_port_water +...
-    m_opp_items.m_safty_equip + m_opp_items.m_residual_fuel + m_opp_items.W_PAX_seats_ECO;
+    m_opp_items.m_safty_equip + m_opp_items.m_residual_fuel + m_opp_items.W_PAX_seats_Basic;
 
 
 Masse_delivery_empty = M_Airframe_service_and_equipment.Zusammen +...
@@ -628,17 +630,17 @@ Masse_opperating_empty = m_opp_items.Zusammen + M_Airframe_service_and_equipment
 
 %% Payload Vergleiche FE1 PS.4
 
-M_Payload.M_payload_full_eco = specs.m_pax_all_eco + specs.m_cargo;
+
 M_Payload.M_payload_basis = specs.m_pax + specs.m_cargo;
 
 %% Zero Fuel Mass 
-M_Zero_Fuel.M_ZF_full_eco = Masse_opperating_empty + M_Payload.M_payload_full_eco;
+M_Zero_Fuel.M_ZF = Masse_opperating_empty + M_Payload.M_payload_basis;
 
 
 %% takeoff Masse
 
-M_take_off_initial.test_mto = M_Zero_Fuel.M_ZF_full_eco/(1-FF.Kappa_ges);
-M_take_off_initial.M_TO = M_Zero_Fuel.M_ZF_full_eco + M_take_off_initial.M_fuel;
+M_take_off_initial.test_mto = M_Zero_Fuel.M_ZF/(1-FF.Kappa_ges);
+M_take_off_initial.M_TO = M_Zero_Fuel.M_ZF + M_take_off_initial.M_fuel;
 
 
 

@@ -589,7 +589,7 @@ while abs(delta_M_to) > 0.0001
     
     % Standard Emergency Equipment S.291
     % Fixed Oxygen System
-    NR_Airframe_service.W_oxygenSys = 18.1 + 1.09 * specs.n_pax_all_eco; % Pax 
+    NR_Airframe_service.W_oxygenSys = 18.1 + 1.09 * specs.n_pax; % Pax 
     
     % Fire Detection
     W_to = M_TO_initial;
@@ -627,26 +627,29 @@ while abs(delta_M_to) > 0.0001
     m_opp_items.m_prov_crew = 93 * specs.n_flight + 68 * specs.n_crew; 
     
     % Passenger Cabin suppys
-    m_opp_items.m_computer = 0.453 * specs.n_pax_all_eco;
-    m_opp_items.m_snacks = 2.27 * specs.n_pax_all_eco;
-    m_opp_items.m_main_meal = 8.62 * specs.n_pax_all_eco;
+    m_opp_items.m_computer = 0.453 * specs.n_pax;
+    m_opp_items.m_snacks = 2.27 * specs.n_pax;
+    m_opp_items.m_main_meal = 8.62 * specs.n_pax;
     m_opp_items.passenger_cabin_supp = m_opp_items.m_computer + m_opp_items.m_snacks + m_opp_items.m_main_meal;
     % Portable Wather / Toilet Chemicals
     m_opp_items.m_port_water = 90.7 * specs.n_Toilette;
     
     % Safy equip
-    m_opp_items.m_safty_equip = 3.4 * specs.n_pax_all_eco;
+    m_opp_items.m_safty_equip = 3.4 * specs.n_pax;
     
     % Residual Fuel 
     m_opp_items.m_residual_fuel = 0.151 * Tank.V_Tank^(2/3);
     
     % Seating 
     % PAX Seats                 %% Bei All ECO ist es 432 
-    m_opp_items.W_PAX_seats_ECO = (specs.n_pax_all_eco / 3) * NR_Airframe_service.seats(1,3); 
-    
+    % m_opp_items.W_PAX_seats_ECO = (specs.n_pax / 3) * NR_Airframe_service.seats(1,3); 
+    m_opp_items.W_PAX_seats_Basic = (30/2) * NR_Airframe_service.seats(3,2) + 10 * NR_Airframe_service.seats(2,3) + 16 * NR_Airframe_service.seats(2,2) + (219/3) *NR_Airframe_service.seats(1,3); 
+                        %First Class            %business Class                                                                                 % Economy 
+ 
+
     m_opp_items.Zusammen = m_opp_items.m_prov_crew + m_opp_items.m_computer +...
         m_opp_items.m_snacks + m_opp_items.m_main_meal + m_opp_items.m_port_water +...
-        m_opp_items.m_safty_equip + m_opp_items.m_residual_fuel + m_opp_items.W_PAX_seats_ECO;
+        m_opp_items.m_safty_equip + m_opp_items.m_residual_fuel + m_opp_items.W_PAX_seats_Basic;
     
     
     Masse_delivery_empty = M_Airframe_service_and_equipment.Zusammen +...
@@ -658,17 +661,17 @@ while abs(delta_M_to) > 0.0001
     
     %% Payload Vergleiche FE1 PS.4
     
-    M_Payload.M_payload_full_eco = specs.m_pax_all_eco + specs.m_cargo;
+   
     M_Payload.M_payload_basis = specs.m_pax + specs.m_cargo;
     
     %% Zero Fuel Mass 
-    M_Zero_Fuel.M_ZF_full_eco = Masse_opperating_empty + M_Payload.M_payload_full_eco;
+    M_Zero_Fuel.M_ZF = Masse_opperating_empty + M_Payload.M_payload_basis;
     
     
     %% takeoff Masse
     
-    M_take_off_initial.test_mto = M_Zero_Fuel.M_ZF_full_eco/(1-FF.Kappa_ges);
-    M_take_off_initial.M_TO = M_Zero_Fuel.M_ZF_full_eco + M_take_off_initial.M_fuel;
+    M_take_off_initial.test_mto = M_Zero_Fuel.M_ZF/(1-FF.Kappa_ges);
+    M_take_off_initial.M_TO = M_Zero_Fuel.M_ZF+ M_take_off_initial.M_fuel;
     
 
 
@@ -683,7 +686,7 @@ while abs(delta_M_to) > 0.0001
     M_TO_initial = M_take_off_initial.M_TO;
     M_OE_initial = Masse_opperating_empty;
     M_del_empty_initial = Masse_delivery_empty;
-    M_Zero_Fuel_initial = M_Zero_Fuel.M_ZF_full_eco;
+    M_Zero_Fuel_initial = M_Zero_Fuel.M_ZF;
    
     Zaehlvariabele = Zaehlvariabele + 1; % test
 end

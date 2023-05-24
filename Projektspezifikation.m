@@ -31,6 +31,7 @@ specs.n_pax_shrink = 249;                           % Paxanzahl shrink
 specs.n_flight = 2;                                 % Anzahl Piloten
 specs.n_crew = 9;                                   % Anzahl Crew
 specs.n_pax_all_eco = 432;                          % Anzahl passagiere All eco
+specs.m_pax_all_eco = 97 * specs.n_pax_all_eco;     % Gewicht in kg
 specs.n_Toilette = 8;                               % Anzahl Toiletten
 
 

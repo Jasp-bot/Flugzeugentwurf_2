@@ -93,6 +93,11 @@ M_Zero_Fuel_initial = Ergebnis_basis_m.m_OE + specs.m_pax_all_eco + specs.m_carg
 Zaehlvariabele = 0;
 delta_M_to = 100;       % Anfangswert
 
+% Unter der annahme, dass 50% der Strukturmasse aus CFK gefertigt werden und CFK 40% leichter ist als ALU
+Technologiefaktor_ALU_CFK = 0.5 * 0.4;
+
+
+
 while abs(delta_M_to) > 0.0001
     
    
@@ -271,7 +276,7 @@ while abs(delta_M_to) > 0.0001
     
     %%%%%%%%%%%%% ??????? sehr niedrig
     % W_Rumpf = Rumpfmasse !!!!!!!!!!!!!!!!!!!!!
-    M_Rumpf.W_Rumpf = 0.23 * sqrt(M_Rumpf.v_D_EAS * (M_Rumpf.l_t)/(specs.D_rumpf + specs.h_rumpf)) * (M_Rumpf.Sg_12)^1.2; 
+    M_Rumpf.W_Rumpf = (0.23 * sqrt(M_Rumpf.v_D_EAS * (M_Rumpf.l_t)/(specs.D_rumpf + specs.h_rumpf)) * (M_Rumpf.Sg_12)^1.2) * (1- Technologiefaktor_ALU_CFK) ; 
     
     
     M_Airframe_Structur.Fuselage_Group = M_Rumpf.W_Rumpf;
@@ -359,10 +364,12 @@ while abs(delta_M_to) > 0.0001
     M_Fluegel.W_SP = 0.015 * NR_M_Fluegel.W_F_initial; % oder 12.2[kg/m^2]
     % 
     
+
     
     % Initiales Gewicht der Fluegelgruppe W_W im Torenbeek oder W_F
     % Formel Torenbeek S 455 c-11
-    M_Fluegel.W_F = M_Fluegel.W_F_basic + 1.2 * (M_Fluegel.W_high_lift_div + M_Fluegel.W_SP); 
+    M_Fluegel.W_F = (M_Fluegel.W_F_basic + 1.2 * (M_Fluegel.W_high_lift_div + M_Fluegel.W_SP))...
+        * (1 - Technologiefaktor_ALU_CFK); 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Ergebnis sehr gering M_Fluegel.W_F
     M_Airframe_Structur.Wing_Group = M_Fluegel.W_F;
     
@@ -555,7 +562,14 @@ while abs(delta_M_to) > 0.0001
     % PAX Cabin Accomodities S.291
     
     % Pax Sitze gemäß Torenbeek Table 3-2 S.76
-    NR_Airframe_service.seats = [[10.9 21.3 29.9]; [13.6 25.4 35.4]; [21.3 31.8 0]];
+    NR_Airframe_service.seats = [[8 16 24]; [13.6 25.4 35.4]; [21.3 31.8 0]];
+    % Quelle fuer ECO: https://www.expliseat.com/products-seat-lines/ ||
+    %       zum Sitz TISEAT E2 X-LINE wurden noch 1.5 kg addiert um
+    %       Elektronik zu beruecksichtigen
+    % Quelle fuer Bussiness: 
+
+
+
     % Spalten Eco bis Firts- Jewils single bis triple Seat
     
     % ATT Seats
@@ -643,8 +657,8 @@ while abs(delta_M_to) > 0.0001
     % Seating 
     % PAX Seats                 %% Bei All ECO ist es 432 
     % m_opp_items.W_PAX_seats_ECO = (specs.n_pax / 3) * NR_Airframe_service.seats(1,3); 
-    m_opp_items.W_PAX_seats_Basic = (30/2) * NR_Airframe_service.seats(3,2) + 10 * NR_Airframe_service.seats(2,3) + 16 * NR_Airframe_service.seats(2,2) + (219/3) *NR_Airframe_service.seats(1,3); 
-                        %First Class            %business Class                                                                                 % Economy 
+    m_opp_items.W_PAX_seats_Basic = (30/2) * NR_Airframe_service.seats(3,2) + 10 * NR_Airframe_service.seats(2,3) + 16 * NR_Airframe_service.seats(2,2) + (219) *NR_Airframe_service.seats(1,1); 
+                                     %First Class                               %business Class                                              % Economy 
  
 
     m_opp_items.Zusammen = m_opp_items.m_prov_crew + m_opp_items.m_computer +...
@@ -721,18 +735,24 @@ Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Aircon_AntiIce = M_Airframe
 Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Miscellaneous = M_Airframe_service_and_equipment.M_Miscellaneous;
 Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Zusammen = M_Airframe_service_and_equipment.Zusammen;
 % Opperational Items
-% m_opp_items.Zusammen = m_opp_items.m_prov_crew + m_opp_items.m_computer +...
-%         m_opp_items.m_snacks + m_opp_items.m_main_meal + m_opp_items.m_port_water +...
-%         m_opp_items.m_safty_equip + m_opp_items.m_residual_fuel + m_opp_items.W_PAX_seats_Basic;
 Anteile_einzel_Massen_FE2.Opperational_Items.Crew_provi = m_opp_items.m_prov_crew;
 Anteile_einzel_Massen_FE2.Opperational_Items.Passenger_cabin_supp = m_opp_items.passenger_cabin_supp;
 Anteile_einzel_Massen_FE2.Opperational_Items.Liquids = m_opp_items.m_port_water;
 Anteile_einzel_Massen_FE2.Opperational_Items.Safty_equip = m_opp_items.m_safty_equip;
 Anteile_einzel_Massen_FE2.Opperational_Items.Seating = m_opp_items.W_PAX_seats_Basic;
-Anteile_einzel_Massen_FE2.Opperational_Items.Residual_Fuel = m_opp_items.m_re
+Anteile_einzel_Massen_FE2.Opperational_Items.Residual_Fuel = m_opp_items.m_residual_fuel;
+Anteile_einzel_Massen_FE2.Opperational_Items.Zusammen = m_opp_items.Zusammen;
+% Treibstoff
+Anteile_einzel_Massen_FE2.Fuel_fractions.Kappa = FF.Kappa_ges;
+Anteile_einzel_Massen_FE2.Fuel_fractions.M_Fuel = Ergebnisse_Massen_FE2.M_F;
+
 
 save Ergebnisse_Massen_FE2.mat Ergebnisse_Massen_FE2 Anteile_einzel_Massen_FE2
 
+
+
+% sichern aller Berechnungen 
+save Zwischenergebnisse_FE2_PS1.mat
 
 
 

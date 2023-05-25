@@ -689,5 +689,56 @@ while abs(delta_M_to) > 0.0001
     M_Zero_Fuel_initial = M_Zero_Fuel.M_ZF;
    
     Zaehlvariabele = Zaehlvariabele + 1; % test
-end
+end     % Ende der Iteration
+
+%% Speichern der Daten
+
+Ergebnisse_Massen_FE2.M_TO = M_TO_initial;
+Ergebnisse_Massen_FE2.M_OE = M_OE_initial;
+Ergebnisse_Massen_FE2.M_DE = M_del_empty_initial;
+Ergebnisse_Massen_FE2.M_ZF = M_Zero_Fuel_initial;
+Ergebnisse_Massen_FE2.M_F = M_TO_initial * FF.Kappa_ges;
+
+
+
+
+% Airplane Structure
+Anteile_einzel_Massen_FE2.Airplane_Structure.Wing_group = M_Airframe_Structur.Wing_Group;
+Anteile_einzel_Massen_FE2.Airplane_Structure.Tail_group = M_Airframe_Structur.Tail_Group;
+Anteile_einzel_Massen_FE2.Airplane_Structure.Fuselage_group = M_Airframe_Structur.Fuselage_Group;
+Anteile_einzel_Massen_FE2.Airplane_Structure.Undercarriage_group = M_Airframe_Structur.Undercarriage_Group;
+Anteile_einzel_Massen_FE2.Airplane_Structure.Surface_control_group = M_Airframe_Structur.Surface_Control_Group;
+Anteile_einzel_Massen_FE2.Airplane_Structure.Nacelle_group = M_Airframe_Structur.Engine_saction_nacelle_group;
+Anteile_einzel_Massen_FE2.Airplane_Structure.Zusammen = M_Airframe_Structur.Zwischensumme;
+% Engine Group
+Anteile_einzel_Massen_FE2.Propulsion.Propulsion_group = M_Propulsion_Group;
+% Service and Equipment
+Anteile_einzel_Massen_FE2.Airframe_Service_equipment.APU = M_Airframe_service_and_equipment.M_APU;
+Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Intruments_Nav_Electr = M_Airframe_service_and_equipment.M_intruments_nav_electr;
+Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Hydraulics_Electric = M_Airframe_service_and_equipment.M_hydraulic_electric_group;
+Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Furnishing_equipment = M_Airframe_service_and_equipment.M_Furnishing_equip;
+Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Aircon_AntiIce = M_Airframe_service_and_equipment.M_Aircon_antifreeze;
+Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Miscellaneous = M_Airframe_service_and_equipment.M_Miscellaneous;
+Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Zusammen = M_Airframe_service_and_equipment.Zusammen;
+% Opperational Items
+Anteile_einzel_Massen_FE2.Opperational_Items.Crew_provi = m_opp_items.m_prov_crew;
+Anteile_einzel_Massen_FE2.Opperational_Items.Passenger_cabin_supp = m_opp_items.passenger_cabin_supp;
+Anteile_einzel_Massen_FE2.Opperational_Items.Liquids = m_opp_items.m_port_water;
+Anteile_einzel_Massen_FE2.Opperational_Items.Safty_equip = m_opp_items.m_safty_equip;
+Anteile_einzel_Massen_FE2.Opperational_Items.Seating = m_opp_items.W_PAX_seats_Basic;
+Anteile_einzel_Massen_FE2.Opperational_Items.Residual_Fuel = m_opp_items.m_residual_fuel;
+Anteile_einzel_Massen_FE2.Opperational_Items.Zusammen = m_opp_items.Zusammen;
+% Treibstoff
+Anteile_einzel_Massen_FE2.Fuel_fractions.Kappa = FF.Kappa_ges;
+Anteile_einzel_Massen_FE2.Fuel_fractions.M_Fuel = Ergebnisse_Massen_FE2.M_F;
+
+
+save Ergebnisse_Massen_FE2.mat Ergebnisse_Massen_FE2 Anteile_einzel_Massen_FE2
+
+% sichern aller Berechnungen 
+save Zwischenergebnisse_FE2_PS1.mat
+
+
+
+
 

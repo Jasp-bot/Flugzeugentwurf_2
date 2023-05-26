@@ -18,7 +18,7 @@ load Ergebnisse_Shrink_massen.mat;
 
 % Deklaration
 Flughoehe = specs.flight_level * 10^2 ;                         % in ft
-hoehe =round(distdim(Flughoehe ,'ft','m'));                     % in m
+hoehe =round(unitsratio('m','ft')*Flughoehe);                     % in m
 
 
 p_CR = ISA.p(hoehe,1);

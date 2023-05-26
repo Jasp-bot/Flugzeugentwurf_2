@@ -62,7 +62,7 @@ Ergebnisse_stat_Flaechenbelastung.Fleachenbelastung = Ergebnisse_stat_Flaechenbe
 %% Berechnung Auftrieb ueber Fluegelflaeche
 
 Flughoehe = specs.flight_level * 10^2 ;                         % in ft
-hoehe =round(distdim(Flughoehe ,'ft','m'));                     % in m
+hoehe =round(unitsratio('m','ft')*Flughoehe);                     % in m
 
 
 Ergebnisse_stat_Flaechenbelastung.C_A_CR = Ergebnisse_stat_Flaechenbelastung.Fleachenbelastung * ...

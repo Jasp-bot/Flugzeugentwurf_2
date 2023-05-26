@@ -4,9 +4,9 @@ specs.g = 9.80665;                                  % [m/(s^2)]
 
 % Reichweite
 specs.max_range_basis_nm = 5050;
-specs.max_range_basis_km = distdim(specs.max_range_basis_nm,'nm','km');     % umrechnen von nm in km
+specs.max_range_basis_km = unitsratio('km','nm')*specs.max_range_basis_nm;     % umrechnen von nm in km
 specs.max_range_Shrink_nm = 9200;
-specs.max_range_Shrink_km = distdim(specs.max_range_Shrink_nm,'nm','km');
+specs.max_range_Shrink_km = unitsratio('km','nm')*specs.max_range_Shrink_nm;
 
 
 % massenabschaetzung Ausweich-Reichweite
@@ -15,10 +15,10 @@ specs.t_HLD = 45*60;                                % [s]
 specs.R_HLD = (specs.v_HLD * specs.t_HLD);          % [m]
 specs.R_HLD_km = specs.R_HLD / 1000;                % [km]
 
-specs.R_ALT = distdim(200 ,'nm','m');               % [m]
+specs.R_ALT = unitsratio('m','nm')*200;               % [m]
 specs.R_ALT_km = specs.R_ALT / 1000;                % [km]
 
-specs.H_HLD = distdim(1500, 'ft', 'm');
+specs.H_HLD = unitsratio('m', 'ft')*1500;
 specs.flight_level_ALT = 200;
 
 

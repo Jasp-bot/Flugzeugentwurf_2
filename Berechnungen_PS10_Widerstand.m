@@ -29,7 +29,7 @@ load Ergebnisse_Fluegel_Tank_NP.mat;
 % streckung_phi25_max = 19;
 
 Flughoehe = specs.flight_level * 10^2 ;                         % in ft
-hoehe = round(distdim(Flughoehe ,'ft','m'));     % in m
+hoehe = round(unitsratio('m','ft')*Flughoehe);     % in m
 
 p_CR = ISA.p(hoehe); % p_Basis Druckvector aus ISA+15
 rho_CR = ISA.rho(hoehe);  % rho_Basis Dichtevector aus ISA+15

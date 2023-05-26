@@ -107,11 +107,11 @@ while abs(delta_M_to) > 0.0001
     
     Flughoehe_CR = specs.flight_level * 10^2 ;     % in ft
     
-    hoehe_CR = round(distdim(Flughoehe_CR ,'ft','m'));     % in m
-    hoehe_CL = round(distdim(Flughoehe_CR*(2/3) ,'ft','m'));     % in m
-    hoehe_CL_ALT = round(distdim(specs.flight_level_ALT * 10^2*(2/3) ,'ft','m'));     % in m %%%%%%%%%%%%%%%%%%%%%%%%%%%%%  ?????
-    hoehe_ALT = round(distdim(specs.flight_level_ALT* 10^2,'ft','m'));     % in m
-    hoehe_HLD = round(distdim(1500, 'ft', 'm'));
+    hoehe_CR = round(unitsratio('m','ft')*Flughoehe_CR);     % in m
+    hoehe_CL = round(unitsratio('m','ft')*Flughoehe_CR*(2/3) );     % in m
+    hoehe_CL_ALT = round(unitsratio('m','ft')*specs.flight_level_ALT * 10^2*(2/3) );     % in m %%%%%%%%%%%%%%%%%%%%%%%%%%%%%  ?????
+    hoehe_ALT = round(unitsratio('m','ft')*specs.flight_level_ALT* 10^2);     % in m
+    hoehe_HLD = round(unitsratio('m', 'ft')*1500);
     
     %% Climbn_ult
     % Berechnungen für FuelFraction Methde nach Roskamp
@@ -397,8 +397,8 @@ while abs(delta_M_to) > 0.0001
     M_Airframe_Structur.Undercarriage_Group = W_uc;
     
     
-
-
+    
+    
     % W_sc Surface control group S.283
     
     NR_W_sc.k_sc = [0.23; 0.44; 0.64;]; % [light AC ohne duplicated sys.controls; Transport-AC/Trainer manually controlled; Transportairpanes with powercontrol]

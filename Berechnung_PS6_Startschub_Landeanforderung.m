@@ -19,7 +19,7 @@ load Ergebnisse_Endwerte_Iteration_V1.mat
 
 % Deklaration
 Flughoehe = specs.flight_level * 10^2 ;                         % in ft
-hoehe =round(distdim(Flughoehe ,'ft','m'));                     % in m
+hoehe =round(unitsratio('m','ft')*Flughoehe);                     % in m
 
 p_CR_B = ISA.p(hoehe,1);                                        % p_Basis Druckvector aus ISA+15
 rho_CR_B = ISA.rho(hoehe,1);                                    % rho_Basis Dichtevector aus ISA+15
@@ -103,7 +103,7 @@ stratschub.Eta_To_thustmatch = 1/Startwerte_Iteration.CA_CW_TO %10.558;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 startschub.Eta_To_inv = 1./(startschub.Eta_To); % fuer legende
 %c_A_max = [1.8; 1.9; 2;] % 2.1; 2.2; 2.25]; % Vector für verschiedenne CA max
-h_2 = distdim(35 ,'ft','m');            % zu überfliegendes Hindernis (hoehe)
+h_2 = unitsratio('m','ft')*35;            % zu überfliegendes Hindernis (hoehe)
 
 startschub.v_2 = 1.2 * startschub.v_s;
 startschub.v_CL = (startschub.v_LOF + startschub.v_2) / 2; % mittlere Geschwindigkeit bei 35ft hoehe
@@ -124,7 +124,7 @@ startschub.S0 = startschub.intersections_1(2,1) * G_To;
 
 % Deklaration von Werten
 
-h_50 = distdim(50 ,'ft','m'); % zu überfliegende Sicherheitshoehe bei Landung in m
+h_50 = unitsratio('m','ft')*50; % zu überfliegende Sicherheitshoehe bei Landung in m
 
 b_m_vec = -(0.3:0.01:0.4)*specs.g; % Bremsverzögerung [1x11]
 landeanvorderung.b_m = b_m_vec(1,11); % = -3.9227   Bremsverzögerung

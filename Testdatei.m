@@ -1,3 +1,0 @@
-%% Testdatei
-
-a = 3;

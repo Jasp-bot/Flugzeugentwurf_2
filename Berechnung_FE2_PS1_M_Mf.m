@@ -475,7 +475,6 @@ while abs(delta_M_to) > 0.0001
     A_plug = A_plug_sqFeet * 0.092903; % umrechnung in m^2
     
     %Alles zsm
-    
     A_Turbine_sqFeet = (A_generator_sqFeet + A_cowling_sqFeet + A_plug_sqFeet); % Achtung Ergebnis in Feet
     
     A_Turbine = A_Turbine_sqFeet * 0.092903; % umrechnung in m^2

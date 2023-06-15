@@ -50,7 +50,7 @@ koeff_pfeilung = [2.1511 1.7988 1.53045 1.2621 1.08715 0.9122 0.6533 0.559;
 
 phi_eff = atan((tan(Ergebnisse_Fluegel.phi_25_max))/(sqrt(1-specs.Ma_CR^2)));
 % rad2deg(phi_eff)
-eta = (0:0.01:1);
+eta = (0:0.001:1);
 startspalte =5 ;
 endspalte =6 ;
 % Berechnung von linearer Interpoltion
@@ -101,7 +101,7 @@ VWA.epsilon = deg2rad(-3);% geometrische Verwindung des Fuegels
 VWA.epsilon_eta = (VWA.epsilon) .* eta;
 
 VWA.gamma_b_fun = @(eta) ((VWA.epsilon) .* eta) * (c1 .* ((eta)./(GRA.l_m)) + c2 .* (4.*sqrt(1 - eta.^2))./pi + c3 .* f_eta.');
-VWA.test_integral = integral(VWA.gamma_b_fun, 0, 1, 101); % trapezintegral
+VWA.test_integral = integral(VWA.gamma_b_fun, 0, 1, 1001); % trapezintegral
 %test = trapz(eta,gamma_b_fun)
 
 VWA.gamma_b_eta = k1 .* VWA.c_AF_anstieg .* GRA.gamma_a_eta .*(VWA.epsilon_eta - VWA.test_integral);
@@ -112,7 +112,7 @@ gamma_eta_ges = GRA.gamma_a_eta * c_AF + VWA.gamma_b_eta;
 
 
 
-
+c_a_eta = (GRA.gamma_a_eta .* Ergebnisse_stat_Flaechenbelastung.C_A_CR .* GRA.l_m) ./ (Ergebnisse_Fluegel.Fluegeltiefen_eta);
 
 %% Part2 Fluegelmomente
 
@@ -167,7 +167,7 @@ Ergebnisse_Auftriebsverteilung.gamma_a_eta = GRA.gamma_a_eta;
 Ergebnisse_Auftriebsverteilung.VWA = VWA;
 Ergebnisse_Auftriebsverteilung.GRA = GRA;
 Ergebnisse_Auftriebsverteilung.eta = eta;
-
+Ergebnisse_Auftriebsverteilung.c_a_eta = c_a_eta;
 save Ergebnisse_Auftrieb_Momente.mat Ergebnisse_Auftriebsverteilung VWA GRA FM
 
 

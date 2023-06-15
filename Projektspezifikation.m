@@ -64,6 +64,7 @@ specs.D_rumpf = 6.21;
 specs.R_rumpf = specs.D_rumpf/2;
 specs.l_rumpf = 74.92;
 specs.h_rumpf = 6.21;
+specs.d_l = 0.13;
 % Leitwerke
 
 specs.coanlaenge = 15;

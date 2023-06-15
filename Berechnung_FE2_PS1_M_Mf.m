@@ -370,6 +370,7 @@ while abs(delta_M_to) > 0.0001
     % Formel Torenbeek S 455 c-11
     M_Fluegel.W_F = (M_Fluegel.W_F_basic + 1.2 * (M_Fluegel.W_high_lift_div + M_Fluegel.W_SP))...
         * (1 - Technologiefaktor_ALU_CFK); 
+    
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Ergebnis sehr gering M_Fluegel.W_F
     M_Airframe_Structur.Wing_Group = M_Fluegel.W_F;
     

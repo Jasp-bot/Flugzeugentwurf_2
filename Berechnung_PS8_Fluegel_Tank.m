@@ -324,15 +324,15 @@ Tank.Test_shrink_Fuelmass = Ergebnis_shrink_m.m_fuel < Tank.masse_Treibstoff_max
 % Bedingung von eta(R-Rumpf) bis eta(s_I) = l_i_R - tan(phi_VK)*s_I(eta)
 % Bedingung von eta(l_i_A) bis eta(l_a_A) = l_i_A - tan(phi_VK_max)*((((n*10^(-2))*(b/2)) - (R_rumpf + s_I))) + tan(phi_HK_dt)*(((n*10^(-2))*(b/2)) - (R_rumpf + s_I));
 
-for n = 1:100
-   if (n*10^(-2))*(Ergebnisse_Fluegel.b/2)<= specs.R_rumpf
+for n = 1:1000
+   if (n*10^(-3))*(Ergebnisse_Fluegel.b/2)<= specs.R_rumpf
        Ergebnisse_Fluegel.Fluegeltiefen_eta(1,1) = DT.l_i_R; 
        Ergebnisse_Fluegel.Fluegeltiefen_eta(1,n+1) = DT.l_i_R;
-   elseif (n*10^(-2))*(Ergebnisse_Fluegel.b/2)< specs.R_rumpf + DT.s_I
-       Ergebnisse_Fluegel.Fluegeltiefen_eta(1,n+1) = DT.l_i_R - tan(Ergebnisse_Fluegel.phi_VK_max)*(((n*10^(-2))*(Ergebnisse_Fluegel.b/2))-specs.R_rumpf);
+   elseif (n*10^(-3))*(Ergebnisse_Fluegel.b/2)< specs.R_rumpf + DT.s_I
+       Ergebnisse_Fluegel.Fluegeltiefen_eta(1,n+1) = DT.l_i_R - tan(Ergebnisse_Fluegel.phi_VK_max)*(((n*10^(-3))*(Ergebnisse_Fluegel.b/2))-specs.R_rumpf);
    else
-       Ergebnisse_Fluegel.Fluegeltiefen_eta(1,n+1) = DT.l_i_A - tan(Ergebnisse_Fluegel.phi_VK_max)*((((n*10^(-2))*(Ergebnisse_Fluegel.b/2))...
-           - (specs.R_rumpf + DT.s_I))) + tan(DT.phi_HK_dt)*(((n*10^(-2))*(Ergebnisse_Fluegel.b/2)) - (specs.R_rumpf + DT.s_I));
+       Ergebnisse_Fluegel.Fluegeltiefen_eta(1,n+1) = DT.l_i_A - tan(Ergebnisse_Fluegel.phi_VK_max)*((((n*10^(-3))*(Ergebnisse_Fluegel.b/2))...
+           - (specs.R_rumpf + DT.s_I))) + tan(DT.phi_HK_dt)*(((n*10^(-3))*(Ergebnisse_Fluegel.b/2)) - (specs.R_rumpf + DT.s_I));
    end
 
 end

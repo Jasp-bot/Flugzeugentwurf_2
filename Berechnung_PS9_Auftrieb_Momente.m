@@ -99,6 +99,8 @@ VWA.c_AF_anstieg = GRA.c_a_anstieg * k0 * cos(Ergebnisse_Fluegel.phi_25_max);
 
 VWA.epsilon = deg2rad(-3);% geometrische Verwindung des Fuegels
 VWA.epsilon_eta = (VWA.epsilon) .* eta;
+VWA.epsilon_eta_oR = VWA.epsilon_eta(1,Ergebnisse_Fluegel.zaehlvariabele_eta_Ru : length(VWA.epsilon_eta));
+VWA.epsilon_eta_Ru = VWA.epsilon_eta(1,1:Ergebnisse_Fluegel.zaehlvariabele_eta_Ru);
 
 VWA.gamma_b_fun = @(eta) ((VWA.epsilon) .* eta) * (c1 .* ((eta)./(GRA.l_m)) + c2 .* (4.*sqrt(1 - eta.^2))./pi + c3 .* f_eta.');
 VWA.test_integral = integral(VWA.gamma_b_fun, 0, 1, 1001); % trapezintegral

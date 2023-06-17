@@ -185,6 +185,13 @@ HLW.x_distanz_zu_fluegel = (HLW.r) - (kabinenversatz - HLW.x_NP_ges/2) + 8.52;
 
 HLW.kabinenversatz = kabinenversatz;
 
+% phi(50) HLW
+HLW.phi_50 = tan((HLW.l_a/2 - HLW.l_i/2 + tan(HLW.phi_VK)*HLW.s_A)/(HLW.s_A));
+
+HLW.l_phi50 = (HLW.b/2)/(cos(HLW.phi_50));
+
+
+
 %% Seitenleitwerk
 
 

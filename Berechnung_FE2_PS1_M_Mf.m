@@ -721,7 +721,8 @@ Ergebnisse_Massen_FE2.M_F = M_TO_initial * FF.Kappa_ges;
 % Airplane Structure
 Anteile_einzel_Massen_FE2.Airplane_Structure.Wing_group = M_Airframe_Structur.Wing_Group;
 Anteile_einzel_Massen_FE2.Airplane_Structure.Tail_group = M_Airframe_Structur.Tail_Group;
-Anteile_einzel_Massen_FE2.Airplane_Structure.Fuselage_group = M_Airframe_Structur.Fuselage_Group;
+Anteile_einzel_Massen_FE2.Airplane_Structure.Fuselage_group.M = M_Airframe_Structur.Fuselage_Group;
+Anteile_einzel_Massen_FE2.Airplane_Structure.Fuselage_group.Sg_12 = M_Rumpf.Sg_12;
 Anteile_einzel_Massen_FE2.Airplane_Structure.Undercarriage_group = M_Airframe_Structur.Undercarriage_Group;
 Anteile_einzel_Massen_FE2.Airplane_Structure.Surface_control_group = M_Airframe_Structur.Surface_Control_Group;
 Anteile_einzel_Massen_FE2.Airplane_Structure.Nacelle_group = M_Airframe_Structur.Engine_saction_nacelle_group;

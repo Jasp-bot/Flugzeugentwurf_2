@@ -1,4 +1,4 @@
-%% PS4 detaillierte Widerstandsabschaetzung nach Diederich
+5%% PS4 detaillierte Widerstandsabschaetzung nach Diederich
 % Aufgeteilt in die Kapitel:
     % Fluegelwiderstand:    - Profilwiderstand
     %                       - Ind. Widerstand
@@ -43,13 +43,23 @@ x_u = Ergebnisse_Fluegel.Fluegeltiefen_eta * xu_l;      % Annahme, dass l die Fl
     % induzierter Widerstand des Flügels
 c_A_F = Ergebnisse_stat_Flaechenbelastung.C_A_CR;       % aus PS4 Formel 11
 
+    % Transsonischer Widerstand
+Ma_unendlich = specs.Ma_CR;
+
+    % Rumpfwiderstand
+S_G_Ru = Anteile_einzel_Massen_FE2.Airplane_Structure.Fuselage_group.Sg_12;
+
+    % Profilwiderstand Leitwerk
+d_l_HLW = 0.1;
+
+
 
 %% ------------------------------------------------------------------------
 %  -------------Fluegelwiderstand nach Diederich---------------------------
 %  ------------------------------------------------------------------------
 
 
-% Profilwiderstand des Fluegels
+%% Profilwiderstand des Fluegels
 
 % PS4 S.2, Formel 4 
 k = 0.27 * specs.d_l + 100 * (specs.d_l)^4;
@@ -80,8 +90,8 @@ test_integ = @(eta) c_w_p_eta .*  (Ergebnisse_Fluegel.Fluegeltiefen_eta) ./ (GRA
 c_w_p = integral(test_integ, 0, 1, 1001);
 test_trapz = trapz(c_w_p_eta .*  (Ergebnisse_Fluegel.Fluegeltiefen_eta) ./ (GRA.l_m))
 test_sum = sum(c_w_p)
-% schnelltest plot
-plot(c_w_p,0:0.001:1)
+% % schnelltest plot
+% plot(c_w_p,0:0.001:1)
 
 
 
@@ -100,12 +110,68 @@ tau = 1 - Ergebnisse_Fluegel.streckung_phi25_max * (0.002 + 0.0084 * (Ergebnisse
 % PS4 S.4, Formel 14
 c2 = (1/tau) * (1 + (5*10^(-6)) * (rad2deg(Ergebnisse_Fluegel.phi_25_max))^3); 
 
-% % delta eps keine ahnung wie das berechnet werden soll
-% delta_eps = abs()
-% 
-% % PS4 S.4, Formel 11
-% c_w_ind = c2 * (c_A_F^2)/(pi * Ergebnisse_Fluegel.streckung_phi25_max) +...
-%     c1 * c_A_F * delta_eps + c0 * delta_eps^2;
-% 
+% delta eps keine ahnung wie das berechnet werden soll
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% achtung nachfragen!!!!!!!!!!!!!!!!
+eta_Ru = length(VWA.epsilon_eta_Ru)*10^(-3);
+delta_eps = abs(VWA.epsilon - VWA.epsilon .* eta_Ru);
+
+% PS4 S.4, Formel 11
+c_w_ind = c2 * (c_A_F^2)/(pi * Ergebnisse_Fluegel.streckung_phi25_max) +...
+    c1 * c_A_F * delta_eps + c0 * delta_eps^2;
+
+
+
+% Transsonischer Widerstand
+
+% PS4 S.5 Formel 18
+k_vector = [0.758, 0.1, -0.090, 0, -0.100];
+
+for n_DD = 1:5;
+    M_DD_profil_phi25_vec(1,n_DD) = k_vector(1,n_DD) * c_A_F^(n_DD-1);
+end    
+M_DD_profil_phi25 = sum(M_DD_profil_phi25_vec);
+
+% PS4 S.5 Formel 17
+delta_Ma = Ma_unendlich - M_DD_profil_phi25/(sqrt(cos(Ergebnisse_Fluegel.phi_25_max)));
+
+% PS4 S.4 Formel 16
+delta_c_WM = 0.002 * exp(60 * delta_Ma);
+
+%% ------------------------------------------------------------------------
+
+% Rumpfwiderstand
+
+Re_Ru = (specs.l_rumpf * (specs.Ma_CR * ISA.a(hoehe_CR)))/(ISA.kin_visk(hoehe_CR));
+% PS4 S.5 Formel 19
+c_f_tu_Ru = (0.455)/(log(Re_Ru)^(2.58));
+
+% PS4 S.5 Formel 21
+k_Rumpf = 2.2 * (specs.D_rumpf/specs.l_rumpf)^(3/2) + 3.8 * (specs.D_rumpf/specs.l_rumpf)^(3);
+
+
+% PS4 S.5 Formel 21
+c_w_Ru_min = c_f_tu_Ru * (1 + k_Rumpf) * S_G_Ru/Ergebnisse_stat_Flaechenbelastung.F;
+
+% Kommentar: Ich habe keine Berechnungen fuer den Widerstand unter
+% betrachtung des Anstellwinkes des Rumpfes gemacht, das bedeutet, dise
+% Rechnung gilt nur fuer CR-Zustand Wenn das hinzugefuegt werden muss PS4
+% S.5 und fogend
+
+
+
+
+%% --------------------------------------------------------------------------
+% Leitwerkswiderstand
+
+% Profilwiderstand Leitwerk
+
+% PS4 S.6 Formel 28 % Annahme 
+k_HLW = 2.7 * d_l_HLW + 100 * d_l_HLW^4;
+
+% PS4 S.6 Formel 27
+c_w_HLW_min = 2 * c_f * (1+ k_HLW * cos(HLW.phi_50)^2) * ((Ergebnisse_stat_Flaechenbelastung.F)/(HLW.F));
+
+
+
 
 

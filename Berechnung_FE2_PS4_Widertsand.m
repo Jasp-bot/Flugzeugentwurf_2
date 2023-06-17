@@ -22,7 +22,7 @@ load Ergebnisse_Fluegel_Tank_NP.mat;
 load Ergebnisse_Auftrieb_Momente.mat;
 load Ergebnisse_Leitwerke.mat;
 load Ergebnisse_ISA_DATA.mat;
-
+load Ergebnisse_stat_Flaechenbelastung_Fluegelflaeche.mat;
 
 
 %% Allgemeine Variabelen
@@ -40,10 +40,13 @@ phi_50 = tan((NP.versatz_HK + 0.5*DT.l_i_I - 0.5*DT.l_a)/(Ergebnisse_Fluegel.b/2
 v_air = specs.Ma_CR * ISA.a(hoehe_CR);
 xu_l = 0.035;    % Wert zwischen 0.02 und 0.05
 x_u = Ergebnisse_Fluegel.Fluegeltiefen_eta * xu_l;      % Annahme, dass l die Fluegeltiefen an der jeweiligen Fosition auf dem Fluegel sind
+    % induzierter Widerstand des Flügels
+c_A_F = Ergebnisse_stat_Flaechenbelastung.C_A_CR;       % aus PS4 Formel 11
 
-%%--------------------------------------------------------------------------
-% -------------Fluegelwiderstand nach Diederich---------------------------
-%--------------------------------------------------------------------------
+
+%% ------------------------------------------------------------------------
+%  -------------Fluegelwiderstand nach Diederich---------------------------
+%  ------------------------------------------------------------------------
 
 
 % Profilwiderstand des Fluegels
@@ -69,7 +72,10 @@ c_w_p_min_Re = 2 * c_f * (1 + k * cos(phi_50)^2);
 c_w_p_eta = c_w_p_min_Re + 0.03 * (Ergebnisse_Auftriebsverteilung.c_a_eta).^6;
 
 
-%PS4 S.3, Formel 10 %%% Sieht alles noch sehr inkorekt aus
+
+
+% PS4 S.3, Formel 10 %%% Sieht alles noch sehr inkorekt aus
+
 test_integ = @(eta) c_w_p_eta .*  (Ergebnisse_Fluegel.Fluegeltiefen_eta) ./ (GRA.l_m);
 c_w_p = integral(test_integ, 0, 1, 1001);
 test_trapz = trapz(c_w_p_eta .*  (Ergebnisse_Fluegel.Fluegeltiefen_eta) ./ (GRA.l_m))
@@ -79,5 +85,27 @@ plot(c_w_p,0:0.001:1)
 
 
 
+
+% Induzierter Widerstand des Fluegels
+
+% PS4 S.4, Formel 12
+ c0 = VWA.c_AF_anstieg^2 * (0.0088 * Ergebnisse_Fluegel.lambda - 0.0051 * Ergebnisse_Fluegel.lambda^2) * (1 - 0.0006 * Ergebnisse_Fluegel.streckung_phi25_max^2);
+
+% PS4 S.4, Formel 13
+% c1 = GRA.c_a_anstieg * (0.0134 * (Ergebnisse_Fluegel.lambda - 0.3) - 0.0037 * Ergebnisse_Fluegel.lambda^2);
+c1 = VWA.c_AF_anstieg * (0.0134 * (Ergebnisse_Fluegel.lambda - 0.3) - 0.0037 * Ergebnisse_Fluegel.lambda^2); %% nicht sicer mit welchem Auftriebsanstieg gerechnet werden muss
+% PS4 S.4, Formel 15
+tau = 1 - Ergebnisse_Fluegel.streckung_phi25_max * (0.002 + 0.0084 * (Ergebnisse_Fluegel.lambda-0.2)^2);
+
+% PS4 S.4, Formel 14
+c2 = (1/tau) * (1 + (5*10^(-6)) * (rad2deg(Ergebnisse_Fluegel.phi_25_max))^3); 
+
+% % delta eps keine ahnung wie das berechnet werden soll
+% delta_eps = abs()
+% 
+% % PS4 S.4, Formel 11
+% c_w_ind = c2 * (c_A_F^2)/(pi * Ergebnisse_Fluegel.streckung_phi25_max) +...
+%     c1 * c_A_F * delta_eps + c0 * delta_eps^2;
+% 
 
 

@@ -286,7 +286,7 @@ while abs(delta_M_to) > 0.0001
     
     NR_M_Fluegel.const = 4.58 * 10^(-3);
     NR_M_Fluegel.b_ref = 1.905; % [m]
-    NR_M_Fluegel.b_s = sqrt((Ergebnisse_Fluegel.b/2)^2 + ( (NP.versatz_HK-(DT.l_a/2)) + (DT.l_i_R/2) )^2);
+    NR_M_Fluegel.b_s = 2 * sqrt((Ergebnisse_Fluegel.b/2)^2 + ( (NP.versatz_HK-(DT.l_a/2)) + (DT.l_i_R/2) )^2);
     NR_M_Fluegel.k_no = 1 + sqrt((NR_M_Fluegel.b_ref)/(NR_M_Fluegel.b_s));
     
     NR_M_Fluegel.k = (1 + Ergebnisse_Fluegel.lambda)^(0.4);
@@ -383,7 +383,49 @@ while abs(delta_M_to) > 0.0001
     
     M_Airframe_Structur.Tail_Group = W_tail;
     
+%% Höhenleitwerk Massenberechnung
+    
+    HLW_Mass.const = 4.58 * 10^(-3);
+    HLW_Mass.b_ref = 1.905; % [m]
+    HLW_Mass.b_s = HLW.l_phi50;
+    HLW_Mass.k_no = 1 + sqrt((HLW_Mass.b_ref)/(HLW_Mass.b_s));
+    
+    HLW_Mass.k = (1 + HLW.phi_VK)^(0.4);
+    
+    HLW_Mass.k_e = 1; % no engines
+    
+    HLW_Mass.k_uc = 0.95; % for wing mounted undercarriage or 0.95 for not Wingmounted undercarriage %%%%%%%% Nicht sicher !!!!!
+    
+    HLW_Mass.Lambda_50 = HLW.phi_50; % Annahme Pfeilung von Außenfluegel
+    
+    
+    %NR_M_Fluegel.W_des = M_Zero_Fuel_initial;
+    %NR_M_Fluegel.k_st = 1 + (9.06*10^(-4)) * (((Ergebnisse_Fluegel.b * cos(Ergebnisse_Fluegel.phi_VK_max))^3)/(NR_M_Fluegel.W_des)) *...
+        (((M_Rumpf.v_D_EAS/100)/(0.13))^2) * cos(NR_M_Fluegel.Lambda_50); % Annahme (t/c)_r = 0.13  W_des = unbekannt
+    
+    %NR_M_Fluegel.k_b = 1; % for catilever wings otherwise k_b = 1 - nue_s^2 || neu_s ditance trut to wing root
+    
+    %NR_M_Fluegel.d_l_root = 0.13;
+    
+    %M_Fluegel.n_max = 2.1 + (10900)/(4540 + M_TO_initial); % Achtung hier steht m_To drin, muss füt Iteration veraendert werden
+    
+    %M_Fluegel.n_ult = M_Fluegel.n_max * 1.5;
+    
+    %if Zaehlvariabele == 0;
 
+       % NR_M_Fluegel.W_F_initial = M_OE_initial * 0.3; %% Initiale Annahme, dass Winggroup weight ca 30% M_OE sind
+    
+    %else Zaehlvariabele > 0;
+        %NR_M_Fluegel.W_F_initial = M_Airframe_Structur.Wing_Group;
+
+    %end
+        
+    % Berechnung W_HLW_basic
+    %M_HLW.W_HLW_basic = HLW_Mass.const * HLW_Mass.k_no * HLW_Mass.k *...
+        %HLW_Mass.k_e * HLW_Mass.k_uc * HLW_Mass.k_st *...
+        %(HLW_Mass.k_b * HLW_Mass.n_ult * (HLW_Mass.W_des - 0.8* HLW_Mass.W_F_initial))^(0.55) * ...
+        %Ergebnisse_Fluegel.b^(1.675) * NR_M_Fluegel.d_l_root^(-0.45) * cos(NR_M_Fluegel.Lambda_50)^(-1.325); % Annahme d_l_root = (t/c)_r = 0.13
+    
 
     % W undercarriage Torenbeek S282 A,B,C,D S283
     k_uc = 1;

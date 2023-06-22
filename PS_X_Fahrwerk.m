@@ -2,14 +2,17 @@ clear
 close  
 clc
 
-G_to = 300000;
-l_HFW = 90;
-l_BFW = 20;
-delta_z = 10;
-l_BFW_max = 25;
-l_BFW_min = 18;
+G_to = 2.6258e+06;
+
+
+delta_z = 7.3;
+l_BFW_max = 36.495;
+l_BFW_min = 33.194;
 %d_reifen = 17;
-l_HFW_min = 20;
+l_HFW_min = 2.793;
+l_HFW = l_HFW_min;
+l_BFW = l_BFW_max;
+
 load Projekt_specs.mat
 
 % Reifendatenbank
@@ -33,21 +36,26 @@ else
     v_reifen_krit = v_reifen_max_TO;
 end
 
-v_reifen_krit = v_reifen_krit * 1.151078;
+v_reifen_krit = 206.9667;%v_reifen_krit * 1.151078;
 
 %% 1. Hauptfahrwerk Belastung ermitteln
-S_Reserve = 0.25;
-S_FW = 1 + ((0.07 + S_Reserve)/100);
+S_Reserve = 25;
+S_FW = 1 + ((7 + S_Reserve)/100);
 
 n_FWB = 2; % Es handelt sich um Hauptfahrwerksbeine
-n_reifen_HFW = 12; % Anzahl Reifen insgesamt
+n_reifen_HFW = 6; % Anzahl Reifen insgesamt
 
 F_HFW_max = (G_to *((l_BFW + l_HFW) - l_HFW_min)) / (n_FWB * (l_BFW + l_HFW));
 
 F_reifen_HFW_max = (F_HFW_max/n_reifen_HFW) * S_FW;
+F_reifen_HFW_max = convforce(F_reifen_HFW_max,"N","lbf");
+
 
 idx = (tires.RatedLoad_Lbs_ >= F_reifen_HFW_max & tires.RatedInflation_PSI_<=220 & tires.RatedSpeed_MPH_ >= v_reifen_krit);
 tires_edit_HFW = tires(idx,:);
+
+
+
 
 
 %% 2. LCN bestimmen -> beste Reifen wählen
@@ -69,7 +77,7 @@ T1 = readmatrix('ReductionFactors1.csv');
 
 Sb_L = S_b / L; % in inch ?
 St_L = S_t / L; % in Inch ?
-Y = roundtowardvec(Sb_L,[25 30 35 40 45 50 55 60 65 70 75 80 85 90 95 100 110 120 130 140 150 160 170]);
+Y = roundtowardvec(St_L,[25 30 35 40 45 50 55 60 65 70 75 80 85 90 95 100 110 120 130 140 150 160 170]);
 
 
 % Finde passende Spalte
@@ -112,9 +120,9 @@ figure(3);
 
 
 for i=1:length(tires_edit_HFW.A_inch_2_)
-    A(i) = ((tires_edit_HFW.A_inch_2_(i)*n_rad)/L);% Hier eigentlich L^2 aber dann ergebnisse unrealistisch ; %Kontaktfläche aus Excel
+    A(i) = ((tires_edit_HFW.A_inch_2_(i)*n_rad)/L^2);% Hier eigentlich L^2 aber dann ergebnisse unrealistisch ; %Kontaktfläche aus Excel
 
-A(i) = A(i) *100;
+A(i) = A(i)*100;
 
 X=roundtowardvec(A(i),[5 8 10 15 20 25 30 35 40 45 50 55 60 65 70 75 80 85 90 95 100 110 120 130 140 150 160 170 180 190 200]);
 
@@ -137,7 +145,7 @@ if isempty(i2)
     ewsl(i) = 0;
     continue
 end
-%figure(2);
+%figure(7);
 %plot(T2(:,j2),T2(:,j2+1));
 %hold on
 
@@ -151,7 +159,7 @@ z2(2,2) = 0;
 punkt_y= [P(2),P(2)];
 punkt_x = [0,6];
 punkt2 = [0 60;P(2) P(2)];
-plot(punkt_x,punkt_y)
+%plot(punkt_x,punkt_y)
 
 P2 = InterX(z2.',punkt2);
 if isempty(P2)
@@ -159,13 +167,13 @@ if isempty(P2)
     continue
 end
 reduc_fac(i) = P2(1);
-ewsl(i) = (tot_load/reduc_fac(i))/1000;
+ewsl(i) = (tot_load/reduc_fac(i))/10000;
 
 % 3. Schritt ESWL bestimmen
 % ESWL und Reifendruck nutzen um LCN zu ermitteln
 
 %figure(3)
-%loglog(tires_edit_HFW.RatedInflation_PSI_(i),ewsl(i),'bx')
+loglog(tires_edit_HFW.RatedInflation_PSI_(i),ewsl(i),'bx')
 
 in(i) = inpolygon(tires_edit_HFW.RatedInflation_PSI_(i),ewsl(i),[71 88 218 238],[62 77 25 35]);
 clear figure(2)
@@ -173,12 +181,12 @@ end
 %% Check ob Reifen im LCN Limit liegt -> Über Polygons
 big = 0;
 big_idx = 0;
-for u=1:length(in)
-    if ewsl(u) > big && in(u) ==1
-        big = ewsl(u);
-        big_idx = u;
-    end
-end
+%for u=1:length(in)
+%    if ewsl(u) > big && in(u) ==1
+%        big = ewsl(u);
+%        big_idx = u;
+%    end
+%end
 
 %% 2. Bugfahrwerk ermitteln
 %% Belastungen

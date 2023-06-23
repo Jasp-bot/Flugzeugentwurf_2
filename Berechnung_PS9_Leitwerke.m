@@ -191,6 +191,25 @@ HLW.phi_50 = tan((HLW.l_a/2 - HLW.l_i/2 + tan(HLW.phi_VK)*HLW.s_A)/(HLW.s_A));
 HLW.l_phi50 = (HLW.b/2)/(cos(HLW.phi_50));
 
 
+% Verlauf der Fluegeltiefen eta
+
+for n_HLW = 1:1000
+    if (n_HLW*10^(-3)) * (HLW.b/2) <= HLW.R_rumpf_unten;
+        HLW.Fluegeltiefen_eta(1,1) = HLW.l_i_R;
+        HLW.Fluegeltiefen_eta(1,n_HLW+1) = HLW.l_i_R;
+        HLW.n_HLW_zaehlvar = n_HLW;
+    elseif (n_HLW*10^(-3)) * (HLW.b/2) < HLW.R_rumpf_oben;
+        HLW.Fluegeltiefen_eta(1,n_HLW+1) = HLW.l_i_R + tan(HLW.phi_HK) * ...
+            ((n_HLW*10^(-3)) * (HLW.b/2) - HLW.R_rumpf_unten); 
+    else 
+        HLW.Fluegeltiefen_eta(1,n_HLW+1) = HLW.l_i - tan(HLW.phi_VK)*((n_HLW*10^(-3)) * (HLW.b/2) - HLW.R_rumpf_oben) +...
+            tan(HLW.phi_HK)*((n_HLW*10^(-3)) * (HLW.b/2) - HLW.R_rumpf_oben);
+    end
+end
+
+HLW.Fluegeltiefen_eta_oR = HLW.Fluegeltiefen_eta(1,HLW.n_HLW_zaehlvar+1:length(HLW.Fluegeltiefen_eta));
+
+
 
 %% Seitenleitwerk
 
@@ -236,11 +255,12 @@ SLW.phi_25 = HLW.phi_25 + deg2rad(3);
 
 % Strekung LAMBDA GROSS
 % f_streckung_SLW = @(x) (-8.892 .* log(x) + 40.285);
-% streckung_phi25_SLW_berechnung = f_streckung_SLW(rad2deg(SLW.phi_25));
-SLW.streckung_phi25 =3;
+% SLW.streckung_phi25_SLW_berechnung = f_streckung_SLW(rad2deg(SLW.phi_25));
+SLW.streckung_phi25 =2.5; % 3;
+
 % Zuspitzung lambda klein
 
-SLW.lambda = 0.5;
+SLW.lambda = 0.35;               % SLW.lambda = 0.5;
 
 % pfeilung SLW.phi_VK
 
@@ -258,10 +278,11 @@ SLW.l_i_et =  (2 .*SLW.F)./ (SLW.b .* (SLW.lambda+1));
 
 SLW.l_a_et = SLW.lambda .* SLW.l_i_et;
 
-SLW.phi_HK = atan( tan(SLW.phi_25) - (4/SLW.streckung_phi25)*(1-0.25) * ((1-SLW.lambda)/(1+SLW.lambda)));
+SLW.phi_HK_et = atan( tan(SLW.phi_25) - (4/SLW.streckung_phi25)*(1-0.25) * ((1-SLW.lambda)/(1+SLW.lambda)));
 % rad2deg(SLW.phi_HK);
 
-SLW.F_test = ((SLW.l_i_et + ((SLW.b/2)*tan(SLW.phi_HK)))*(SLW.b/2) - ((tan(SLW.phi_VK)*(SLW.b/2)^2)/2) - (tan(SLW.phi_HK)*(SLW.b/2)^2)/2)*2; %% Trash rechnung
+%SLW.F_test = ((SLW.l_i_et + ((SLW.b/2)*tan(SLW.phi_HK)))*(SLW.b/2) - ((tan(SLW.phi_VK)*(SLW.b/2)^2)/2) - (tan(SLW.phi_HK)*(SLW.b/2)^2)/2)*2; %% Trash rechnung
+% SLW.F_test = (SLW.l_i_et +(tan(phi)))
 
 
 
@@ -271,7 +292,7 @@ l_i_SLW_high = 100;
 l_i_SLW_low = 1;
 SLW.s_R = 2;
 dF_SLW = 1;
-SLW.SLW.phi_HK_lokal = SLW.phi_HK;
+SLW.phi_HK_lokal = SLW.phi_HK_et;
 SLW.s_A = SLW.b - SLW.s_R;
 
 %for zaehlvar = 1:10000
@@ -289,9 +310,15 @@ while abs(dF_SLW) > 0.001
     SLW.phi_HK_lokal = atan(gegenkathete_phi_HK/SLW.s_A);
     
 
-    SLW.F_aussen = (l_i_SLW_try + ((SLW.b/2)*tan(SLW.phi_HK_lokal)))*(SLW.b/2)...
-        - ((tan(SLW.phi_HK_lokal)*(SLW.b/2)^2)/2)...
-        - (tan(SLW.phi_HK_lokal)*(SLW.b/2)^2)/2; 
+%     SLW.F_aussen = (l_i_SLW_try + ((SLW.b/2)*tan(SLW.phi_HK_lokal)))*(SLW.b/2)...
+%         - ((tan(SLW.phi_HK_lokal)*(SLW.b/2)^2)/2)...
+%         - (tan(SLW.phi_HK_lokal)*(SLW.b/2)^2)/2; 
+%     SLW.F_aussen = (l_i_SLW_try + ((SLW.b)*tan(SLW.phi_HK_lokal)))*(SLW.b)...
+%         - ((tan(SLW.phi_HK_lokal)*(SLW.b)^2)/2)...
+%         - (tan(SLW.phi_HK_lokal)*(SLW.b)^2)/2; 
+    SLW.F_aussen = (l_i_SLW_try + (tan(SLW.phi_HK_lokal) * SLW.s_A)) * SLW.s_A -...
+        ((SLW.s_A^2 * tan(SLW.phi_VK))/2) - ...
+        ((SLW.s_A^2 * tan(SLW.phi_HK_lokal))/2);
     SLW.F_innen = l_i_SLW_try * SLW.s_R;
     F_SLW_check = SLW.F_innen + SLW.F_aussen;
     dF_SLW = -F_SLW_check + SLW.F_real;
@@ -338,6 +365,36 @@ SLW.y_SP_ges = ((SLW.y_SP + SLW.s_R)*(SLW.F_aussen) + SLW.y_SP_R*(SLW.F_innen))/
 SLW.x_NP_ges = (SLW.x_NP *(SLW.F_aussen) + SLW.x_NP_R*(SLW.F_innen))/(SLW.F_aussen + SLW.F_innen);
 
 x_distanz_zu_fluegel_SLW = (SLW.r) - (SLW.x_NP_ges) + 8.52;
+
+
+% Berechnung fuer/mit phi_50
+
+SLW.phi_50 = tan((tan(SLW.phi_VK)*SLW.s_A + (SLW.l_a)/(2) - (SLW.l_i)/(2))/(SLW.b));
+
+SLW.l_phi50 = (SLW.b)/(cos(SLW.phi_50));
+
+
+% Fluegeltiefen eta 
+
+for n_SLW = 1:1000
+    if (n_SLW*10^(-3)) * (SLW.b) <= SLW.s_R
+        SLW.Fluegeltiefen_eta(1,1) = SLW.l_i;
+        SLW.Fluegeltiefen_eta(1,n_SLW + 1) = SLW.l_i;
+        SLW.n_SLW_zaehlvar = n_SLW;
+    elseif (n_SLW*10^(-3)) * (SLW.b) > SLW.s_R
+        SLW.Fluegeltiefen_eta(1,n_SLW + 1) = SLW.l_i - (tan(SLW.phi_VK) * ((n_SLW*10^(-3)) * (SLW.b) - SLW.s_R) ) + ...
+            (tan(SLW.phi_HK_lokal) * ((n_SLW*10^(-3)) * (SLW.b) - SLW.s_R) );
+    end
+end
+SLW.Fluegeltiefen_eta_oR = SLW.Fluegeltiefen_eta(1, SLW.n_SLW_zaehlvar+1:length(SLW.Fluegeltiefen_eta));
+
+% Test zum trubble shooten
+% test = abs(SLW.Fluegeltiefen_eta(1,1001) - SLW.l_a) < 0.01;
+% test
+% SLW.Fluegeltiefen_eta(1,1001)
+% SLW.l_a
+% plot(SLW.Fluegeltiefen_eta);
+
 
 
 %% Speichern von Daten

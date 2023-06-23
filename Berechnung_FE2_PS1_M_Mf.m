@@ -488,22 +488,24 @@ while abs(delta_M_to) > 0.0001
     
     % ???????????????????????????????? Quelle der Werte ???????????????????
     % deklarationen
-    feat = 3.28084;     %% Umrechnungsfactor
-    ln = 4 * feat;        %%länge fan cowling
-    lh = 2.3 * feat;      %%länge zur größten Stelle an der urbine
-    Dn = 3.3 * feat;      %%größter Durchmesser Engine
-    Dh = 3 * feat;        %%Durchmesser Eingang Engine
-    Gesamtlaenge = 4.49 * feat;
+    feet = 3.28084;     %% Umrechnungsfactor
+    ln = 4 * feet;        %%länge fan cowling
+    lh = 2.3 * feet;      %%länge zur größten Stelle an der urbine
+    Dn = 3.3 * feet;      %%größter Durchmesser Engine
+    Dh = 3 * feet;        %%Durchmesser Eingang Engine
+    Gesamtlaenge = 4.49 * feet;
     beta_c = ln / Gesamtlaenge;   %%Gesamtlänge des Triebwerkes
     
+    l_nacell_pylon = (ln - lh)/feet; % Annahme das das die laenge ist die der pylon mit der nacell interagiert
+
     % (B-13)
     A_cowling_sqFeet = ln * Dn * (2 + 0.35 * beta_c * (Dh / Dn) + 1.15 * (1 - beta_c));
     A_cowling = A_cowling_sqFeet * 0.092903; % umrechnung in m^2
     
     % Gas Generator section
-    lg = 0.3 * feat;     %%Länge section
-    Dg = 1.3 * feat;     %%größter Durchmesser section
-    Deg = 0.9 * feat;    %%KLeinster Durchmesser section
+    lg = 0.3 * feet;     %%Länge section
+    Dg = 1.3 * feet;     %%größter Durchmesser section
+    Deg = 0.9 * feet;    %%KLeinster Durchmesser section
     
     % Formel (B-14)
     A_generator_sqFeet = pi * lg * Dg * (1 -(1 / 3) * (1 -(Deg / Dg))) * 1 - 0.18 *((Dg / lg)^(5/3));
@@ -511,8 +513,8 @@ while abs(delta_M_to) > 0.0001
     
     
     %Plug
-    lp = 0.9 * feat;    %%Länge section
-    Dp = 0.5 * feat;     %%Anfangs Durchmesser
+    lp = 0.9 * feet;    %%Länge section
+    Dp = 0.5 * feet;     %%Anfangs Durchmesser
     % Formel (B-15)
     A_plug_sqFeet = 0.7 * pi * lp * Dp;
     A_plug = A_plug_sqFeet * 0.092903; % umrechnung in m^2
@@ -527,7 +529,7 @@ while abs(delta_M_to) > 0.0001
     % %  Refined Weight and Balance Estimate  s.317
     % 
     % W_e = 2.20462 * specs.m_TW;       %%Gewicht Triebwerk
-    % S_p = 10.3 * feat^2;              %%umspülte fläche des pilon
+    % S_p = 10.3 * feet^2;              %%umspülte fläche des pilon
     % n_ult = M_Fluegel.n_ult;                    %%Danach soll itteriert werden sagt jasper
     % 
     % 
@@ -767,7 +769,11 @@ Anteile_einzel_Massen_FE2.Airplane_Structure.Fuselage_group.M = M_Airframe_Struc
 Anteile_einzel_Massen_FE2.Airplane_Structure.Fuselage_group.Sg_12 = M_Rumpf.Sg_12;
 Anteile_einzel_Massen_FE2.Airplane_Structure.Undercarriage_group = M_Airframe_Structur.Undercarriage_Group;
 Anteile_einzel_Massen_FE2.Airplane_Structure.Surface_control_group = M_Airframe_Structur.Surface_Control_Group;
-Anteile_einzel_Massen_FE2.Airplane_Structure.Nacelle_group = M_Airframe_Structur.Engine_saction_nacelle_group;
+Anteile_einzel_Massen_FE2.Airplane_Structure.Nacelle_group.Masse = M_Airframe_Structur.Engine_saction_nacelle_group;
+Anteile_einzel_Massen_FE2.Airplane_Structure.Nacelle_group.Turbine_Area = A_Turbine;
+Anteile_einzel_Massen_FE2.Airplane_Structure.Nacelle_group.Turbine_Diameter = Dn / feet;
+Anteile_einzel_Massen_FE2.Airplane_Structure.Nacelle_group.Turbine_length = Gesamtlaenge / feet;
+Anteile_einzel_Massen_FE2.Airplane_Structure.Nacelle_group.l_nacell_pylon = l_nacell_pylon;
 Anteile_einzel_Massen_FE2.Airplane_Structure.Zusammen = M_Airframe_Structur.Zwischensumme;
 Anteile_einzel_Massen_FE2.Airplane_Structure.NR.Rumpf = NR_Rumpf_Geometrie;
 Anteile_einzel_Massen_FE2.Airplane_Structure.NR.FLuegel = NR_M_Fluegel;

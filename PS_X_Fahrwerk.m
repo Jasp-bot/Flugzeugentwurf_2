@@ -2,8 +2,8 @@ clear all
 close all
 clc
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Das mit Variablen aus CG ersetzen!!
 G_to = 258000;%2.6258e+06;
-
 
 delta_z = 7.3;
 l_BFW_max = 36.495;
@@ -12,7 +12,7 @@ l_BFW_min = 33.194;
 l_HFW_min = 2.793;
 l_HFW = l_HFW_min;
 l_BFW = l_BFW_max;
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 load Projekt_specs.mat
 
 % Reifendatenbank

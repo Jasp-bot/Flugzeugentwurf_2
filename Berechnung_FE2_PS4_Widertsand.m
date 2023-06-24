@@ -76,7 +76,7 @@ dx_SP = 1.5; %%%%%% Ein random wert angenommen!!!!!!!!!!!
 c_M_0_F = FM.c_M_NP_F0;
 
     % Zusatzwidertsand
-c_A_F_laufvar = 0:0.1:5; %%%%% NACHFRAGEN !!!!!!!!!!!!!!!!!!!!!!!!
+c_A_F_laufvar = 0:0.01:1; 
 
     % Inerferenzwiderstand
 l_int_F = DT.l_i_I;
@@ -133,10 +133,10 @@ c_w_p_eta = c_w_p_min_Re + 0.03 .*...
 
 test_integ = @(eta) c_w_p_eta .*  (Ergebnisse_Fluegel.Fluegeltiefen_eta_oR) ./ (GRA.l_m);
 c_w_p = integral(test_integ, 0, 1, 1001);
-test_trapz = trapz(c_w_p_eta .*  (Ergebnisse_Fluegel.Fluegeltiefen_eta_oR) ./ (GRA.l_m))
+test_trapz = trapz(c_w_p_eta .*  (Ergebnisse_Fluegel.Fluegeltiefen_eta_oR) ./ (GRA.l_m));
 %test_sum = sum(c_w_p)
 % % schnelltest plot
-% plot(c_w_p,0:0.001:1)
+% plot(c_w_p)
 
 
 
@@ -284,7 +284,7 @@ k_SLW = 2.7 .* d_l_SLW + 100 .* d_l_SLW.^4;
 
 % PS4 S.6 Formel 27
 c_w_HLW_min = 2 .* c_f_HLW .* (1+ k_HLW .* cos(HLW.phi_50).^2) .* ((HLW.F)/(Ergebnisse_stat_Flaechenbelastung.F));
-s_w_SLW_min = 2 .* c_f_SLW .* (1+ k_SLW .* cos(SLW.phi_50).^2) .* ((SLW.F)/(Ergebnisse_stat_Flaechenbelastung.F));
+c_w_SLW_min = 2 .* c_f_SLW .* (1+ k_SLW .* cos(SLW.phi_50).^2) .* ((SLW.F)/(Ergebnisse_stat_Flaechenbelastung.F));
 
 
 % ------------------Trimwiderstand Leitwerke--------------------
@@ -365,6 +365,50 @@ c_w_int_fs = (c_w_int_F + c_w_int_HLW + ...
     c_w_int_SLW +c_w_int_NC + c_w_int_PYL)/...
     Ergebnisse_stat_Flaechenbelastung.F;
 
-
 end
+
+
+% Plot design
+
+figure(1)
+hold on
+grid on
+
+
+
+
+% Plot Profilwiderstand
+plot(c_w_p)
+
+% plot Induzierter Widersatnd
+plot(c_w_ind, '*red')
+
+
+% Plot Transsonischer Widersatnd
+plot(delta_c_WM, '*green')
+
+% Plot Rumpfwiderstand
+plot(c_w_R, '*k')
+
+% Plot Widerstand Triebwerk
+plot(c_w_TW, '*m');
+
+
+% Plot Widerstand Seitenleitwerk
+%p(1) =
+plot(c_w_SLW_min);
+
+% Plot Widerstand Hoehenleitwerk 
+% p(2) = plot()
+
+% Plot Trimwiderstand HLW
+%p(3) = 
+plot(c_w_trim, '*blue');
+
+% Plot Zusatzwidersatnd
+%p(4) = plot()
+
+
+
+
 

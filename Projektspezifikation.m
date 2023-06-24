@@ -53,6 +53,13 @@ specs.n_TW = 2;      % Anzahl Triebwerke
 m_TW = 7549;   % Quelle: https://www.easa.europa.eu/sites/default/files/dfu/EASA%20E111%20TCDS%20issue%2012_Trent%20XWB.pdf
 specs.m_TW = m_TW * 0.10 + m_TW; % Masse eines TW in kg bsp terd XWB
 
+% Masze Triebwerk (in meter)
+specs.ln_TW=4;
+specs.lh_TW=2.3;
+specs.Dn_TW=3.3;
+specs.Dh_TW=3;
+specs.l_TW=4.49;    %Muss verändert werden falls der rest sich ändert
+
 % Landespezifikationen
 
 specs.s_LDG_specs = 2600;  % max Landestrecke bis zum Stillstand

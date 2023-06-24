@@ -133,7 +133,16 @@ CA_F_max = Ergebnisse_Auftriebsverteilung.c_a_eta(u)
 
 %% 4. alphaCaf_max
 
-alpha_Ca_f_max = (CA_F_max/ CA_alpha) * alpha_0_aft + delta_alpha_CA_F_max
+alpha_Ca_f_max = (CA_F_max/ CA_alpha) * alpha_0_aft - delta_alpha_CA_F_max
 deg2rad(alpha_Ca_f_max)
 
 
+%% PLotting Aufgelöste Polare
+
+alphas = -6:0.1:(alpha_Ca_f_max-delta_alpha_CA_F_max); % normal Plotten bis alphamax - delta alpha
+
+plot(alphas,(CA_alpha.*alphas))
+title("Aufgelöste Flügelpolare ohne Hochauftriebshilfen")
+ylabel("Auftriebsbeiwert CA")
+xlabel("Anstellwinkel Alpha")
+grid on

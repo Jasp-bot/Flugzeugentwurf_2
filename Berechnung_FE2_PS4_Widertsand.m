@@ -36,12 +36,12 @@ hoehe_CR = round(unitsratio('m','ft')*Flughoehe_CR);
         % es fehlen Werte als PS2 / PS3
     
     % Profilwiderstand des Fluegels  
-phi_50 = tan((NP.versatz_HK + 0.5*DT.l_i_I - 0.5*DT.l_a)/(Ergebnisse_Fluegel.b/2 - specs.R_rumpf));          % Muss noch erfragen wie phi_50 brterchnet werden soll
+phi_50 = Ergebnisse_Fluegel.phi_50; % tan((NP.versatz_HK + 0.5*DT.l_i_I - 0.5*DT.l_a)/(Ergebnisse_Fluegel.b/2 - specs.R_rumpf));          % Muss noch erfragen wie phi_50 brterchnet werden soll
 v_air = specs.Ma_CR * ISA.a(hoehe_CR);
 xu_l = 0.035;    % Wert zwischen 0.02 und 0.05
 x_u = Ergebnisse_Fluegel.Fluegeltiefen_eta_oR * xu_l;      % Annahme, dass l die Fluegeltiefen an der jeweiligen Fosition auf dem Fluegel sind
     % induzierter Widerstand des Flügels
-c_A_F = Ergebnisse_stat_Flaechenbelastung.C_A_CR;       % aus PS4 Formel 11
+%c_A_F = linspace(0,1); % Ergebnisse_stat_Flaechenbelastung.C_A_CR;       % aus PS4 Formel 11
 
     % Transsonischer Widerstand
 Ma_unendlich = specs.Ma_CR;
@@ -103,6 +103,8 @@ n_int_PYL = 4;
 
 for n_iteration = 1:100 
 
+    c_A_F = n_iteration * 10^(-2);
+
 %% Profilwiderstand des Fluegels
 
 % PS4 S.2, Formel 4 
@@ -132,13 +134,13 @@ c_w_p_eta = c_w_p_min_Re + 0.03 .*...
 
 % PS4 S.3, Formel 10 %%% Sieht alles noch sehr inkorekt aus
 
-test_integ = @(eta) c_w_p_eta .*  (Ergebnisse_Fluegel.Fluegeltiefen_eta_oR) ./ (GRA.l_m);
-c_w_p = integral(test_integ, 0, 1, 1001);
-test_trapz = trapz(c_w_p_eta .*  (Ergebnisse_Fluegel.Fluegeltiefen_eta_oR) ./ (GRA.l_m));
+% test_integ = @(eta) c_w_p_eta .*  (Ergebnisse_Fluegel.Fluegeltiefen_eta_oR) ./ (Ergebnisse_Fluegel.l_m);
+% c_w_p = integral(test_integ, 0, 1, 1001);
+c_w_p = trapz(c_w_p_eta .*  (Ergebnisse_Fluegel.Fluegeltiefen_eta_oR) ./ (Ergebnisse_Fluegel.l_m)) * 10^(-3);
 %test_sum = sum(c_w_p)
 % % schnelltest plot
 % plot(c_w_p)
-integral()
+
 
 
 
@@ -162,8 +164,8 @@ eta_Ru = length(VWA.epsilon_eta_Ru)*10^(-3);
 delta_eps = abs(VWA.epsilon - VWA.epsilon .* eta_Ru);
 
 % PS4 S.4, Formel 11
-c_w_ind = c2 * (c_A_F^2)/(pi * Ergebnisse_Fluegel.streckung_phi25_max) +...
-    c1 * c_A_F * delta_eps + c0 * delta_eps^2;
+c_w_ind(1,n_iteration) = c2 .* (c_A_F.^2)./(pi * Ergebnisse_Fluegel.streckung_phi25_max) +...
+    c1 .* c_A_F .* delta_eps + c0 .* delta_eps^2;
 
 
 
@@ -173,9 +175,9 @@ c_w_ind = c2 * (c_A_F^2)/(pi * Ergebnisse_Fluegel.streckung_phi25_max) +...
 k_vector = [0.758, 0.1, -0.090, 0, -0.100];
 
 for n_DD = 1:5
-    M_DD_profil_phi25_vec(1,n_DD) = k_vector(1,n_DD) * c_A_F^(n_DD-1);
+    M_DD_profil_phi25_vec(1,n_DD) = k_vector(1,n_DD) .* c_A_F.^(n_DD-1);
 end    
-M_DD_profil_phi25 = sum(M_DD_profil_phi25_vec);
+M_DD_profil_phi25(1,n_iteration) = sum(M_DD_profil_phi25_vec);
 
 % PS4 S.5 Formel 17
 delta_Ma = Ma_unendlich - M_DD_profil_phi25/(sqrt(cos(Ergebnisse_Fluegel.phi_25_max)));
@@ -220,17 +222,17 @@ c_A_alpha = c_A_alpha_F * (1+ ((c_A_alpha_H)/(c_A_alpha_F)) *...
 
 % PS4 S.5 Formel 23
 if zaehlvariabele_itt <= 1
-    c_A_ges = 0.5;
+    c_A_ges(1, n_iteration) = 0.5;
 
 elseif  zaehlvariabele_itt > 1
-    c_A_ges = c_A_ges;
+    c_A_ges(1, n_iteration) = c_A_ges(1, n_iteration - 1);
 end    
-alpha_Rumpf_grad = ((c_A_ges - Ergebnisse_stat_Flaechenbelastung.C_A_CR)/(c_A_alpha)) * ...
+alpha_Rumpf_grad(1, n_iteration) = ((c_A_ges(1, n_iteration) - Ergebnisse_stat_Flaechenbelastung.C_A_CR)/(c_A_alpha)) * ...
     (180 / pi);
 % PS4 S.5 Formel 22
-c_w_R_zu_c_w_Rmin = 0.000208 * abs(alpha_Rumpf_grad)^3 + 0.00125 * abs(alpha_Rumpf_grad)^2 + 0.029 * abs(alpha_Rumpf_grad) + 1;
+c_w_R_zu_c_w_Rmin(1, n_iteration) = 0.000208 * abs(alpha_Rumpf_grad(1, n_iteration)).^3 + 0.00125 * abs(alpha_Rumpf_grad(1, n_iteration)).^2 + 0.029 * abs(alpha_Rumpf_grad(1, n_iteration)) + 1;
 
-c_w_R = c_w_R_zu_c_w_Rmin * c_w_Ru_min;
+c_w_R(1, n_iteration) = c_w_R_zu_c_w_Rmin(1, n_iteration) .* c_w_Ru_min;
 
 
 
@@ -249,7 +251,7 @@ alpha_TW_grad = alpha_Rumpf_grad + TW_Einbauwinkel;
 c_w_TW_min = c_f_tu_TW * (1 + k_TW) * S_G_TW/Ergebnisse_stat_Flaechenbelastung.F;
 
 % PS4 S.5 Formel 22
-c_w_TW_zu_c_w_TWmin = 0.000208 * abs(alpha_TW_grad)^3 + 0.00125 * abs(alpha_TW_grad)^2 + 0.029 * abs(alpha_TW_grad) + 1;
+c_w_TW_zu_c_w_TWmin = 0.000208 * abs(alpha_TW_grad).^3 + 0.00125 * abs(alpha_TW_grad).^2 + 0.029 * abs(alpha_TW_grad) + 1;
 
 c_w_TW = c_w_TW_zu_c_w_TWmin * c_w_TW_min;
 
@@ -295,12 +297,12 @@ c_w_SLW_min = 2 .* c_f_SLW .* (1+ k_SLW .* cos(SLW.phi_50).^2) .* ((SLW.F)/(Erge
 
 % PS4 S.7 Formel 33 
 qH_q = 0.95;
-c_A_H = (c_M_0_F + c_A_F * ((dx_SP)/(l_mue))) / ...
+c_A_H(1,n_iteration) = (c_M_0_F + c_A_F * ((dx_SP)/(l_mue))) / ...
     (qH_q * ((HLW.F)/(Ergebnisse_Fluegel.F)) * ((HLW.r - dx_SP)/(l_mue)));
 
 % PS4 S.7 Formel 29
-c_A_ges = c_A_F + c_A_H * qH_q * ((HLW.F)/(Ergebnisse_stat_Flaechenbelastung.F));
-c_A_ges_vec(zaehlvariabele_itt,1) = c_A_ges;
+c_A_ges(1,n_iteration) = c_A_F + c_A_H(1,n_iteration) * qH_q * ((HLW.F)/(Ergebnisse_stat_Flaechenbelastung.F));
+c_A_ges_vec(zaehlvariabele_itt,1) = c_A_ges(1,n_iteration);
 
 zaehlvariabele_itt = zaehlvariabele_itt + 1;
 
@@ -309,7 +311,7 @@ zaehlvariabele_itt = zaehlvariabele_itt + 1;
 tau_H = 1 - HLW.streckung_phi25 * (0.002 + 0.0084 * (HLW.lambda - 0.2)^2);
 
 % PS4 S.7 Formel 30
-c_w_trim = ((c_A_H^2)/(pi * HLW.streckung_phi25)) * ...
+c_w_trim(1,n_iteration) = ((c_A_H(1,n_iteration).^2)/(pi * HLW.streckung_phi25)) * ...
     ((1 + (5*10^(-6)) * (rad2deg(HLW.phi_25))^3)/(tau_H)) *...
     ((HLW.F)/(Ergebnisse_Fluegel.F));
 
@@ -320,13 +322,13 @@ c_w_trim = ((c_A_H^2)/(pi * HLW.streckung_phi25)) * ...
 
 % PS4 S.8 Formel 38
 % Achtung c_A_F_laufvar soll eien Laufvariabele sein 
-d_alpha_oH = c_A_F_laufvar ./ c_A_alpha_F;
+d_alpha_oH = c_A_F ./ c_A_alpha_F;
 
 % PS4 S.8 Formel 37
 d_alpha_w = Abwindfaktor .* d_alpha_oH;
 
 % PS4 S.8 Formel 36
-delta_c_w_H = c_A_H .* sin(d_alpha_w) .* qH_q .* ((HLW.F)./(Ergebnisse_stat_Flaechenbelastung.F));
+delta_c_w_H(1,n_iteration) = c_A_H(1,n_iteration) .* sin(d_alpha_w) .* qH_q .* ((HLW.F)./(Ergebnisse_stat_Flaechenbelastung.F));
 
 
 %%--------------------------------------------------------------------------
@@ -367,6 +369,8 @@ c_w_int_fs = (c_w_int_F + c_w_int_HLW + ...
     c_w_int_SLW +c_w_int_NC + c_w_int_PYL)/...
     Ergebnisse_stat_Flaechenbelastung.F;
 
+n_iteration_vec(1,n_iteration) = n_iteration * 10^(-2);
+
 end
 
 
@@ -375,40 +379,40 @@ end
 figure(1)
 hold on
 grid on
-
-
+xlim([0, 0.05])
+ylim([0, 1])
 
 
 % Plot Profilwiderstand
-plot(c_w_p)
+%plot(c_w_p,   '.r') %n_iteration_vec,
 
 % plot Induzierter Widersatnd
-plot(c_w_ind, '*red')
-
-
+plot(c_w_ind, n_iteration_vec, '-red')
+% 
+% 
 % Plot Transsonischer Widersatnd
-plot(delta_c_WM, '*green')
-
+plot(delta_c_WM, n_iteration_vec, '-green')
+ 
 % Plot Rumpfwiderstand
-plot(c_w_R, '*k')
-
+plot(c_w_R, n_iteration_vec, '-k')
+ 
 % Plot Widerstand Triebwerk
-plot(c_w_TW, '*m');
+plot(c_w_TW,n_iteration_vec, '-m');
 
 
 % Plot Widerstand Seitenleitwerk
 %p(1) =
-plot(c_w_SLW_min);
-
-% Plot Widerstand Hoehenleitwerk 
-% p(2) = plot()
-
-% Plot Trimwiderstand HLW
-%p(3) = 
-plot(c_w_trim, '*blue');
-
-% Plot Zusatzwidersatnd
-%p(4) = plot()
+%plot(c_w_SLW_min);
+% 
+% % Plot Widerstand Hoehenleitwerk 
+% % p(2) = plot()
+% 
+% % Plot Trimwiderstand HLW
+% %p(3) = 
+ plot(c_w_trim, n_iteration_vec,'-blue');
+% 
+% % Plot Zusatzwidersatnd
+% %p(4) = plot()
 
 
 

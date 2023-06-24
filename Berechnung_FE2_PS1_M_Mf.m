@@ -521,10 +521,10 @@ while abs(delta_M_to) > 0.0001
     % ???????????????????????????????? Quelle der Werte ???????????????????
     % deklarationen
     feet = 3.28084;     %% Umrechnungsfactor
-    ln = 4 * feet;        %%länge fan cowling
-    lh = 2.3 * feet;      %%länge zur größten Stelle an der urbine
-    Dn = 3.3 * feet;      %%größter Durchmesser Engine
-    Dh = 3 * feet;        %%Durchmesser Eingang Engine
+    ln = specs.ln_TW * feet;        %%länge fan cowling
+    lh = specs.lh_TW * feet;      %%länge zur größten Stelle an der urbine
+    Dn = specs.Dn_TW * feet;      %%größter Durchmesser Engine
+    Dh = specs.Dh_TW * feet;        %%Durchmesser Eingang Engine
     Gesamtlaenge = 4.49 * feet;
     beta_c = ln / Gesamtlaenge;   %%Gesamtlänge des Triebwerkes
     

@@ -339,11 +339,15 @@ for n = 1:1000
    end
 end
 Ergebnisse_Fluegel.Fluegeltiefen_eta_oR = Ergebnisse_Fluegel.Fluegeltiefen_eta(1, Ergebnisse_Fluegel.zaehlvariabele_eta_Ru:length(Ergebnisse_Fluegel.Fluegeltiefen_eta));
+<<<<<<< Updated upstream
 
 Ergebnisse_Fluegel.F = Ergebnisse_stat_Flaechenbelastung.F;
 
 Ergebnisse_Fluegel.l_mue = (Ergebnisse_Fluegel.b / Ergebnisse_Fluegel.F)* trapz(Ergebnisse_Fluegel.Fluegeltiefen_eta.^2) * 10^(-3); 
 Ergebnisse_Fluegel.l_m = trapz(Ergebnisse_Fluegel.Fluegeltiefen_eta)*10^(-3);
+=======
+Ergebnisse_Fluegel.Fluegeltiefen_eta_Ru = Ergebnisse_Fluegel.Fluegeltiefen_eta(1, 1:Ergebnisse_Fluegel.zaehlvariabele_eta_Ru);
+>>>>>>> Stashed changes
 
 %% Safe
 

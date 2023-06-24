@@ -328,16 +328,16 @@ for n = 1:1000
    if (n*10^(-3))*(Ergebnisse_Fluegel.b/2)<= specs.R_rumpf
        Ergebnisse_Fluegel.Fluegeltiefen_eta(1,1) = DT.l_i_R; 
        Ergebnisse_Fluegel.Fluegeltiefen_eta(1,n+1) = DT.l_i_R;
-       Ergebnisse_Fluegel.zaehlvariabele_eta_Ru = n+1;
+       Ergebnisse_Fluegel.zaehlvariabele_eta_Ru = n;
    elseif (n*10^(-3))*(Ergebnisse_Fluegel.b/2)< specs.R_rumpf + DT.s_I
        Ergebnisse_Fluegel.Fluegeltiefen_eta(1,n+1) = DT.l_i_R - tan(Ergebnisse_Fluegel.phi_VK_max)*(((n*10^(-3))*(Ergebnisse_Fluegel.b/2))-specs.R_rumpf);
    else
        Ergebnisse_Fluegel.Fluegeltiefen_eta(1,n+1) = DT.l_i_A - tan(Ergebnisse_Fluegel.phi_VK_max)*((((n*10^(-3))*(Ergebnisse_Fluegel.b/2))...
            - (specs.R_rumpf + DT.s_I))) + tan(DT.phi_HK_dt)*(((n*10^(-3))*(Ergebnisse_Fluegel.b/2)) - (specs.R_rumpf + DT.s_I));
    end
-
-
 end
+Ergebnisse_Fluegel.Fluegeltiefen_eta_oR = Ergebnisse_Fluegel.Fluegeltiefen_eta(1, Ergebnisse_Fluegel.zaehlvariabele_eta_Ru:length(Ergebnisse_Fluegel.Fluegeltiefen_eta));
+
 
 %% Safe
 

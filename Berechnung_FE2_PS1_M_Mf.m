@@ -397,35 +397,67 @@ while abs(delta_M_to) > 0.0001
     HLW_Mass.k_uc = 0.95; % for wing mounted undercarriage or 0.95 for not Wingmounted undercarriage %%%%%%%% Nicht sicher !!!!!
     
     HLW_Mass.Lambda_50 = HLW.phi_50; % Annahme Pfeilung von Außenfluegel
+    HLW_Mass.k_st = 1 + 9.06*10^(-4)*(((HLW.b*cos(HLW.phi_VK))^3/NR_M_Fluegel.W_des)*(M_Rumpf.v_D_EAS/(100*specs.HLW_d2l))^2*cos(HLW_Mass.Lambda_50));
+  
     
+    HLW_Mass.k_b = 1; % for catilever wings otherwise k_b = 1 - nue_s^2 || neu_s ditance trut to wing root
     
-    %NR_M_Fluegel.W_des = M_Zero_Fuel_initial;
-    %NR_M_Fluegel.k_st = 1 + (9.06*10^(-4)) * (((Ergebnisse_Fluegel.b * cos(Ergebnisse_Fluegel.phi_VK_max))^3)/(NR_M_Fluegel.W_des)) *...
-        (((M_Rumpf.v_D_EAS/100)/(0.13))^2) * cos(NR_M_Fluegel.Lambda_50); % Annahme (t/c)_r = 0.13  W_des = unbekannt
-    
-    %NR_M_Fluegel.k_b = 1; % for catilever wings otherwise k_b = 1 - nue_s^2 || neu_s ditance trut to wing root
-    
-    %NR_M_Fluegel.d_l_root = 0.13;
-    
-    %M_Fluegel.n_max = 2.1 + (10900)/(4540 + M_TO_initial); % Achtung hier steht m_To drin, muss füt Iteration veraendert werden
-    
-    %M_Fluegel.n_ult = M_Fluegel.n_max * 1.5;
-    
-    %if Zaehlvariabele == 0;
+    if Zaehlvariabele == 0;
 
-       % NR_M_Fluegel.W_F_initial = M_OE_initial * 0.3; %% Initiale Annahme, dass Winggroup weight ca 30% M_OE sind
+       HLW_Mass.W_F_initial = 3000; %% Initiale Annahme für HLW based on Uebung Schwerpunkt
     
-    %else Zaehlvariabele > 0;
-        %NR_M_Fluegel.W_F_initial = M_Airframe_Structur.Wing_Group;
+    else Zaehlvariabele > 0;
+        HLW_Mass.W_F_initial = M_Airframe_Structur.HLW;
 
-    %end
+    end
         
-    % Berechnung W_HLW_basic
-    %M_HLW.W_HLW_basic = HLW_Mass.const * HLW_Mass.k_no * HLW_Mass.k *...
-        %HLW_Mass.k_e * HLW_Mass.k_uc * HLW_Mass.k_st *...
-        %(HLW_Mass.k_b * HLW_Mass.n_ult * (HLW_Mass.W_des - 0.8* HLW_Mass.W_F_initial))^(0.55) * ...
-        %Ergebnisse_Fluegel.b^(1.675) * NR_M_Fluegel.d_l_root^(-0.45) * cos(NR_M_Fluegel.Lambda_50)^(-1.325); % Annahme d_l_root = (t/c)_r = 0.13
+    %Berechnung W_HLW_basic
+    M_HLW.W_HLW_basic = HLW_Mass.const * HLW_Mass.k_no * HLW_Mass.k *...
+        HLW_Mass.k_e * HLW_Mass.k_uc * HLW_Mass.k_st *...
+        (HLW_Mass.k_b * M_Fluegel.n_ult * (NR_M_Fluegel.W_des - 0.8* HLW_Mass.W_F_initial))^(0.55) * ...
+        HLW.b^(1.675) * specs.HLW_d2l^(-0.45) * cos(HLW_Mass.Lambda_50)^(-1.325);
+
+    M_Airframe_Structur.HLW = M_HLW.W_HLW_basic;
+
+%% Seitenleitwerk Massenberechnung
     
+    SLW_Mass.const = 4.58 * 10^(-3);
+    SLW_Mass.b_ref = 1.905; % [m]
+    SLW_Mass.b_s = SLW.l_phi50;
+    SLW_Mass.k_no = 1 + sqrt((SLW_Mass.b_ref)/(SLW_Mass.b_s));
+    
+    SLW_Mass.k = (1 + SLW.phi_VK)^(0.4);
+    
+    SLW_Mass.k_e = 1; % no engines
+    
+    SLW_Mass.k_uc = 0.95; % for wing mounted undercarriage or 0.95 for not Wingmounted undercarriage %%%%%%%% Nicht sicher !!!!!
+    
+    SLW_Mass.Lambda_50 = SLW.phi_50; % Annahme Pfeilung von Außenfluegel
+    SLW_Mass.k_st = 1 + 9.06*10^(-4)*(((SLW.b*cos(SLW.phi_VK))^3/NR_M_Fluegel.W_des)*(M_Rumpf.v_D_EAS/(100*specs.HLW_d2l))^2*cos(SLW_Mass.Lambda_50));
+  
+    
+    SLW_Mass.k_b = 1; % for catilever wings otherwise k_b = 1 - nue_s^2 || neu_s ditance trut to wing root
+    
+    if Zaehlvariabele == 0;
+
+       SLW_Mass.W_F_initial = 3000; %% Initiale Annahme für SLW based on Uebung Schwerpunkt
+    
+    else Zaehlvariabele > 0;
+        SLW_Mass.W_F_initial = M_Airframe_Structur.SLW;
+
+    end
+        
+    %Berechnung W_SLW_basic
+    M_SLW.W_SLW_basic = SLW_Mass.const * SLW_Mass.k_no * SLW_Mass.k *...
+        SLW_Mass.k_e * SLW_Mass.k_uc * SLW_Mass.k_st *...
+        (SLW_Mass.k_b * M_Fluegel.n_ult * (NR_M_Fluegel.W_des - 0.8* SLW_Mass.W_F_initial))^(0.55) * ...
+        SLW.b^(1.675) * specs.HLW_d2l^(-0.45) * cos(SLW_Mass.Lambda_50)^(-1.325);
+
+    M_Airframe_Structur.SLW = M_SLW.W_SLW_basic;
+
+    
+
+
 
     % W undercarriage Torenbeek S282 A,B,C,D S283
     k_uc = 1;
@@ -747,6 +779,7 @@ while abs(delta_M_to) > 0.0001
     M_OE_initial = Masse_opperating_empty;
     M_del_empty_initial = Masse_delivery_empty;
     M_Zero_Fuel_initial = M_Zero_Fuel.M_ZF;
+    %M_Airframe_Structur.HLW
    
     Zaehlvariabele = Zaehlvariabele + 1; % test
 end     % Ende der Iteration

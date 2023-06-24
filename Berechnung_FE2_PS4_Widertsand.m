@@ -61,8 +61,8 @@ TW_Einbauwinkel = 0; % Kann gegen einen beliebigen Einbauwinkel ausgetauscht wer
 
 
     % Profilwiderstand Leitwerk
-d_l_HLW = 0.1;
-d_l_SLW = 0.1;
+d_l_HLW = specs.HLW_d2l;
+d_l_SLW = specs.HLW_d2l;
 
 xu_l_HLW = 0.035;
 xu_l_SLW = 0.035;
@@ -71,7 +71,7 @@ x_u_HLW = HLW.Fluegeltiefen_eta_oR * xu_l_HLW;
 x_u_SLW = SLW.Fluegeltiefen_eta_oR * xu_l_SLW;
 
         % Trimmwiderstand
-l_mue = GRA.l_m;  
+l_mue = Ergebnisse_Fluegel.l_mue;  
 dx_SP = 1.5; %%%%%% Ein random wert angenommen!!!!!!!!!!!
 c_M_0_F = FM.c_M_NP_F0;
 
@@ -116,6 +116,7 @@ Re = Ergebnisse_Fluegel.Fluegeltiefen_eta_oR * v_air / ISA.kin_visk(hoehe_CR);  
 c_f_la_xu = 1.328./(sqrt(Re_u));
 c_f_tu_xu = 0.455./(log(Re_u).^(2.58));
 c_f_tu_l = 0.455./(log(Re).^(2.58));
+
 % PS4 S.2, Formel 5
 c_f = c_f_tu_l  - xu_l * (c_f_tu_xu - c_f_la_xu);
 
@@ -137,7 +138,7 @@ test_trapz = trapz(c_w_p_eta .*  (Ergebnisse_Fluegel.Fluegeltiefen_eta_oR) ./ (G
 %test_sum = sum(c_w_p)
 % % schnelltest plot
 % plot(c_w_p)
-
+integral()
 
 
 
@@ -182,6 +183,8 @@ delta_Ma = Ma_unendlich - M_DD_profil_phi25/(sqrt(cos(Ergebnisse_Fluegel.phi_25_
 % PS4 S.4 Formel 16
 delta_c_WM = 0.002 * exp(60 * delta_Ma);
 
+
+
 %% ------------------------------------------------------------------------
 
 % Rumpfwiderstand
@@ -206,9 +209,9 @@ c_w_Ru_min = c_f_tu_Ru * (1 + k_Rumpf) * S_G_Ru/Ergebnisse_stat_Flaechenbelastun
 c_A_alpha_H = (pi * HLW.streckung_phi25)/(1 + sqrt(1 + 0.25 * HLW.streckung_phi25^2 * (tan(HLW.phi_50)^2 + (1 - specs.Ma_CR^2))));
 
 % PS4 S.6 Formel 25 Abwindfaktor = delta_alpha_w/delta_alpha_oH 
-% Abwindfaktor = 1.75 * ((c_A_alpha_F)/(pi * Ergebnisse_Fluegel.streckung_phi25_max *...
-%     (Ergebnisse_Fluegel.lambda * (HLW.r/(Ergebnisse_Fluegel.b/2))^0.25 *...
-%     (1+ (abs(z_abstand))/((Ergebnisse_Fluegel.b/2))) )));
+Abwindfaktor = 1.75 * ((c_A_alpha_F)/(pi * Ergebnisse_Fluegel.streckung_phi25_max *...
+    (Ergebnisse_Fluegel.lambda * (HLW.r/(Ergebnisse_Fluegel.b/2))^0.25 *...
+    (1+ (abs(z_abstand))/((Ergebnisse_Fluegel.b/2))) )));
 
 % PS4 S.5 Formel 24 annahme c_A_alpha_F = c_A_alpha_oH da der Rumpf kein
 % wirklichen Auftrieb erzeugt
@@ -293,8 +296,7 @@ c_w_SLW_min = 2 .* c_f_SLW .* (1+ k_SLW .* cos(SLW.phi_50).^2) .* ((SLW.F)/(Erge
 % PS4 S.7 Formel 33 
 qH_q = 0.95;
 c_A_H = (c_M_0_F + c_A_F * ((dx_SP)/(l_mue))) / ...
-    (qH_q * ((HLW.F)/(Ergebnisse_stat_Flaechenbelastung.F)) *...
-    ((HLW.r - dx_SP)/(l_mue)));
+    (qH_q * ((HLW.F)/(Ergebnisse_Fluegel.F)) * ((HLW.r - dx_SP)/(l_mue)));
 
 % PS4 S.7 Formel 29
 c_A_ges = c_A_F + c_A_H * qH_q * ((HLW.F)/(Ergebnisse_stat_Flaechenbelastung.F));
@@ -308,8 +310,8 @@ tau_H = 1 - HLW.streckung_phi25 * (0.002 + 0.0084 * (HLW.lambda - 0.2)^2);
 
 % PS4 S.7 Formel 30
 c_w_trim = ((c_A_H^2)/(pi * HLW.streckung_phi25)) * ...
-    ((1 + (5*10^(-6)) * rad2deg(HLW.phi_25)^3)/(tau_H)) *...
-    ((HLW.F)/(Ergebnisse_stat_Flaechenbelastung.F));
+    ((1 + (5*10^(-6)) * (rad2deg(HLW.phi_25))^3)/(tau_H)) *...
+    ((HLW.F)/(Ergebnisse_Fluegel.F));
 
 
 %%--------------------------------------------------------------------------

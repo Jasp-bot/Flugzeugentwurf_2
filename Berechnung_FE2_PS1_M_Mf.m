@@ -470,8 +470,19 @@ while abs(delta_M_to) > 0.0001
     W_uc = sum(W_uc_teilergebnis); %%%%%%%%%%%%%%%%%%%% Ergebnis Plausibel
     
     M_Airframe_Structur.Undercarriage_Group = W_uc;
+
+
+    % MAIN GEAR
+    % Von https://www.fzt.haw-hamburg.de/pers/Scholz/HOOU/AircraftDesign_10_Mass.pdf
+    W_MainGear = 15 + 0.033*M_TO_initial^(3/4) + 0.021*M_TO_initial;
     
+    M_Airframe_Structur.MainGear = W_MainGear;
+
+    % FRONT GEAR
+    % Von https://www.fzt.haw-hamburg.de/pers/Scholz/HOOU/AircraftDesign_10_Mass.pdf
+    W_FrontGear = 5.4 + 0.049*M_TO_initial^(3/4);
     
+    M_Airframe_Structur.FrontGear = W_FrontGear;
     
     
     % W_sc Surface control group S.283
@@ -810,6 +821,8 @@ Anteile_einzel_Massen_FE2.Airplane_Structure.Nacelle_group.l_nacell_pylon = l_na
 Anteile_einzel_Massen_FE2.Airplane_Structure.Zusammen = M_Airframe_Structur.Zwischensumme;
 Anteile_einzel_Massen_FE2.Airplane_Structure.NR.Rumpf = NR_Rumpf_Geometrie;
 Anteile_einzel_Massen_FE2.Airplane_Structure.NR.FLuegel = NR_M_Fluegel;
+Anteile_einzel_Massen_FE2.Airplane_Structure.MainGear = M_Airframe_Structur.MainGear;
+Anteile_einzel_Massen_FE2.Airplane_Structure.FrontGear = M_Airframe_Structur.FrontGear;
 % Engine Group
 Anteile_einzel_Massen_FE2.Propulsion.Propulsion_group = M_Propulsion_Group;
 % Service and Equipment
@@ -830,12 +843,13 @@ Anteile_einzel_Massen_FE2.Opperational_Items.Seating = m_opp_items.W_PAX_seats_B
 Anteile_einzel_Massen_FE2.Opperational_Items.Residual_Fuel = m_opp_items.m_residual_fuel;
 Anteile_einzel_Massen_FE2.Opperational_Items.Zusammen = m_opp_items.Zusammen;
 Anteile_einzel_Massen_FE2.Opperational_Items.M_opp_items = m_opp_items;
+
 % Treibstoff
 Anteile_einzel_Massen_FE2.Fuel_fractions.Kappa = FF.Kappa_ges;
 Anteile_einzel_Massen_FE2.Fuel_fractions.M_Fuel = Ergebnisse_Massen_FE2.M_F;
 Anteile_einzel_Massen_FE2.Fuel_fractions.FF = FF;
 
-save Ergebnisse_Massen_FE2.mat Ergebnisse_Massen_FE2 Anteile_einzel_Massen_FE2
+save Ergebnisse_Massen_FE2.mat Ergebnisse_Massen_FE2 Anteile_einzel_Massen_FE2 M_HLW M_SLW
 
 
 

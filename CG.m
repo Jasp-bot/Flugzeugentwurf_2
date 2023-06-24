@@ -21,7 +21,7 @@ load Ergebnisse_stat_Flaechenbelastung_Fluegelflaeche.mat;
 c_A_alpha_F = GRA.c_a_anstieg;      % Annahme bitte ueberpruefen !!!!!!!!!!!!!!!!!!!!
 z_abstand = 3; % Abstand zwischen Profilsehnen angenommen vergleiche Torenbeek s480
 
-l_fn=40;            %%Abstand Flugzeugnase zu Fluegel Schnittpunkt mit Rumpf NICHT MAC!!! Muss noch verändert werden
+l_fn=40;            %%Abstand Flugzeugnase zu Fluegel Schnittpunkt mit Rumpf NICHT MAC!!! Muss noch verï¿½ndert werden
 Durchmesser_Flugzeug_wo_Fluegel_durchgeht=specs.D_rumpf;      % Erste annahme!!!! Der fluegel geht nicht in der mitte durch den Rumpf sondern etwas weiter unten daher ist der rumpf da etwas schmaler
 
 
@@ -51,7 +51,7 @@ CG_Seatings_prozent=[Anteile_einzel_Massen_FE2.Opperational_Items.Seating, 0.58,
 
 
 % [Masse, x, y, z];
-% seats_MAT=[Anteile_einzel_Massen_FE2.Opperational_Items.Seating,0.55*specs.l_rumpf,0,0];%% Z höhe liegt direkt im Rumpfmittelpunkt Y=0 weil symetrisch
+% seats_MAT=[Anteile_einzel_Massen_FE2.Opperational_Items.Seating,0.55*specs.l_rumpf,0,0];%% Z hï¿½he liegt direkt im Rumpfmittelpunkt Y=0 weil symetrisch
 % cockpit_MAT=[4500,0.05*specs.l_rumpf,0,0];
 % tail_MAT=[Anteile_einzel_Massen_FE2.Airplane_Structure.Tail_group];
 % wing_MAT=[Anteile_einzel_Massen_FE2.Airplane_Structure.Wing_group];
@@ -88,11 +88,11 @@ c_A_alpha = c_A_alpha_F * (1+ ((c_A_alpha_H)/(c_A_alpha_F)) *...
 
 d_F1_X_NP_durch_l_mue=(1.8/c_A_alpha_F)*(specs.D_rumpf^2 *l_fn)/(Ergebnisse_Fluegel.F*Ergebnisse_Fluegel.l_mue)    %%Einfluss des rumpfes vor und hinter dem Fluegel Formel 28
 
-d_F2_X_NP_durch_l_mue=(0.273*specs.D_rumpf^2*Ergebnisse_Fluegel.l_m*(Ergebnisse_Fluegel.b+specs.D_rumpf))/((1+Ergebnisse_Fluegel.lambda)*Ergebnisse_Fluegel.l_mue^2*(Ergebnisse_Fluegel.b+2.15*specs.D_rumpf))*tan(Ergebnisse_Fluegel.phi_25_max) %Einfluss des Rumpf Flügel überganges auf den NP FORMEL 29 PS02
+d_F2_X_NP_durch_l_mue=(0.273*specs.D_rumpf^2*Ergebnisse_Fluegel.l_m*(Ergebnisse_Fluegel.b+specs.D_rumpf))/((1+Ergebnisse_Fluegel.lambda)*Ergebnisse_Fluegel.l_mue^2*(Ergebnisse_Fluegel.b+2.15*specs.D_rumpf))*tan(Ergebnisse_Fluegel.phi_25_max) %Einfluss des Rumpf Flï¿½gel ï¿½berganges auf den NP FORMEL 29 PS02
 
 d_TW_X_NP_durch_l_mue=(specs.Dn_TW^2 *specs.l_TW)/(Ergebnisse_Fluegel.F*Ergebnisse_Fluegel.l_mue*c_A_alpha_F) %Einfluss Triebwerk auf NP Formel 30 PS02
 
-l_i_Mitte= DT.l_i_I+(tan(Ergebnisse_Fluegel.phi_VK_max)*Durchmesser_Flugzeug_wo_Fluegel_durchgeht*0.5)    %Ausrechnen von tiefe des Fluges imaginär IM rumpf     
+l_i_Mitte= DT.l_i_I+(tan(Ergebnisse_Fluegel.phi_VK_max)*Durchmesser_Flugzeug_wo_Fluegel_durchgeht*0.5)    %Ausrechnen von tiefe des Fluges imaginï¿½r IM rumpf     
 
 Flaeche_im_Rumpf_oberes_dreieck=(l_i_Mitte-DT.l_i_I)*Durchmesser_Flugzeug_wo_Fluegel_durchgeht*0.5;
 
@@ -102,7 +102,7 @@ F_ges_Fluegel_MAC=Flaeche_im_Rumpf_oberes_dreieck+Ergebnisse_Fluegel.F;
 %gesamte streckung mit teil im rumpf (dreieck)
 Streckung_ges=(Ergebnisse_Fluegel.b^2)/F_ges_Fluegel_MAC;
 
-%%NP des Flügels berechnen Formel 24 PS02
+%%NP des Flï¿½gels berechnen Formel 24 PS02
 X_NP_F=l_i_Mitte*(0.25+(Streckung_ges/12)*(1+2*Ergebnisse_Fluegel.lambda*tan(Ergebnisse_Fluegel.phi_25_max)));
 
 

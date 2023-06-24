@@ -95,6 +95,7 @@ for C=1:length(CG_DataMatrix)       %%Der Schwerpunkt wird ausgrechnet mit der S
     CG_Moment_Z=CG_Moment_Z+(CG_DataMatrix(C,1)*(CG_DataMatrix(C,4)));
     CG_MZ=CG_MZ+CG_DataMatrix(C,1);
 end
+<<<<<<< HEAD
 CG_Rumpf_Z=CG_Moment_Z/CG_MZ;
 
 %% Berechnung Flügelschwerpunkt
@@ -122,3 +123,12 @@ for C=1:length(CG_DataMatrix_Wing)       %%Der Schwerpunkt wird ausgrechnet mit 
     CG_Wing_MZ=CG_MZ+CG_DataMatrix_Wing(C,1);
 end
 CG_Wing_Z=CG_Wing_Moment_Z/CG_Wing_MZ;
+=======
+CG_Rumpf_Z=CG_Moment_Z/CG_M;
+
+%% Berechnung Flügelschwerpunkt
+CG_Data_Wing.Fluegel = [Anteile_einzel_Massen_FE2.Airplane_Structure.Wing_group; (NP.versatz_HK + DT.l_i_R + tan(Ergebnisse_Fluegel.phi_VK_max)*specs.R_rumpf)-NP.x_SP_ges; 0; 1];
+CG_Data_Wing.MainGear = [];
+CG_Data_Wing.SurfaceControls = [];
+
+>>>>>>> main

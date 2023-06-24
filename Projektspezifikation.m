@@ -69,6 +69,7 @@ specs.d_l = 0.13;
 
 specs.coanlaenge = 15;
 specs.HLW_beginn = 6.6;
+specs.HLW_d2l = 0.12;
 
 % Massenanteile 
 

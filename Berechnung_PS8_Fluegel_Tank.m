@@ -171,6 +171,8 @@ end
 DT.phi_HK_dt = phi_HK_dt_try;
 DT.y_kink = y_pos_kink(1,y_pos_kink_vector);
 DT.phi_VK_max = Ergebnisse_Fluegel.phi_VK_max;
+
+
 % rad2deg(DT.phi_HK_dt)
 
 %% Neutralpunke (Doppeltrapez)
@@ -338,6 +340,10 @@ for n = 1:1000
 end
 Ergebnisse_Fluegel.Fluegeltiefen_eta_oR = Ergebnisse_Fluegel.Fluegeltiefen_eta(1, Ergebnisse_Fluegel.zaehlvariabele_eta_Ru:length(Ergebnisse_Fluegel.Fluegeltiefen_eta));
 
+Ergebnisse_Fluegel.F = Ergebnisse_stat_Flaechenbelastung.F;
+
+Ergebnisse_Fluegel.l_mue = (Ergebnisse_Fluegel.b / Ergebnisse_Fluegel.F)* trapz(Ergebnisse_Fluegel.Fluegeltiefen_eta.^2); 
+Ergebnisse_Fluegel.l_m = trapz(Ergebnisse_Fluegel.Fluegeltiefen_eta);
 
 %% Safe
 

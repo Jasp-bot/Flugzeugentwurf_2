@@ -74,7 +74,8 @@ specs.HLW_beginn = 6.6;
 
 specs.m_APU = 335; % [kg] HGT1700 Auxiliary Power Unit
 
-
+% Fahrwerk
+specs.m_k_min=0.06;     % min der Bugfahwerkslast 6%    PS02 FE2 S._6 Formel:15
 
 
 save Projekt_specs.mat specs;

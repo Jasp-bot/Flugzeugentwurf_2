@@ -5,10 +5,14 @@ close
 load Projekt_specs.mat
 load Ergebnisse_Auftrieb_Momente.mat
 load Ergebnisse_Fluegel_Tank_NP.mat
+load Ergebnisse_Auftrieb_Momente.mat
+load Ergebnisse_Leitwerke.mat
+load Ergebnisse_Start_Landeanforderungen.mat
 
-%%%%%%%%%%%%%%%%%%%%%% Platzhalter-> Hier richtige Werte einfügen von PS4
+
+%%%%%%%%%%%%%%%%%%%%%% Platzhalter-> Hier richtige Werte einfügen   von    PS4
 CA_F_CR = 0.5;
-CAalpha_F = 6.36;
+CAalpha_F = Ergebnisse_Auftriebsverteilung.VWA.c_AF_anstieg;
 %%%%%%%%%%%%%%%%%%%%%%
 
 % Variablen  %%%%%%%
@@ -24,7 +28,7 @@ alpha_MAC_F_CR_0 = CA_F_CR / CAalpha_F;
 
 
 %% 2. Nullanstellwinkel Profil aus Katalog 
-% Aus Profilkatalog Alpha0 = -3°
+% Aus Profilkatalog Alpha0 = -3° bei 0.83 Mach
 alpha0profil = -3;
 
 alpha_MAC_0_F = deg2rad(alpha0profil);
@@ -39,7 +43,8 @@ alpha_MAC_F_CR = alpha_MAC_F_CR_0 + alpha_MAC_0_F;
 %% 4. Verwindungskorrektur zur Symmetriebene! ALSO MIT RUMPANTEIL?!
 % mittlere Verwindung % Aus diederich das Integral
 % Integral 
-Delta_epsilon_sym = -trapz(VWA.epsilon_eta); %?
+X = 0:.001:1;
+Delta_epsilon_sym = -trapz(VWA.epsilon_eta,X); %% Fehler????
 %test = rad2deg(Delta_epsilon_sym)
 
 %% 5. Einbauwinkel 
@@ -52,37 +57,83 @@ psi_sym_inst = alpha_MAC_F_CR + Delta_epsilon_sym;
 eta_root = length(Ergebnisse_Fluegel.Fluegeltiefen_eta_Ru);
 %delta_epsilon_root = dEps_dEta * eta_root 
 Delta_epsilon_root = VWA.epsilon_eta_Ru(1,93);
-deltaEpsRoot = rad2deg(Delta_epsilon_root)
+%deltaEpsRoot = rad2deg(Delta_epsilon_root)
 
 psi_root = psi_sym_inst + Delta_epsilon_root;
-psiRoot= rad2deg(psi_root)
+psiRootDeg= rad2deg(psi_root);
 
 
 
 %% Nullanstellwinkel Flugzeug
 % Für zwei Szenarien -> CG max front / CG max rear
 
-Fh = ;
-F = ;
+Fh = HLW.F_aussen ; % -> Ist das der richtige Wert?
+F = Ergebnisse_Fluegel.F; % -> Richtig ? Ganze Flügelfläche ohne Rumpf soll das sein1
 
-CA_F = CA - CA_h * 0.85 * (Fh/F);
+CA_front = 0.8;   % Hier noch richtige Werte
+CA_aft = 1.1;   %
+CA_h = 0.2;     %
 
+%% Für CG Front
+CA_F_front = CA_front - CA_h * 0.85 * (Fh/F);
 
-alpha_0_MAC = alpha_MAC_0_F + (CA_F/CAalpha_F);
-
-
-alpha_0_root = alpha_0_MAC + Delta_epsilon_sym + Delta_epsilon_root;
-
-
-alpha_0 = alpha_0_root - psi_root
+alpha_0_MAC_front = alpha_MAC_0_F + (CA_F_front/CAalpha_F);
 
 
+alpha_0_root_front = alpha_0_MAC_front + Delta_epsilon_sym + Delta_epsilon_root;
+
+
+alpha_0_front = alpha_0_root_front - psi_root;
+alpha_0_aft = rad2deg(alpha_0_front)
+
+%% Für CG AFT
+CA_F_aft = CA_aft - (CA_h * 0.85 * (Fh/F));
+
+alpha_0_MAC_aft = alpha_MAC_0_F + (CA_F_aft/CAalpha_F);
+
+
+alpha_0_root_aft = alpha_0_MAC_aft + Delta_epsilon_sym + Delta_epsilon_root;
+
+
+alpha_0_aft = alpha_0_root_aft - psi_root;
+alpha_o_aft_deg = rad2deg(alpha_0_aft)
 
 %% Teil 2.
-%Aufgelöste Polare über Weissinger Formel
+%Aufgelöste Polare über Weissinger Formel -> Schritte wie in Übungsfolien
 
-CAalpha_F
+%% 1. CA Alpha
 
+streckung = Ergebnisse_Fluegel.streckung_phi25_max; % -> Richtig?
+phi_50 = atan(tan(Ergebnisse_Fluegel.phi_25_max)-(4/streckung)* (0.5-0.25) * (1-Ergebnisse_Fluegel.lambda)/(1-Ergebnisse_Fluegel.lambda));
+phi_50_deg = rad2deg(phi_50);
+[~,a,~,~,~] = atmosisa(50);
+M = (landeanvorderung.v_50 * 1.3)/a;
 
+%Fällt weg weil schon berechnet?
+CA_alpha =  (pi * streckung)/(1 + sqrt(1 + ((streckung/2)^2) * (tan(phi_50)^2 + (1 - M^2))));
+%CA_alpha = Ergebnisse_Auftriebsverteilung.VWA.c_AF_anstieg;    -> Richtig?
+
+%% 2. delta CAf_max
+
+% Wird aus Plot abgelesen für phi_VK = 32.2
+rad2deg(Ergebnisse_Fluegel.phi_VK_max)
+delta_alpha_CA_F_max = deg2rad(3.6); 
+
+%% 3. CA_F_max
+% Maximaler Auftriebsbeiwert am Flügel
+% = min-Wert der folgenden Formel
+Ca_2D = 1.4;
+
+for i = 1: length(Ergebnisse_Fluegel.Fluegeltiefen_eta)
+    CA_F_max(i) = (Ergebnisse_Auftriebsverteilung.c_a_eta(i) * (Ergebnisse_Fluegel.Fluegeltiefen_eta(i)) - Ergebnisse_Auftriebsverteilung.gamma_b_eta(i)) / Ergebnisse_Auftriebsverteilung.gamma_a_eta(i);
+end
+[~,u] = min(CA_F_max);
+
+CA_F_max = Ergebnisse_Auftriebsverteilung.c_a_eta(u)
+
+%% 4. alphaCaf_max
+
+alpha_Ca_f_max = (CA_F_max/ CA_alpha) * alpha_0_aft + delta_alpha_CA_F_max
+deg2rad(alpha_Ca_f_max)
 
 

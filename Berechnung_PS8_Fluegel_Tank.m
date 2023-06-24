@@ -342,8 +342,8 @@ Ergebnisse_Fluegel.Fluegeltiefen_eta_oR = Ergebnisse_Fluegel.Fluegeltiefen_eta(1
 
 Ergebnisse_Fluegel.F = Ergebnisse_stat_Flaechenbelastung.F;
 
-Ergebnisse_Fluegel.l_mue = (Ergebnisse_Fluegel.b / Ergebnisse_Fluegel.F)* trapz(Ergebnisse_Fluegel.Fluegeltiefen_eta.^2); 
-Ergebnisse_Fluegel.l_m = trapz(Ergebnisse_Fluegel.Fluegeltiefen_eta);
+Ergebnisse_Fluegel.l_mue = (Ergebnisse_Fluegel.b / Ergebnisse_Fluegel.F)* trapz(Ergebnisse_Fluegel.Fluegeltiefen_eta.^2) * 10^(-3); 
+Ergebnisse_Fluegel.l_m = trapz(Ergebnisse_Fluegel.Fluegeltiefen_eta)*10^(-3);
 
 %% Safe
 

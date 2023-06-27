@@ -8,7 +8,7 @@ load Ergebnisse_Fluegel_Tank_NP.mat
 load Ergebnisse_Auftrieb_Momente.mat
 load Ergebnisse_Leitwerke.mat
 load Ergebnisse_Start_Landeanforderungen.mat
-
+load Zwischenergebnisse_PS5_Fluegelflaechen.mat
 
 %%%%%%%%%%%%%%%%%%%%%% Platzhalter-> Hier richtige Werte einfügen   von    PS4
 CA_F_CR = 0.5;
@@ -72,7 +72,7 @@ F = Ergebnisse_Fluegel.F; % -> Richtig ? Ganze Flügelfläche ohne Rumpf soll da
 
 CA_front = 0.8;   % Hier noch richtige Werte
 CA_aft = 1.1;   %
-CA_h = 0.2;     %
+CA_h = 0.5;     %
 
 %% Für CG Front
 CA_F_front = CA_front - CA_h * 0.85 * (Fh/F);

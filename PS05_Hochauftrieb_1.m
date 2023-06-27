@@ -71,7 +71,7 @@ Fh = HLW.F_aussen ; % -> Ist das der richtige Wert?
 F = Ergebnisse_Fluegel.F; % -> Richtig ? Ganze Flügelfläche ohne Rumpf soll das sein1
 
 CA_front = 0.1;   % Hier noch richtige Werte -> Muss bei CAGesamt = 0!!!!!!!
-CA_aft = -0.1;   %
+CA_aft = 0.2;   %
 CA_h = 0.5;     %
 
 %% Für CG Front
@@ -84,7 +84,7 @@ alpha_0_root_front = alpha_0_MAC_front + Delta_epsilon_sym + Delta_epsilon_root;
 
 
 alpha_0_front = alpha_0_root_front - psi_root;
-alpha_0_aft = rad2deg(alpha_0_front)
+alpha_0_front_deg = rad2deg(alpha_0_front)
 
 %% Für CG AFT
 CA_F_aft = CA_aft - (CA_h * 0.85 * (Fh/F));
@@ -99,12 +99,12 @@ alpha_o_aft_deg = rad2deg(alpha_0_aft)
 
 %% Teil 2.
 %Aufgelöste Polare über Weissinger Formel -> Schritte wie in Übungsfolien
-
 %% 1. CA Alpha
-
 streckung = Ergebnisse_Fluegel.streckung_phi25_max; % -> Richtig?
+
 phi_50 = atan(tan(Ergebnisse_Fluegel.phi_25_max)-(4/streckung)* (0.5-0.25) * (1-Ergebnisse_Fluegel.lambda)/(1-Ergebnisse_Fluegel.lambda));
-phi_50_deg = rad2deg(phi_50);
+phi_50_deg = rad2deg(phi_50)
+
 [~,a,~,~,~] = atmosisa(50);
 M = (landeanvorderung.v_50 * 1.3)/a;
 
@@ -116,7 +116,9 @@ CA_alpha =  (pi * streckung)/(1 + sqrt(1 + ((streckung/2)^2) * (tan(phi_50)^2 + 
 
 % Wird aus Plot abgelesen für phi_VK = 32.2
 rad2deg(Ergebnisse_Fluegel.phi_VK_max)
-delta_alpha_CA_F_max = deg2rad(3.6); 
+delta_alpha_CA_F_max = deg2rad(3.6);
+delta_alpha_CA_F_max_deg = 3.6;
+
 
 %% 3. CA_F_max
 % Maximaler Auftriebsbeiwert am Flügel
@@ -124,7 +126,7 @@ delta_alpha_CA_F_max = deg2rad(3.6);
 Ca_2D = 1.4;
 
 for i = 1: length(Ergebnisse_Fluegel.Fluegeltiefen_eta)
-    CA_F_max(i) = (Ergebnisse_Auftriebsverteilung.c_a_eta(i) * (Ergebnisse_Fluegel.Fluegeltiefen_eta(i)) - Ergebnisse_Auftriebsverteilung.gamma_b_eta(i)) / Ergebnisse_Auftriebsverteilung.gamma_a_eta(i);
+    CA_F_max(i) = (Ergebnisse_Auftriebsverteilung.c_a_eta(i) * (Ergebnisse_Fluegel.Fluegeltiefen_eta(i)/Ergebnisse_Fluegel.l_m) - Ergebnisse_Auftriebsverteilung.gamma_b_eta(i)) / Ergebnisse_Auftriebsverteilung.gamma_a_eta(i);
 end
 [~,u] = min(CA_F_max);
 
@@ -132,15 +134,16 @@ CA_F_max = Ergebnisse_Auftriebsverteilung.c_a_eta(u)
 
 %% 4. alphaCaf_max
 
-alpha_Ca_f_max = (CA_F_max/ CA_alpha) * alpha_0_aft - delta_alpha_CA_F_max
-deg2rad(alpha_Ca_f_max)
+alpha_Ca_f_max = (CA_F_max/ CA_alpha) * alpha_0_aft - delta_alpha_CA_F_max;
+
+alpha_Ca_f_max_deg = rad2deg(alpha_Ca_f_max)
 
 
 %% PLotting Aufgelöste Polare
 
-alphas = -6:0.1:(alpha_Ca_f_max-delta_alpha_CA_F_max); % normal Plotten bis alphamax - delta alpha
-
-plot(alphas,(CA_alpha.*alphas))
+alphas = -6:0.5:alpha_Ca_f_max_deg; % normal Plotten bis alphamax - delta alpha
+CA_s = (CA_alpha.*alphas) + alpha_0_front_deg;
+plot(alphas,CA_s)
 title("Aufgelöste Flügelpolare ohne Hochauftriebshilfen")
 ylabel("Auftriebsbeiwert CA")
 xlabel("Anstellwinkel Alpha")

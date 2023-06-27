@@ -70,8 +70,8 @@ psiRootDeg= rad2deg(psi_root);
 Fh = HLW.F_aussen ; % -> Ist das der richtige Wert?
 F = Ergebnisse_Fluegel.F; % -> Richtig ? Ganze Flügelfläche ohne Rumpf soll das sein1
 
-CA_front = 0.8;   % Hier noch richtige Werte
-CA_aft = 1.1;   %
+CA_front = 0.1;   % Hier noch richtige Werte -> Muss bei CAGesamt = 0!!!!!!!
+CA_aft = -0.1;   %
 CA_h = 0.5;     %
 
 %% Für CG Front
@@ -90,7 +90,6 @@ alpha_0_aft = rad2deg(alpha_0_front)
 CA_F_aft = CA_aft - (CA_h * 0.85 * (Fh/F));
 
 alpha_0_MAC_aft = alpha_MAC_0_F + (CA_F_aft/CAalpha_F);
-
 
 alpha_0_root_aft = alpha_0_MAC_aft + Delta_epsilon_sym + Delta_epsilon_root;
 

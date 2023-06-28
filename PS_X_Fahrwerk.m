@@ -2,8 +2,8 @@ clear all
 close all
 clc
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Das mit Variablen aus CG ersetzen!!
 G_to = 258000;%2.6258e+06;
-
 
 delta_z = 7.3;
 l_BFW_max = 36.495;
@@ -12,7 +12,7 @@ l_BFW_min = 33.194;
 l_HFW_min = 2.793;
 l_HFW = l_HFW_min;
 l_BFW = l_BFW_max;
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 load Projekt_specs.mat
 
 % Reifendatenbank
@@ -51,7 +51,7 @@ F_reifen_HFW_max = (F_HFW_max/n_reifen_HFW) * S_FW;
 F_reifen_HFW_max = convforce(F_reifen_HFW_max,"N","lbf");
 
 
-idx = ((tires.RatedLoad_Lbs_ >= F_reifen_HFW_max) & (tires.RatedInflation_PSI_<=220) & (tires.RatedSpeed_MPH_ >= v_reifen_krit) );
+idx = ((tires.RatedLoad_Lbs_ >= F_reifen_HFW_max) & (tires.RatedInflation_PSI_<=240) & (tires.RatedSpeed_MPH_ >= v_reifen_krit) );
 tires_edit_HFW = tires(idx,:);
 
 
@@ -192,23 +192,26 @@ F_BFW_max = (G_to * ((l_BFW + l_HFW)-l_BFW_min))/(l_BFW + l_HFW);
 %Max dyn. Bremslast -> Abhängig von durchmesser Reifen
 %Outisde Diameter MIN verwenden!
 d_reifen = tires_edit_HFW.OutsideDiameterMin(big_idx);
-F_BFW_dyn(i) = F_BFW_max + ((10*(delta_z + 0.5 * d_reifen)*G_to) / (32.2 * (l_BFW + l_HFW)));
+F_BFW_dyn = F_BFW_max + ((10*(delta_z + 0.5 * d_reifen)*G_to) / (32.2 * (l_BFW + l_HFW)));
+F_BFW_Dyn_transf = F_BFW_dyn/1.5;
 
 
 % Statische Belastung muss zwischen 6% und 20% des Abfluggewichts liegen
 % NIEMALS Über/unterschreiten -> OPtimaler ist 8-15
 
-if ((F_BFW_min >= 0.06*G_to) && (F_BFW_max <= 0.20*G_to))
-    disp("Within Limits 1");
+if ((F_BFW_min >= 0.06*G_to) && (F_BFW_max <= 0.20*G_to) && (F_BFW_min <= 0.20*G_to) && (F_BFW_max >= 0.06*G_to))
+    disp("Innerhalb Limits 1");
     
     if ((F_BFW_min >= 0.08*G_to) && (F_BFW_max <= 0.15*G_to))
-        disp("Within Limits 2");
+        disp("Innerhalb Limits 2");
     else
         disp("Außerhalb Limits 2");
     end
 else
     disp("Außerhalb Limits 1");
 end
+idz  =(tires.RatedInflation_PSI_>=220 & tires.RatedLoad_Lbs_ >= F_BFW_Dyn_transf & tires.RatedLoad_Lbs_ >= F_BFW_max & tires.RatedSpeed_MPH_ >= v_reifen_krit);
+tires_bugfahrwerk = tires(idz,:)
 
 %% Reifendruck 
 % Bugfahrwerk High Pressure ab 160PSI/ Aber auch 220PSI

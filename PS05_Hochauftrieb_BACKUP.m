@@ -70,35 +70,24 @@ psiRootDeg= rad2deg(psi_root);
 Fh = HLW.F_aussen ; % -> Ist das der richtige Wert?
 F = Ergebnisse_Fluegel.F; % -> Richtig ? Ganze Flügelfläche ohne Rumpf soll das sein1
 
-CA_front = 0.1;   % Hier noch richtige Werte -> Muss bei CAGesamt = 0!!!!!!!
-CA_aft = 0.2;   %
-CA_h = 0.5;     %
+CA = 0.4;   % Hier noch richtige Werte -> Muss bei CAGesamt = 0!!!!!!!   
+CA_h = 0.1;     %
 
-%% Für CG Front
-CA_F_front = CA_front - CA_h * 0.85 * (Fh/F);
+CA_F = CA - CA_h * 0.85 * (Fh/F);
 
-alpha_0_MAC_front = alpha_MAC_0_F + (CA_F_front/CAalpha_F);
+alpha_0_MAC = alpha_MAC_0_F + (CA_F/Ergebnisse_Auftriebsverteilung.VWA.c_AF_anstieg);
 
+alpha_root = alpha_0_MAC + Delta_epsilon_root + Delta_epsilon_sym;
 
-alpha_0_root_front = alpha_0_MAC_front + Delta_epsilon_sym + Delta_epsilon_root;
-
-
-alpha_0_front = alpha_0_root_front - psi_root;
-alpha_0_front_deg = rad2deg(alpha_0_front)
-
-%% Für CG AFT
-CA_F_aft = CA_aft - (CA_h * 0.85 * (Fh/F));
-
-alpha_0_MAC_aft = alpha_MAC_0_F + (CA_F_aft/CAalpha_F);
-
-alpha_0_root_aft = alpha_0_MAC_aft + Delta_epsilon_sym + Delta_epsilon_root;
+alpha_0 = alpha_root - psi_root;
 
 
-alpha_0_aft = alpha_0_root_aft - psi_root;
-alpha_o_aft_deg = rad2deg(alpha_0_aft)
+alpha_0_deg = rad2deg(alpha_0)
+
 
 %% Teil 2.
 %Aufgelöste Polare über Weissinger Formel -> Schritte wie in Übungsfolien
+
 %% 1. CA Alpha
 streckung = Ergebnisse_Fluegel.streckung_phi25_max; % -> Richtig?
 
@@ -130,11 +119,11 @@ for i = 1: length(Ergebnisse_Fluegel.Fluegeltiefen_eta)
 end
 [~,u] = min(CA_F_max);
 
-CA_F_max = Ergebnisse_Auftriebsverteilung.c_a_eta(u)
+CA_F_max_1 = Ergebnisse_Auftriebsverteilung.c_a_eta(u);
 
 %% 4. alphaCaf_max
 
-alpha_Ca_f_max = (CA_F_max/ CA_alpha) * alpha_0_aft - delta_alpha_CA_F_max;
+alpha_Ca_f_max = (CA_F_max_1/ CA_alpha) * alpha_0 - delta_alpha_CA_F_max;
 
 alpha_Ca_f_max_deg = rad2deg(alpha_Ca_f_max)
 
@@ -142,7 +131,7 @@ alpha_Ca_f_max_deg = rad2deg(alpha_Ca_f_max)
 %% PLotting Aufgelöste Polare
 
 alphas = -6:0.5:alpha_Ca_f_max_deg; % normal Plotten bis alphamax - delta alpha
-CA_s = (CA_alpha.*alphas) + alpha_0_front_deg;
+CA_s = CA_alpha.*(alphas - alpha_0_deg);
 plot(alphas,CA_s)
 title("Aufgelöste Flügelpolare ohne Hochauftriebshilfen")
 ylabel("Auftriebsbeiwert CA")

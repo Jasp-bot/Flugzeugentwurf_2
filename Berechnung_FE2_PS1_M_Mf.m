@@ -474,13 +474,13 @@ while abs(delta_M_to) > 0.0001
 
     % MAIN GEAR
     % Von https://www.fzt.haw-hamburg.de/pers/Scholz/HOOU/AircraftDesign_10_Mass.pdf
-    W_MainGear = 15 + 0.033*M_TO_initial^(3/4) + 0.021*M_TO_initial;
+    W_MainGear = 18.1 + 0.131*M_TO_initial^(3/4) + 0.019*M_TO_initial + 2.23*10^(-5)*M_TO_initial^(3/2);
     
     M_Airframe_Structur.MainGear = W_MainGear;
 
     % FRONT GEAR
     % Von https://www.fzt.haw-hamburg.de/pers/Scholz/HOOU/AircraftDesign_10_Mass.pdf
-    W_FrontGear = 5.4 + 0.049*M_TO_initial^(3/4);
+    W_FrontGear = 9.1 + 0.082*M_TO_initial^(3/4)+ 2.97*10^(-6)*M_TO_initial^(3/2);
     
     M_Airframe_Structur.FrontGear = W_FrontGear;
     

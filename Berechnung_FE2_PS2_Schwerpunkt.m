@@ -58,7 +58,7 @@ Rumpf_SP_Faktoren.zSP_ResFuel =-2.5;
 % Berechnung Momente und CGX, CGZ
 % [Masse,x,y,z]
 
-CG_Data.Rumpf = [Anteile_einzel_Massen_FE2.Airplane_Structure.Fuselage_group.M + Anteile_einzel_Massen_FE2.Airplane_Structure.Tail_group,0.43,0,0];
+CG_Data.Rumpf = [Anteile_einzel_Massen_FE2.Airplane_Structure.Fuselage_group.M + Anteile_einzel_Massen_FE2.Airplane_Structure.Tail_group - M_HLW.W_HLW_basic - M_SLW.W_SLW_basic,0.43,0,0];
 CG_Data.HLW = [M_HLW.W_HLW_basic, 0.96, 0, 1];
 CG_Data.SLW = [M_SLW.W_SLW_basic, 0.96, 0, 5];
 CG_Data.Bugfahrwerk = [Anteile_einzel_Massen_FE2.Airplane_Structure.FrontGear, 0.05, 0, -4.5];
@@ -66,19 +66,20 @@ CG_Data.APU = [specs.m_APU, 0.97, 0, 0];
 CG_Data.CockpitInstruments = [Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Intruments_Nav_Electr, 0.07,0,0];
 CG_Data.HydraulicsElectricalWing = [Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Hydraulics_Electric*0.6,0.45, 0, -2];
 CG_Data.HydraulicsElectricalTail = [Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Hydraulics_Electric*0.4,0.9, 0, 0];
+CG_Data.Furnishing = [Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Furnishing_equipment, 0.5, 0, 0];
 CG_Data.AC_AntiIce = [Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Aircon_AntiIce, 0.5,0,-2];
 CG_Data.Misc = [Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Miscellaneous, 0.5,0,0];
 CG_Data.CrewProvisions = [Anteile_einzel_Massen_FE2.Opperational_Items.Crew_provi, 0.49,0,0];
-CG_Data.PassengerCabinSupplies = [Anteile_einzel_Massen_FE2.Opperational_Items.Crew_provi, 0.55,0,0];
+CG_Data.PassengerCabinSupplies = [Anteile_einzel_Massen_FE2.Opperational_Items.Passenger_cabin_supp, 0.55,0,0];
 CG_Data.WaterToiletChem = [Anteile_einzel_Massen_FE2.Opperational_Items.Liquids, 0.80,0,-1];
 CG_Data.SafetyEq = [Anteile_einzel_Massen_FE2.Opperational_Items.Safty_equip, 0.5,0,0.5];
 CG_Data.Seating = [Anteile_einzel_Massen_FE2.Opperational_Items.Seating, 0.58,0,0];
-%CG_Data.ResFuel = [Anteile_einzel_Massen_FE2.Opperational_Items.Residual_Fuel, ???, 0, -2.5];
+CG_Data.ResFuel = [Anteile_einzel_Massen_FE2.Opperational_Items.Residual_Fuel, 0.5, 0, -2.5];
 
 CG_DataMatrix=[CG_Data.Rumpf;CG_Data.HLW;CG_Data.SLW;CG_Data.Bugfahrwerk;CG_Data.APU;CG_Data.CockpitInstruments;...
-    CG_Data.HydraulicsElectricalWing;CG_Data.HydraulicsElectricalTail;CG_Data.AC_AntiIce;CG_Data.Misc;...
-    CG_Data.CrewProvisions;CG_Data.PassengerCabinSupplies;CG_Data.WaterToiletChem;CG_Data.SafetyEq;CG_Data.Seating];
-%ResFuel noch nicht enthalten
+    CG_Data.HydraulicsElectricalWing;CG_Data.HydraulicsElectricalTail;CG_Data.Furnishing;CG_Data.AC_AntiIce;CG_Data.Misc;...
+    CG_Data.CrewProvisions;CG_Data.PassengerCabinSupplies;CG_Data.WaterToiletChem;CG_Data.SafetyEq;CG_Data.Seating;CG_Data.ResFuel];
+%ResFuel Annahme SP bei x=0.5
 
 CG_Moment_X=0;
 CG_M=0;
@@ -123,3 +124,16 @@ for C=1:length(CG_DataMatrix_Wing)       %%Der Schwerpunkt wird ausgrechnet mit 
     CG_Wing_MZ=CG_MZ+CG_DataMatrix_Wing(C,1); 
 end 
 CG_Wing_Z=CG_Wing_Moment_Z/CG_Wing_MZ;
+
+%% Bestimmung von X_MAC
+
+Wing_MAC.xSP_MAC_lmue = 0.23; % siehe Übung: Wert zwischen 20% und 25%
+Wing_MAC.xSP_MAC_FG = CG_Wing_X - (CG_Data_Wing.Fluegel(2)-NP.l_mue_ges);
+
+Wing_MAC.XMAC = CG_Rumpf_X + Wing_MAC.xSP_MAC_FG*(CG_Wing_M/CG_M) - Wing_MAC.xSP_MAC_lmue*(1+(CG_Wing_M/CG_M))*NP.l_mue_ges;
+
+%% Bestimmung des Gesamtschwerpunktes
+
+Rumpf_MAC.xSP_MAC_RG = -Wing_MAC.XMAC + CG_Rumpf_X;
+
+CG_Gesamt_x = (Rumpf_MAC.xSP_MAC_RG*CG_M + Wing_MAC.xSP_MAC_FG*CG_Wing_M)/(CG_M + CG_Wing_M);

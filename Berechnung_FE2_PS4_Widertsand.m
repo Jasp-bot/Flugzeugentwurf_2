@@ -72,8 +72,9 @@ x_u_SLW = SLW.Fluegeltiefen_eta_oR * xu_l_SLW;
 
         % Trimmwiderstand
 l_mue = Ergebnisse_Fluegel.l_mue;  
-dx_SP = 1.5; %%%%%% Ein random wert angenommen!!!!!!!!!!!
-c_M_0_F = FM.c_M_NP_F0;
+x_SP_MAC = 1.5; %%%%%% Ein random wert angenommen!!!!!!!!!!!
+c_M_0_F = FM.c_M_NP_F0;%* 0.1;
+qH_q = 0.85; % hat Kristof gesagt urspruenglich mit 0.95 angenommen
 
     % Zusatzwidertsand
 c_A_F_laufvar = 0:0.01:1; 
@@ -94,16 +95,27 @@ n_int_NC = 4;
 l_int_PYL = Ergebnisse_Fluegel.Fluegeltiefen_eta(1,0.3*10^3)*0.65;
 n_int_PYL = 4;
 
+% Off design
+Ma_off_D = linspace(0.7, specs.Ma_MO, 100);
+kappa = 1.4;
 
 
-%% ------------------------------------------------------------------------
-%  -------------Fluegelwiderstand nach Diederich---------------------------
+
+% ------------------------------------------------------------------------
+%% Fluegelwiderstand nach Diederich---------------------------
 %  ------------------------------------------------------------------------
 
 
 for n_iteration = 1:100 
 
     c_A_F = n_iteration * 10^(-2);
+    
+
+%     c_A_F_off_D = ((2)/(kappa * ISA.p(hoehe_CR) * Ma_off_D(1,n_iteration))) * Ergebnisse_stat_Flaechenbelastung.Fleachenbelastung; 
+%     v_air_off_D = Ma_off_D(1,n_iteration) * ISA.a(hoehe_CR);
+
+
+
 
 %% Profilwiderstand des Fluegels
 
@@ -136,7 +148,7 @@ c_w_p_eta = c_w_p_min_Re + 0.03 .*...
 
 % test_integ = @(eta) c_w_p_eta .*  (Ergebnisse_Fluegel.Fluegeltiefen_eta_oR) ./ (Ergebnisse_Fluegel.l_m);
 % c_w_p = integral(test_integ, 0, 1, 1001);
-c_w_p = trapz(c_w_p_eta .*  (Ergebnisse_Fluegel.Fluegeltiefen_eta_oR) ./ (Ergebnisse_Fluegel.l_m)) * 10^(-3);
+c_w_p(1,n_iteration) = trapz(c_w_p_eta .*  (Ergebnisse_Fluegel.Fluegeltiefen_eta_oR) ./ (Ergebnisse_Fluegel.l_m)) * 10^(-3); % Achtung Potenz kann inkoreckt sein
 %test_sum = sum(c_w_p)
 % % schnelltest plot
 % plot(c_w_p)
@@ -169,7 +181,7 @@ c_w_ind(1,n_iteration) = c2 .* (c_A_F.^2)./(pi * Ergebnisse_Fluegel.streckung_ph
 
 
 
-% Transsonischer Widerstand
+%% Transsonischer Widerstand
 
 % PS4 S.5 Formel 18
 k_vector = [0.758, 0.1, -0.090, 0, -0.100];
@@ -187,10 +199,9 @@ delta_c_WM = 0.002 * exp(60 * delta_Ma);
 
 
 
-%% ------------------------------------------------------------------------
-
-% Rumpfwiderstand
-
+% ------------------------------------------------------------------------
+%% Rumpfwiderstand
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Re_Ru = (specs.l_rumpf * (specs.Ma_CR * ISA.a(hoehe_CR)))/(ISA.kin_visk(hoehe_CR));
 % PS4 S.5 Formel 19
 c_f_tu_Ru = (0.455)/(log(Re_Ru)^(2.58));
@@ -204,7 +215,7 @@ c_w_Ru_min = c_f_tu_Ru * (1 + k_Rumpf) * S_G_Ru/Ergebnisse_stat_Flaechenbelastun
 
 % Kommentar: Ich habe keine Berechnungen fuer den Widerstand unter
 % betrachtung des Anstellwinkes des Rumpfes gemacht, das bedeutet, dise
-% Rechnung gilt nur fuer CR-Zustand Wenn das hinzugefuegt werden muss PS4
+% Rechnung gilt nur fuer CR-Zustand Wenn das hinzugefuegt werden muss PFluegeltiefen_eta_oRS4
 % S.5 und fogend
 
 % PS4 S.6 Formel 26
@@ -236,8 +247,11 @@ c_w_R(1, n_iteration) = c_w_R_zu_c_w_Rmin(1, n_iteration) .* c_w_Ru_min;
 
 
 
-%% -------------------------------------------------------------------------
-% Triebwerke analog zu Rumpf
+% -------------------------------------------------------------------------
+%% Triebwerke analog zu Rumpf
+% -------------------------------------------------------------------------
+
+
 k_TW = 0.2;
 Re_TW = (l_TW * (specs.Ma_CR * ISA.a(hoehe_CR))) / (ISA.kin_visk(hoehe_CR));
 
@@ -248,16 +262,18 @@ c_f_tu_TW = (0.455)/(log(Re_TW)^(2.58));
 alpha_TW_grad = alpha_Rumpf_grad + TW_Einbauwinkel;
 
 % PS4 S.5 Formel 20
-c_w_TW_min = c_f_tu_TW * (1 + k_TW) * S_G_TW/Ergebnisse_stat_Flaechenbelastung.F;
+c_w_TW_min = c_f_tu_TW * (1 + k_TW) * (S_G_TW * 2)/Ergebnisse_stat_Flaechenbelastung.F;
 
 % PS4 S.5 Formel 22
 c_w_TW_zu_c_w_TWmin = 0.000208 * abs(alpha_TW_grad).^3 + 0.00125 * abs(alpha_TW_grad).^2 + 0.029 * abs(alpha_TW_grad) + 1;
 
-c_w_TW = c_w_TW_zu_c_w_TWmin * c_w_TW_min;
+c_w_TW = c_w_TW_zu_c_w_TWmin .* c_w_TW_min;
 
-%% --------------------------------------------------------------------------
-% Leitwerkswiderstand
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% --------------------------------------------------------------------------
+%% Leitwerkswiderstand
+%---------------------------------------------------------------------------
+
 % Profilwiderstand Leitwerk
 
 
@@ -292,13 +308,24 @@ c_w_HLW_min = 2 .* c_f_HLW .* (1+ k_HLW .* cos(HLW.phi_50).^2) .* ((HLW.F)/(Erge
 c_w_SLW_min = 2 .* c_f_SLW .* (1+ k_SLW .* cos(SLW.phi_50).^2) .* ((SLW.F)/(Ergebnisse_stat_Flaechenbelastung.F));
 
 
-% ------------------Trimwiderstand Leitwerke--------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Kein plan ob richtig
+c_W_HLW(1,n_iteration) = trapz(c_w_HLW_min*10^(-2));
+c_W_SLW(1,n_iteration) = trapz(c_w_SLW_min*10^(-2));
 
+
+%--------------------------------------------------------------------------
+%% Trimwiderstand Leitwerke
+% -------------------------------------------------------------------------
 
 % PS4 S.7 Formel 33 
-qH_q = 0.95;
-c_A_H(1,n_iteration) = (c_M_0_F + c_A_F * ((dx_SP)/(l_mue))) / ...
-    (qH_q * ((HLW.F)/(Ergebnisse_Fluegel.F)) * ((HLW.r - dx_SP)/(l_mue)));
+
+% c_A_H(1,n_iteration) = (c_M_0_F + c_A_F * ((x_SP_MAC)/(l_mue))) / ...
+%     (qH_q * ((HLW.F)/(Ergebnisse_Fluegel.F)) * ((HLW.r - x_SP_MAC)/(l_mue)));
+
+c_A_H(1,n_iteration) = (c_M_0_F + c_A_F * (0.1)) ./ ...
+                        (qH_q * ((HLW.F)/(Ergebnisse_Fluegel.F)) *...
+                        (((HLW.r/l_mue) - (0.1))));
+
 
 % PS4 S.7 Formel 29
 c_A_ges(1,n_iteration) = c_A_F + c_A_H(1,n_iteration) * qH_q * ((HLW.F)/(Ergebnisse_stat_Flaechenbelastung.F));
@@ -311,39 +338,38 @@ zaehlvariabele_itt = zaehlvariabele_itt + 1;
 tau_H = 1 - HLW.streckung_phi25 * (0.002 + 0.0084 * (HLW.lambda - 0.2)^2);
 
 % PS4 S.7 Formel 30
-c_w_trim(1,n_iteration) = ((c_A_H(1,n_iteration).^2)/(pi * HLW.streckung_phi25)) * ...
-    ((1 + (5*10^(-6)) * (rad2deg(HLW.phi_25))^3)/(tau_H)) *...
-    ((HLW.F)/(Ergebnisse_Fluegel.F));
+c_w_trim(1,n_iteration) = ((c_A_H(1,n_iteration).^2) ./ (pi * HLW.streckung_phi25)) .* ...
+    ((1 + (5*10^(-6)) .* (abs(rad2deg(HLW.phi_25))).^3)./(tau_H)) .*...
+    ((HLW.F)./(Ergebnisse_Fluegel.F));
 
-
-%%--------------------------------------------------------------------------
-% Zusatzwiderstand
-
+%--------------------------------------------------------------------------
+%% Zusatzwiderstand
+%--------------------------------------------------------------------------
 
 % PS4 S.8 Formel 38
 % Achtung c_A_F_laufvar soll eien Laufvariabele sein 
-d_alpha_oH = c_A_F ./ c_A_alpha_F;
+d_alpha_oH(1,n_iteration) = c_A_F ./ c_A_alpha_F;
 
 % PS4 S.8 Formel 37
-d_alpha_w = Abwindfaktor .* d_alpha_oH;
+d_alpha_w(1,n_iteration) = Abwindfaktor .* d_alpha_oH(1,n_iteration);
 
 % PS4 S.8 Formel 36
-delta_c_w_H(1,n_iteration) = c_A_H(1,n_iteration) .* sin(d_alpha_w) .* qH_q .* ((HLW.F)./(Ergebnisse_stat_Flaechenbelastung.F));
+delta_c_w_H(1,n_iteration) = c_A_H(1,n_iteration) .* sin(d_alpha_w(1,n_iteration)) .* qH_q .* ((HLW.F)./(Ergebnisse_stat_Flaechenbelastung.F));
 
 
-%%--------------------------------------------------------------------------
-% Interferenzwiderstand
-    
+%--------------------------------------------------------------------------
+%% Interferenzwiderstand
+%--------------------------------------------------------------------------    
         % Fluegel
 Re_F_wurzel = l_int_F * v_air / ISA.kin_visk(hoehe_CR);
 % PS4 S.9 Formel 40
-c_w_int_F = ((0.1369)/(Re_F_wurzel)) * l_int_F^2 * n_int_F;
+c_w_int_F = ((0.1369)/(Re_F_wurzel)^0.4) * l_int_F^2 * n_int_F;
         
 
         % HLW
 Re_HLW_wurzel = l_int_HLW * v_air / ISA.kin_visk(hoehe_CR);
 % PS4 S.9 Formel 40
-c_w_int_HLW = ((0.1369)/(Re_HLW_wurzel)) * l_int_HLW^2 * n_int_HLW;
+c_w_int_HLW = ((0.1369)/(Re_HLW_wurzel)^0.4) * l_int_HLW^2 * n_int_HLW;
 
 
         % SLW
@@ -355,17 +381,17 @@ c_w_int_SLW = ((0.1369)/(Re_SLW_wurzel)) * l_int_SLW^2 * n_int_SLW;
         % TW Nacell
 Re_NC_wurzel = l_int_NC * v_air / ISA.kin_visk(hoehe_CR);
 % PS4 S.9 Formel 40
-c_w_int_NC = ((0.1369)/(Re_NC_wurzel)) * l_int_NC^2 * n_int_NC;
+c_w_int_NC = ((0.1369)/(Re_NC_wurzel)^0.4) * l_int_NC^2 * n_int_NC;
 
 
         % Pyl Nacell
 Re_PYL_wurzel = l_int_PYL * v_air / ISA.kin_visk(hoehe_CR);
 % PS4 S.9 Formel 40
-c_w_int_PYL = ((0.1369)/(Re_PYL_wurzel)) * l_int_PYL^2 * n_int_PYL;
+c_w_int_PYL = ((0.1369)/(Re_PYL_wurzel)^0.4) * l_int_PYL^2 * n_int_PYL;
 
     % zusammenfassung
 
-c_w_int_fs = (c_w_int_F + c_w_int_HLW + ...
+c_w_int_fs(1,n_iteration) = (c_w_int_F + c_w_int_HLW + ...
     c_w_int_SLW +c_w_int_NC + c_w_int_PYL)/...
     Ergebnisse_stat_Flaechenbelastung.F;
 
@@ -374,47 +400,125 @@ n_iteration_vec(1,n_iteration) = n_iteration * 10^(-2);
 end
 
 
-% Plot design
+%% Plot design
 
-figure(1)
+% figure(1)
+% hold on
+% grid on
+% xlim([0, 0.05])
+% ylim([0, 1])
+% 
+% 
+% 
+% % plot Leitwerke SLW und HLW
+% 
+% p(1) = plot(c_W_SLW, n_iteration_vec, '.-b');   % SLW
+% 
+% p(2) = plot(c_W_HLW, n_iteration_vec, '.-c');   % HLW
+% 
+% % Interferenzwiderstand
+% 
+% p(3) =  plot(c_w_int_fs, n_iteration_vec, '.green');
+% 
+% % Plot Rumpfwiderstand
+% p(4) = plot(c_w_R, n_iteration_vec, '-k');
+% 
+% 
+% % Plot Widerstand Triebwerk
+% p(5) = plot(c_w_TW,n_iteration_vec, '-m');
+% 
+% 
+% % Plot Trimwiderstand HLW
+% 
+% p(6) = plot(c_w_trim, n_iteration_vec,'-blue');
+% 
+% % Abwindwiderstand
+% p(7) = plot(delta_c_w_H, n_iteration_vec, 'c');
+% 
+% % Plot Profilwiderstand 
+% 
+% p(8) = plot(c_w_p, n_iteration_vec, '-.k');
+% 
+% % plot Induzierter Widerstand
+% p(9) = plot(c_w_ind, n_iteration_vec, '-red');
+% 
+% % Plot Transsonischer Widersatnd
+% p(10) = plot(delta_c_WM, n_iteration_vec, '-green');
+%  
+% 
+% % Testplot Widerstände aufaddiert
+% widerstaende_aufaddiert = c_w_ind + delta_c_WM + c_w_R + c_w_TW + c_w_trim + c_w_int_fs + delta_c_w_H + c_W_HLW + c_W_SLW;
+% plot(widerstaende_aufaddiert, n_iteration_vec, '*r')
+% 
+% 
+% legend(p([1:10]),{'+ SLW', '+ HLW', '+ Interferenz', '+ Rumpf', '+ Triebwerk', '+ Trimmung', '+ Abwind', '+ Profil', '+ ind. Widerstand', '+ Wellenwiderstand'},'Location','southeast','FontSize',18);
+% title('Kumulative Widerstandspolare')
+% xlabel('c_{W}');
+% ylabel('c_A');
+
+
+% atomatisches Plotten
+figure(2)
+
 hold on
 grid on
 xlim([0, 0.05])
 ylim([0, 1])
 
+% Anzahl der Plots festlegen
+numPlots =10 %6;     % muss veraendert werden um off Design noch zu plotten
 
-% Plot Profilwiderstand
-%plot(c_w_p,   '.r') %n_iteration_vec,
+% Vector mit zu plottenden Werten
+x_vector = [c_W_SLW; c_W_HLW; c_w_int_fs; c_w_R; c_w_TW; c_w_trim; delta_c_w_H; c_w_p; c_w_ind; delta_c_WM];
 
-% plot Induzierter Widersatnd
-plot(c_w_ind, n_iteration_vec, '-red')
-% 
-% 
-% Plot Transsonischer Widersatnd
-plot(delta_c_WM, n_iteration_vec, '-green')
- 
-% Plot Rumpfwiderstand
-plot(c_w_R, n_iteration_vec, '-k')
- 
-% Plot Widerstand Triebwerk
-plot(c_w_TW,n_iteration_vec, '-m');
+% Farbverlauf definieren
+colorStart = [1, 0.5, 0];   % Startfarbe (RGB)
+colorEnd = [0, 0, 0];     % Endfarbe (RGB)
 
+% Farbwerte für jeden Plot berechnen
+%colors = zeros(numPlots/2, 3);
+for n_color = 1:(numPlots/2)
+    colors(n_color, :) = colorStart + (n_color-1) * (colorEnd - colorStart) / ((numPlots/2)-1);
+end
 
-% Plot Widerstand Seitenleitwerk
-%p(1) =
-%plot(c_w_SLW_min);
-% 
-% % Plot Widerstand Hoehenleitwerk 
-% % p(2) = plot()
-% 
-% % Plot Trimwiderstand HLW
-% %p(3) = 
- plot(c_w_trim, n_iteration_vec,'-blue');
-% 
-% % Plot Zusatzwidersatnd
-% %p(4) = plot()
+colors = vertcat(colors, colors);
 
 
+
+% Linienarten definieren
+lineStyles = {'--', ':', '-.', '-', '--', ':', '-.', '-', '--', ':', '-.', '-' }; % Gestrichelt, Gepunktet
+
+% Vector mit zu plottenden Werten
+x_vector = [c_W_SLW; c_W_HLW; c_w_int_fs; c_w_R; c_w_TW; c_w_trim; delta_c_w_H; c_w_p; c_w_ind; delta_c_WM];
+
+for n_vec = 1:numPlots
+    if n_vec == 1
+        x_vector_sum(n_vec,:) = x_vector(n_vec,:);
+    else
+        x_vector_sum(n_vec,:) = x_vector_sum(n_vec-1,:) + x_vector(n_vec,:);
+    end
+end
+
+
+% Plots erstellen
+
+atoplots = cell(numPlots, 1);
+
+for n_plot = 1:numPlots
+   autoplot(n_plot,1) = plot((x_vector_sum(n_plot,:)), n_iteration_vec, 'Color', colors(n_plot, :), 'LineStyle', lineStyles{1,n_plot});
+end
+
+
+
+% schoen machen des Plots 
+
+legend(autoplot([1:10]),{'+ SLW', '+ HLW', '+ Interferenz', '+ Rumpf', '+ Triebwerk', '+ Trimmung', '+ Abwind', '+ Profil', '+ ind. Widerstand', '+ Wellenwiderstand'},...
+    'Location','southeast','FontSize',18);
+title('Kumulative Widerstandspolare')
+xlabel('c_W');
+ylabel('c_A');
+
+hold off;
 
 
 

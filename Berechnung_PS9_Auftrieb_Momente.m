@@ -116,7 +116,7 @@ gamma_eta_ges = GRA.gamma_a_eta * c_AF + VWA.gamma_b_eta;
 
 c_a_eta = (GRA.gamma_a_eta .* Ergebnisse_stat_Flaechenbelastung.C_A_CR .* GRA.l_m) ./ (Ergebnisse_Fluegel.Fluegeltiefen_eta);
 
-%% Part2 Fluegelmomente
+%% Part 2 Fluegelmomente
 
 % Grundrissabhaengiger Anteil (Fluegelmomente)
 
@@ -131,24 +131,26 @@ FM.c_M_NP_eta = mean(CMNPBDiagramm25(:,1));
 % %fun_cMNP_B = @(eta)  c_M_NP_eta  * (Fluegeltiefen_eta./ l_m ).^2;
 % % test2_int = integral(fun_cMNP_B, 0, 1, 101);
 
-for laufvariable_C_M_NP_B = 1:1:101;
-    FM.teilergebnis(1,laufvariable_C_M_NP_B) = FM.c_M_NP_eta  * (Ergebnisse_Fluegel.Fluegeltiefen_eta(1,laufvariable_C_M_NP_B)./ GRA.l_m ).^2; %
+for laufvariable_C_M_NP_B = 1:1:length(Ergebnisse_Fluegel.Fluegeltiefen_eta);
+    FM.teilergebnis(1,laufvariable_C_M_NP_B) = FM.c_M_NP_eta  .* (Ergebnisse_Fluegel.Fluegeltiefen_eta(1,laufvariable_C_M_NP_B)./ GRA.l_m ).^2; %
 end  
 
 % summe = sum(teilergebnis);
-FM.summe = trapezoidal_area(eta,FM.teilergebnis);
+FM.summe = trapz(FM.teilergebnis)*10^(-3);
+%FM.summe = trapezoidal_area(eta,FM.teilergebnis);
 FM.c_M_NP_B = (GRA.l_m/ NP.l_mue_ges) .* FM.summe; %integral(fun_cMNP_B, 0, 1, 101);
 
 
 % Verwindungsanteil
 
 % fun_delta_c_M_NP_eps = @(x) gamma_b_eta .* x;
-for laufvar_delta_C_M_NP_ets = 1:1:101
-    FM.teilergebnis2(1,laufvar_delta_C_M_NP_ets) = VWA.gamma_b_eta(1,laufvar_delta_C_M_NP_ets) * (laufvar_delta_C_M_NP_ets-1)*10^(-2) ; 
+for laufvar_delta_C_M_NP_ets = 1:1:length(Ergebnisse_Fluegel.Fluegeltiefen_eta)
+    FM.teilergebnis2(1,laufvar_delta_C_M_NP_ets) = VWA.gamma_b_eta(1,laufvar_delta_C_M_NP_ets) * (laufvar_delta_C_M_NP_ets-1)*10^(-3) ; 
 end
 % summe2 = sum(teilergebnis2);
-FM.summe2 = trapezoidal_area(FM.teilergebnis2,eta);
-FM.delta_c_M_NP_eps = - ((Ergebnisse_Fluegel.streckung_phi25_max .* tan(Ergebnisse_Fluegel.phi_25_max) .* GRA.l_m)./(2 .* NP.l_mue_ges)) .*FM.summe2; %integral(fun_delta_c_M_NP_eps, 0, 1, 101); 
+FM.summe2 =  trapz(FM.teilergebnis2)*10^(-3);
+%FM.summe2 = trapezoidal_area(FM.teilergebnis2,eta); % trapz(FM.teilergebnis2);%*10^(-3);
+FM.delta_c_M_NP_eps = - ((Ergebnisse_Fluegel.streckung_phi25_max .* tan(Ergebnisse_Fluegel.phi_25_max) .* GRA.l_m)./(2 .* NP.l_mue_ges)) .* FM.summe2; %integral(fun_delta_c_M_NP_eps, 0, 1, 101); 
 
 
 % Nullmomentenbeiwert

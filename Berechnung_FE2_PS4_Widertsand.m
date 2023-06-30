@@ -97,7 +97,7 @@ Annahmen.l_int_PYL = Ergebnisse_Fluegel.Fluegeltiefen_eta(1,0.3*10^3)*0.65;
 Annahmen.n_int_PYL = 4;
 
 % Off design
-Annahmen.Ma_off_D = linspace(0.7, specs.Ma_MO, 100);
+Annahmen.Ma_off_D = linspace(0.1, 1, 100);
 Annahmen.kappa = 1.4;
 
 
@@ -128,8 +128,10 @@ for n_iteration = 1:100
     c_A_F = n_iteration * 10^(-2);
     
 
-%     c_A_F_off_D = ((2)/(Annahmen.kappa * ISA.p(Annahmen.hoehe_CR) * Annahmen.Ma_off_D(1,n_iteration))) * Ergebnisse_stat_Flaechenbelastung.Fleachenbelastung; 
-%     v_air_off_D = Annahmen.Ma_off_D(1,n_iteration) * ISA.a(Annahmen.hoehe_CR);
+    c_A_F_off_D = ((2)/(Annahmen.kappa * ISA.p(Annahmen.hoehe_CR) * Annahmen.Ma_off_D(1,n_iteration))) * Ergebnisse_stat_Flaechenbelastung.Fleachenbelastung; 
+    v_air_off_D = Annahmen.Ma_off_D(1,n_iteration) * ISA.a(Annahmen.hoehe_CR);
+
+    c_A_F_off_D_vec(1,n_iteration) = c_A_F_off_D;
 
 
 %% Profilwiderstand des Fluegels
@@ -169,7 +171,7 @@ for n_iteration = 1:100
 % % plot(c_w_p)
 
 c_w_p(1,n_iteration) = Profilwiderstand(Annahmen.v_air);
-
+c_w_p_off_D(1,n_iteration) = Profilwiderstand(v_air_off_D);
 
 %% Induzierter Widerstand des Fluegels
 
@@ -195,6 +197,7 @@ c_w_p(1,n_iteration) = Profilwiderstand(Annahmen.v_air);
 %     c1 .* c_A_F .* delta_eps + c0 .* delta_eps^2;
 
 c_w_ind(1,n_iteration) = Induzierter_W(c_A_F);
+c_w_ind_off_D(1,n_iteration) = Induzierter_W(c_A_F_off_D);
 
 %% Transsonischer Widerstand
 
@@ -213,16 +216,21 @@ c_w_ind(1,n_iteration) = Induzierter_W(c_A_F);
 % delta_c_WM = 0.002 * exp(60 * delta_Ma);
 
 delta_c_WM(1,n_iteration) = Transsonischer_W(Annahmen.Ma_unendlich,c_A_F);
+delta_c_WM_off_D(1,n_iteration) = Transsonischer_W(Annahmen.Ma_off_D(1,n_iteration), c_A_F_off_D);
+
 
 % ------------------------------------------------------------------------
 %% Rumpfwiderstand
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if Annahmen.zaehlvariabele_itt <= 1
     c_A_ges(1, n_iteration) = 0.522;
+    c_A_ges_off_D(1, n_iteration) = 0.522;
 
 elseif  Annahmen.zaehlvariabele_itt > 1
     c_A_ges(1, n_iteration) = c_A_ges(1, n_iteration - 1);
     c_A_ges(1,1) = c_A_ges(1, n_iteration);
+    c_A_ges_off_D(1, n_iteration) = c_A_ges_off_D(1, n_iteration - 1);
+    c_A_ges_off_D(1,1) = c_A_ges_off_D(1, n_iteration);
 end   
 % PS4 S.6 Formel 25 Abwindfaktor = delta_alpha_w/delta_alpha_oH 
 Abwindfaktor = 1.75 * ((Annahmen.c_A_alpha_F)/(pi * Ergebnisse_Fluegel.streckung_phi25_max *...
@@ -264,8 +272,10 @@ Abwindfaktor = 1.75 * ((Annahmen.c_A_alpha_F)/(pi * Ergebnisse_Fluegel.streckung
 % 
 % c_w_R(1, n_iteration) = c_w_R_zu_c_w_Rmin(1, n_iteration) .* c_w_Ru_min;
 
-[c_w_R(1, n_iteration), alpha_Rumpf_grad(1, n_iteration)] = Rumpfwiderstand(specs.Ma_CR,Abwindfaktor,c_A_ges(1,n_iteration));
-
+[c_w_R(1, n_iteration), alpha_Rumpf_grad(1, n_iteration)] =...
+    Rumpfwiderstand(specs.Ma_CR,Abwindfaktor,c_A_ges(1,n_iteration));
+[c_w_R_off_D(1, n_iteration), alpha_Rumpf_grad_off_D(1, n_iteration)] =...
+    Rumpfwiderstand(Annahmen.Ma_off_D(1,n_iteration),Abwindfaktor,c_A_ges_off_D(1,n_iteration));
 
 % -------------------------------------------------------------------------
 %% Triebwerke analog zu Rumpf
@@ -291,6 +301,8 @@ Abwindfaktor = 1.75 * ((Annahmen.c_A_alpha_F)/(pi * Ergebnisse_Fluegel.streckung
 
 
 c_w_TW(1, n_iteration) = Triebwerkswiderstand(Annahmen.v_air, alpha_Rumpf_grad(1, n_iteration));
+c_w_TW_off_D(1, n_iteration) = Triebwerkswiderstand(v_air_off_D, alpha_Rumpf_grad_off_D(1, n_iteration));
+
 
 
 % --------------------------------------------------------------------------
@@ -328,10 +340,13 @@ c_w_TW(1, n_iteration) = Triebwerkswiderstand(Annahmen.v_air, alpha_Rumpf_grad(1
 % c_w_SLW_min = 2 .* c_f_SLW .* (1+ k_SLW .* cos(SLW.phi_50).^2) .* ((SLW.F)/(Ergebnisse_Fluegel.F));
 
 [c_w_HLW_min, c_w_SLW_min] = Leitwerke_W(Annahmen.v_air);
-
+[c_w_HLW_min_off_D, c_w_SLW_min_off_D] = Leitwerke_W(v_air_off_D);
 
 c_W_HLW(1,n_iteration) = trapz(c_w_HLW_min)*10^(-2);
 c_W_SLW(1,n_iteration) = trapz(c_w_SLW_min)*10^(-2);
+
+c_W_HLW_off_D(1,n_iteration) = trapz(c_w_HLW_min_off_D)*10^(-2);
+c_W_SLW_off_D(1,n_iteration) = trapz(c_w_SLW_min_off_D)*10^(-2);
 
 
 %--------------------------------------------------------------------------
@@ -363,7 +378,7 @@ c_W_SLW(1,n_iteration) = trapz(c_w_SLW_min)*10^(-2);
 %     ((HLW.F)./(Ergebnisse_Fluegel.F));
 
 [c_A_H(1,n_iteration), c_A_ges(1,n_iteration), c_w_trim(1,n_iteration)] = Leitwerke_Trim_W(c_A_F);
-
+[c_A_H_off_D(1,n_iteration), c_A_ges_off_D(1,n_iteration), c_w_trim_off_D(1,n_iteration)] = Leitwerke_Trim_W(c_A_F_off_D);
 
 %--------------------------------------------------------------------------
 %% Zusatzwiderstand
@@ -381,7 +396,7 @@ c_W_SLW(1,n_iteration) = trapz(c_w_SLW_min)*10^(-2);
 %     Annahmen.qH_q .* ((HLW.F)./(Ergebnisse_Fluegel.F));
 
 [delta_c_w_H(1,n_iteration)] = Zusatz_W(c_A_F, Abwindfaktor, c_A_H(1, n_iteration));
-
+[delta_c_w_H_off_D(1,n_iteration)] = Zusatz_W(c_A_F_off_D, Abwindfaktor, c_A_H_off_D(1, n_iteration));
 
 %--------------------------------------------------------------------------
 %% Interferenzwiderstand
@@ -423,138 +438,156 @@ c_W_SLW(1,n_iteration) = trapz(c_w_SLW_min)*10^(-2);
 
 
 c_w_int_fs(1,n_iteration) = Interferenz_W(Annahmen.v_air);
+c_w_int_fs_off_D(1,n_iteration) = Interferenz_W(v_air_off_D);
+
+
 
 n_iteration_vec(1,n_iteration) = n_iteration * 10^(-2);
 
 end
 
+save Ergebnisse_Widerstand_FE2.mat 
 
 
 
-%% Plot design
-
-% figure(1)
+% %% Plot design
+% 
+% % figure(1)
+% % hold on
+% % grid on
+% % xlim([0, 0.05])
+% % ylim([0, 1])
+% % 
+% % 
+% % 
+% % % plot Leitwerke SLW und HLW
+% % 
+% % p(1) = plot(c_W_SLW, n_iteration_vec, '.-b');   % SLW
+% % 
+% % p(2) = plot(c_W_HLW, n_iteration_vec, '.-c');   % HLW
+% % 
+% % % Interferenzwiderstand
+% % 
+% % p(3) =  plot(c_w_int_fs, n_iteration_vec, '.green');
+% % 
+% % % Plot Rumpfwiderstand
+% % p(4) = plot(c_w_R, n_iteration_vec, '-k');
+% % 
+% % 
+% % % Plot Widerstand Triebwerk
+% % p(5) = plot(c_w_TW,n_iteration_vec, '-m');
+% % 
+% % 
+% % % Plot Trimwiderstand HLW
+% % 
+% % p(6) = plot(c_w_trim, n_iteration_vec,'-blue');
+% % 
+% % % Abwindwiderstand
+% % p(7) = plot(delta_c_w_H, n_iteration_vec, 'c');
+% % 
+% % % Plot Profilwiderstand 
+% % 
+% % p(8) = plot(c_w_p, n_iteration_vec, '-.k');
+% % 
+% % % plot Induzierter Widerstand
+% % p(9) = plot(c_w_ind, n_iteration_vec, '-red');
+% % 
+% % % Plot Transsonischer Widersatnd
+% % p(10) = plot(delta_c_WM, n_iteration_vec, '-green');
+% %  
+% % 
+% % % Testplot Widerstände aufaddiert
+% % widerstaende_aufaddiert = c_w_ind + delta_c_WM + c_w_R + c_w_TW + c_w_trim + c_w_int_fs + delta_c_w_H + c_W_HLW + c_W_SLW;
+% % plot(widerstaende_aufaddiert, n_iteration_vec, '*r')
+% % 
+% % 
+% % legend(p([1:10]),{'+ SLW', '+ HLW', '+ Interferenz', '+ Rumpf', '+ Triebwerk', '+ Trimmung', '+ Abwind', '+ Profil', '+ ind. Widerstand', '+ Wellenwiderstand'},'Location','southeast','FontSize',18);
+% % title('Kumulative Widerstandspolare')
+% % xlabel('c_{W}');
+% % ylabel('c_A');
+% 
+% 
+% % atomatisches Plotten
+% figure(2)
+% 
 % hold on
 % grid on
 % xlim([0, 0.05])
 % ylim([0, 1])
 % 
+% % Anzahl der Plots festlegen
+% numPlots = 10 %6;     % muss veraendert werden um off Design noch zu plotten
+% 
+% % Vector mit zu plottenden Werten
 % 
 % 
-% % plot Leitwerke SLW und HLW
+% %x_vector = [c_W_SLW; c_W_HLW; c_w_int_fs; c_w_R; c_w_TW; c_w_trim; delta_c_w_H; c_w_p; c_w_ind; delta_c_WM; off_D];
 % 
-% p(1) = plot(c_W_SLW, n_iteration_vec, '.-b');   % SLW
+% % Farbverlauf definieren
+% colorStart = [0, 1, 0];   % Startfarbe (RGB)
+% colorEnd = [0, 0, 0];     % Endfarbe (RGB)
 % 
-% p(2) = plot(c_W_HLW, n_iteration_vec, '.-c');   % HLW
+% % Farbwerte für jeden Plot berechnen
+% %colors = zeros(numPlots/2, 3);
+% for n_color = 1:ceil(numPlots/2)
+%     colors(n_color, :) = colorStart + (n_color-1) * (colorEnd - colorStart) / ((numPlots/2)-1);
+% end
 % 
-% % Interferenzwiderstand
-% 
-% p(3) =  plot(c_w_int_fs, n_iteration_vec, '.green');
-% 
-% % Plot Rumpfwiderstand
-% p(4) = plot(c_w_R, n_iteration_vec, '-k');
-% 
-% 
-% % Plot Widerstand Triebwerk
-% p(5) = plot(c_w_TW,n_iteration_vec, '-m');
+% colors = vertcat(colors, colors);
 % 
 % 
-% % Plot Trimwiderstand HLW
 % 
-% p(6) = plot(c_w_trim, n_iteration_vec,'-blue');
+% % Linienarten definieren
+% lineStyles = {'--', ':', '-.', '-', '--', ':', '-.', '-', '--', ':', '-.', '-' }; % Gestrichelt, Gepunktet
 % 
-% % Abwindwiderstand
-% p(7) = plot(delta_c_w_H, n_iteration_vec, 'c');
+% % Vector mit zu plottenden Werten
 % 
-% % Plot Profilwiderstand 
+% x_vector = [c_W_SLW; c_W_HLW; c_w_int_fs; c_w_R; c_w_TW; c_w_trim; delta_c_w_H; c_w_p; c_w_ind; delta_c_WM];
 % 
-% p(8) = plot(c_w_p, n_iteration_vec, '-.k');
+% for n_vec = 1:numPlots
+%     if n_vec == 1
+%         x_vector_sum(n_vec,:) = x_vector(n_vec,:);
+%     else
+%         x_vector_sum(n_vec,:) = x_vector_sum(n_vec-1,:) + x_vector(n_vec,:)
+%     end
+% end
 % 
-% % plot Induzierter Widerstand
-% p(9) = plot(c_w_ind, n_iteration_vec, '-red');
+% % Offdesign Vector
+% off_D_vector = [c_W_SLW_off_D; c_W_HLW_off_D; c_w_int_fs_off_D; c_w_R_off_D; c_w_TW_off_D; c_w_trim_off_D; delta_c_w_H_off_D; c_w_p_off_D; c_w_ind_off_D; delta_c_WM_off_D];
 % 
-% % Plot Transsonischer Widersatnd
-% p(10) = plot(delta_c_WM, n_iteration_vec, '-green');
-%  
+% for n_vec_off_D = 1:length(off_D_vector)
+%     if n_vec_off_D == 1
+%         x_vector_sum_off_D(n_vec_off_D,:) = off_D_vector(n_vec_off_D,:);
+%     else
+%         x_vector_sum_off_D(n_vec_off_D,:) = x_vector_sum_off_D(n_vec_off_D-1,:) + off_D_vector(n_vec_off_D,:);
+%     end
+% end
 % 
-% % Testplot Widerstände aufaddiert
-% widerstaende_aufaddiert = c_w_ind + delta_c_WM + c_w_R + c_w_TW + c_w_trim + c_w_int_fs + delta_c_w_H + c_W_HLW + c_W_SLW;
-% plot(widerstaende_aufaddiert, n_iteration_vec, '*r')
+% 
+% % Plots erstellen
+% 
+% atoplots = cell(numPlots, 1);
+% 
+% for n_plot = 1:numPlots
+%    autoplot(n_plot,1) = plot((x_vector_sum(n_plot,:)), n_iteration_vec, 'Color', colors(n_plot, :), 'LineStyle', lineStyles{1,n_plot});
+% end
+% plot(off_D_vector,c_A_F_off_D,'red')
 % 
 % 
-% legend(p([1:10]),{'+ SLW', '+ HLW', '+ Interferenz', '+ Rumpf', '+ Triebwerk', '+ Trimmung', '+ Abwind', '+ Profil', '+ ind. Widerstand', '+ Wellenwiderstand'},'Location','southeast','FontSize',18);
+% % schoen machen des Plots 
+% 
+% % legend(autoplot([1:10]),{'+ SLW', '+ HLW', '+ Interferenz', '+ Rumpf', '+ Triebwerk', '+ Trimmung', '+ Abwind', '+ Profil', '+ ind. Widerstand', '+ Wellenwiderstand', '+Off-Design'},...
+% %     'Location','southeast','FontSize',18);
 % title('Kumulative Widerstandspolare')
-% xlabel('c_{W}');
+% xlabel('c_W');
 % ylabel('c_A');
-
-
-% atomatisches Plotten
-figure(2)
-
-hold on
-grid on
-xlim([0, 0.05])
-ylim([0, 1])
-
-% Anzahl der Plots festlegen
-numPlots =10 %6;     % muss veraendert werden um off Design noch zu plotten
-
-% Vector mit zu plottenden Werten
-x_vector = [c_W_SLW; c_W_HLW; c_w_int_fs; c_w_R; c_w_TW; c_w_trim; delta_c_w_H; c_w_p; c_w_ind; delta_c_WM];
-
-% Farbverlauf definieren
-colorStart = [0, 1, 0];   % Startfarbe (RGB)
-colorEnd = [0, 0, 0];     % Endfarbe (RGB)
-
-% Farbwerte für jeden Plot berechnen
-%colors = zeros(numPlots/2, 3);
-for n_color = 1:(numPlots/2)
-    colors(n_color, :) = colorStart + (n_color-1) * (colorEnd - colorStart) / ((numPlots/2)-1);
-end
-
-colors = vertcat(colors, colors);
-
-
-
-% Linienarten definieren
-lineStyles = {'--', ':', '-.', '-', '--', ':', '-.', '-', '--', ':', '-.', '-' }; % Gestrichelt, Gepunktet
-
-% Vector mit zu plottenden Werten
-x_vector = [c_W_SLW; c_W_HLW; c_w_int_fs; c_w_R; c_w_TW; c_w_trim; delta_c_w_H; c_w_p; c_w_ind; delta_c_WM];
-
-for n_vec = 1:numPlots
-    if n_vec == 1
-        x_vector_sum(n_vec,:) = x_vector(n_vec,:);
-    else
-        x_vector_sum(n_vec,:) = x_vector_sum(n_vec-1,:) + x_vector(n_vec,:);
-    end
-end
-
-
-% Plots erstellen
-
-atoplots = cell(numPlots, 1);
-
-for n_plot = 1:numPlots
-   autoplot(n_plot,1) = plot((x_vector_sum(n_plot,:)), n_iteration_vec, 'Color', colors(n_plot, :), 'LineStyle', lineStyles{1,n_plot});
-end
-
-
-
-% schoen machen des Plots 
-
-legend(autoplot([1:10]),{'+ SLW', '+ HLW', '+ Interferenz', '+ Rumpf', '+ Triebwerk', '+ Trimmung', '+ Abwind', '+ Profil', '+ ind. Widerstand', '+ Wellenwiderstand'},...
-    'Location','southeast','FontSize',18);
-title('Kumulative Widerstandspolare')
-xlabel('c_W');
-ylabel('c_A');
-
-hold off;
+% 
+% hold off;
 
 
 
 
-
+%--------------------------------------------------------------------------
 %% Funktionen zur Berechnung der einzelnen Widerstandsteile
 %--------------------------------------------------------------------------
 

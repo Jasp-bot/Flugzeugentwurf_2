@@ -27,7 +27,7 @@ alpha_MAC_F_CR_0 = CA_F_CR / CAalpha_F;
 
 %% 2. Nullanstellwinkel Profil aus Katalog 
 % Aus Profilkatalog Alpha0 = -3° bei 0.83 Mach
-alpha0profil = -3;
+alpha0profil = -2.6;
 
 alpha_MAC_0_F = deg2rad(alpha0profil);
 alpha_MAC_0_F_deg = rad2deg(alpha_MAC_0_F);
@@ -156,7 +156,7 @@ alpha_CA_F_MAX_deg = rad2deg(alpha_CA_F_MAX);
 %% Plotten
 
 alphas = -6:0.01:alpha_CA_F_MAX_deg; % normal Plotten bis alphamax - delta alpha
-CA_s = CA_alpha_lowspeed.*(deg2rad(alphas+alpha_0));
+CA_s = CA_alpha_lowspeed.*(deg2rad(alphas-alpha_0));
 plot(alphas,CA_s)
 
 % Noch den CA Abfall plotten !

@@ -115,3 +115,9 @@ X_NP_durch_l_mue=X_NP_OH_durch_l_mue+((HLW.r/Ergebnisse_Fluegel.l_mue)*0.85*c_A_
 
 
 Neutralpunkt=X_NP_durch_l_mue*Ergebnisse_Fluegel.l_mue+l_fn
+
+
+
+save Ergebnisse_CG.mat Neutralpunkt F_ges_Fluegel_MAC
+
+

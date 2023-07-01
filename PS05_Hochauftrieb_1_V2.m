@@ -13,7 +13,7 @@ load Zwischenergebnisse_PS5_Fluegelflaechen.mat
 
 
 %%%%%%%%%%%%%%%%%%%%%% Platzhalter-> Hier richtige Werte einfügen   von    PS4
-CA_F_CR = 0.5;
+CA_F_CR = 2.0;
 CAalpha_F = Ergebnisse_Auftriebsverteilung.VWA.c_AF_anstieg;
 
 %%%%%%%%%%%%%%%%%%%%%%

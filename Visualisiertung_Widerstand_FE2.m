@@ -125,18 +125,19 @@ lineStyles = {'--', ':', '-.', '-', '--', ':', '-.', '-', '--', ':', '-.', '-' }
 atoplots = cell(numPlots+1, 1);
 
 for n_plot = 1:numPlots
-   autoplot(n_plot,1) = plot((x_vector_sum(n_plot,:)), n_iteration_vec, 'Color', colors(n_plot, :), 'LineStyle', lineStyles{1,n_plot});
+   autoplot(n_plot,1) = plot((Ergebnisse_Widerstand_FE2.x_vector_sum(n_plot,:)), Ergebnisse_Widerstand_FE2.n_iteration_vec, 'Color', colors(n_plot, :), 'LineStyle', lineStyles{1,n_plot});
 end
-autoplot(numPlots+1,1)= plot(x_vector_sum_off_D(numPlots,:),c_A_F_off_D_vec,'red');
+autoplot(numPlots+1,1)= plot(Ergebnisse_Widerstand_FE2.x_vector_sum_off_D(numPlots,:), Ergebnisse_Widerstand_FE2.c_A_F_off_D_vec,'red');
 
-% Schnittpunkt Design / Off_design
-schnittpunkt_des_off_D=InterX([x_vector_sum_off_D(numPlots,:); c_A_F_off_D_vec], [(x_vector_sum(numPlots,:)); n_iteration_vec]);
-plot(schnittpunkt_des_off_D(1,1), schnittpunkt_des_off_D(2,1), '*b');
+% % Schnittpunkt Design / Off_design
+% schnittpunkt_des_off_D=InterX([Ergebnisse_Widerstand_FE2.x_vector_sum_off_D(numPlots,:); Ergebnisse_Widerstand_FE2.c_A_F_off_D_vec], [(Ergebnisse_Widerstand_FE2.x_vector_sum(numPlots,:)); Ergebnisse_Widerstand_FE2.n_iteration_vec]);
+% plot(schnittpunkt_des_off_D(1,1), schnittpunkt_des_off_D(2,1), '*b');
+% 
+% 
+% % Schnittpunkt Offdesign c_A_CR
+% schnittpunkt_off_D_c_A_CR = InterX([Ergebnisse_Widerstand_FE2.x_vector_sum_off_D(numPlots,:); Ergebnisse_Widerstand_FE2.c_A_F_off_D_vec], [[0, 1]; [Ergebnisse_stat_Flaechenbelastung.C_A_CR, Ergebnisse_stat_Flaechenbelastung.C_A_CR]]);
+% plot(schnittpunkt_off_D_c_A_CR(1,1), schnittpunkt_off_D_c_A_CR(2,1), '*g');
 
-
-% Schnittpunkt Offdesign c_A_CR
-schnittpunkt_off_D_c_A_CR = InterX([x_vector_sum_off_D(numPlots,:); c_A_F_off_D_vec], [[0, 1]; [Ergebnisse_stat_Flaechenbelastung.C_A_CR, Ergebnisse_stat_Flaechenbelastung.C_A_CR]]);
-plot(schnittpunkt_off_D_c_A_CR(1,1), schnittpunkt_off_D_c_A_CR(2,1), '*g');
 
 
 % schoen machen des Plots 

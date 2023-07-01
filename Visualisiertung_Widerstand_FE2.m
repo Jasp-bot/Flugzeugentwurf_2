@@ -96,28 +96,28 @@ colors = vertcat(colors, colors);
 % Linienarten definieren
 lineStyles = {'--', ':', '-.', '-', '--', ':', '-.', '-', '--', ':', '-.', '-' }; % Gestrichelt, Gepunktet
 
-% Vector mit zu plottenden Werten
-
-x_vector = [c_W_SLW; c_W_HLW; c_w_int_fs; c_w_R; c_w_TW; c_w_trim; delta_c_w_H; c_w_p; c_w_ind; delta_c_WM];
-
-for n_vec = 1:numPlots
-    if n_vec == 1
-        x_vector_sum(n_vec,:) = x_vector(n_vec,:);
-    else
-        x_vector_sum(n_vec,:) = x_vector_sum(n_vec-1,:) + x_vector(n_vec,:);
-    end
-end
-
-% Offdesign Vector
-off_D_vector = [c_W_SLW_off_D; c_W_HLW_off_D; c_w_int_fs_off_D; c_w_R_off_D; c_w_TW_off_D; c_w_trim_off_D; delta_c_w_H_off_D; c_w_p_off_D; c_w_ind_off_D; delta_c_WM_off_D];
-
-for n_vec_off_D = 1:numPlots
-    if n_vec_off_D == 1
-        x_vector_sum_off_D(n_vec_off_D,:) = off_D_vector(n_vec_off_D,:);
-    else
-        x_vector_sum_off_D(n_vec_off_D,:) = x_vector_sum_off_D(n_vec_off_D - 1,:) + off_D_vector(n_vec_off_D,:);
-    end
-end
+% % Vector mit zu plottenden Werten
+% 
+% x_vector = [c_W_SLW; c_W_HLW; c_w_int_fs; c_w_R; c_w_TW; c_w_trim; delta_c_w_H; c_w_p; c_w_ind; delta_c_WM];
+% 
+% for n_vec = 1:numPlots
+%     if n_vec == 1
+%         x_vector_sum(n_vec,:) = x_vector(n_vec,:);
+%     else
+%         x_vector_sum(n_vec,:) = x_vector_sum(n_vec-1,:) + x_vector(n_vec,:);
+%     end
+% end
+% 
+% % Offdesign Vector
+% off_D_vector = [c_W_SLW_off_D; c_W_HLW_off_D; c_w_int_fs_off_D; c_w_R_off_D; c_w_TW_off_D; c_w_trim_off_D; delta_c_w_H_off_D; c_w_p_off_D; c_w_ind_off_D; delta_c_WM_off_D];
+% 
+% for n_vec_off_D = 1:numPlots
+%     if n_vec_off_D == 1
+%         x_vector_sum_off_D(n_vec_off_D,:) = off_D_vector(n_vec_off_D,:);
+%     else
+%         x_vector_sum_off_D(n_vec_off_D,:) = x_vector_sum_off_D(n_vec_off_D - 1,:) + off_D_vector(n_vec_off_D,:);
+%     end
+% end
 
 
 % Plots erstellen

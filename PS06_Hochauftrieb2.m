@@ -62,8 +62,9 @@ CA_F_max_VFFK = CA_F_max + delta_CA_F_max_SF_phi + delta_CA_F_max_VF;
 % Neuer Auftriebsanstieg
 c = Ergebnisse_Fluegel.l_m; % Mittlere Flügeltiefe benutzen
 c_ = 2+Ergebnisse_Fluegel.l_m; % Quelle GPT und ACAMP
+test2=c_/c;
 
-CA_alpha_F_FK_phi = CA_alpha_lowspeed * (((c_/c)-1) * (F_klappen/Ergebnisse_Fluegel.F));
+CA_alpha_F_FK_phi = CA_alpha_lowspeed * (((c_/c)-1) * (F_klappen/Ergebnisse_Fluegel.F)+1);
 
 
 %delta_CA_F_SF_phi
@@ -75,10 +76,66 @@ delta_CA_F_SF_phi = (F_k / Ergebnisse_Fluegel.F) * cos(Ergebnisse_Fluegel.phi_25
 
 alpha_F_max_VFFK = (CA_F_max_VFFK/CA_alpha_F_FK_phi) + (((CA_F * (alpha_MAC_0_F + deg2rad(6)) + delta_CA_F_SF_phi))/CA_alpha_F_FK_phi) + deg2rad(6) + delta_alpha_CA_F_max;
 
+alpha_F_max_VFFK_deg = rad2deg(alpha_F_max_VFFK);
+
+alphas = -6:0.01:alpha_CA_F_MAX_deg; % normal Plotten bis alphamax - delta alpha
+CA_s = CA_alpha_F_FK_phi.*(deg2rad(alphas-alpha_0));
+plot(alphas,CA_s,'blue')
+hold on
+
+alphas = -6:0.01:alpha_F_max_VFFK_deg; % normal Plotten bis alphamax - delta alpha
+CA_s = CA_alpha_lowspeed.*(deg2rad(alphas-alpha_0)) + delta_CA_F_max_SF_phi;
+plot(alphas,CA_s,'green')
 
 
 %% TAKEOFF
 %Gleiche Formeln  
+
+% Kleine Formel CA_F_MAX -> AUS PS05
+CA_F_max; %-> Übernehmen
+
+% kleine Formel deltaCAFMAX,SF,phi
+delta_Ca_max_SF_phi_TO = 1.59;  % Ablesen aus Grafik bei Klappenausschlag ~45°
+%                                                                       in Rad oder Grad?
+delta_CA_F_max_SF_phi_TO = delta_Ca_max_SF_phi_TO * (F_klappen/Ergebnisse_Fluegel.F) * cos(Ergebnisse_Fluegel.phi_25_max)^2;
+    
+%Annahme eta_opt für slat = 55°
+% Vorflügel           % 0.93 = Faktor für Vorflügel/Slat        % Annahme
+% 74% des Flügels mit Slats belegt      Annahme Slats tiefe = 1m -> 1/l_m=6,57 = 0.152 
+delta_CA_F_max_VF_TO = 0.93 * 0.64 * 0.69 * 1.0 * (cos(Ergebnisse_Fluegel.phi_25_max)^2);
+%SLAT SETTINGS Gleich  bei Takeoff und Landing                %Rad oder Degree ? 
+
+
+% Damit kann kleine Formel 1 berechnet werden!
+
+CA_F_max_VFFK_TO = CA_F_max + delta_CA_F_max_SF_phi_TO + delta_CA_F_max_VF_TO;
+
+% Neuer Auftriebsanstieg
+c_TO = Ergebnisse_Fluegel.l_m; % Mittlere Flügeltiefe benutzen
+c__TO = 1+Ergebnisse_Fluegel.l_m; % Quelle GPT und ACAMP
+
+CA_alpha_F_FK_phi_TO = CA_alpha_lowspeed * (((c__TO/c_TO)-1) * (F_klappen/Ergebnisse_Fluegel.F));
+
+
+%delta_CA_F_SF_phi
+c_k_TO = c_TO - (Ergebnisse_Fluegel.l_m * 0.65);
+test = c_k_TO / c_TO; % -> Für Takeoff ist der Faktor = 1.35
+delta_CA_F_SF_phi_TO = (F_k / Ergebnisse_Fluegel.F) * cos(Ergebnisse_Fluegel.phi_25_max)^2 *  1.35;
+
+% Große Formel VFFK
+
+alpha_F_max_VFFK_TO = (CA_F_max_VFFK_TO/CA_alpha_F_FK_phi_TO) + (((CA_F * (alpha_MAC_0_F + deg2rad(6)) + delta_CA_F_SF_phi_TO))/CA_alpha_F_FK_phi_TO) + deg2rad(6) + delta_alpha_CA_F_max;
+
+
+alphas = -6:0.01:alpha_F_max_VFFK_TO; % normal Plotten bis alphamax - delta alpha
+CA_s = CA_alpha_lowspeed.*(deg2rad(alphas-alpha_0));
+plot(alphas,CA_s,'red')
+
+
+legend("Normal","LAnding","Takeoff")
+
+
+
 
 %% Momentenänderung - Trimmung noch möglich?
 

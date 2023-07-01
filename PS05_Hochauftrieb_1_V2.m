@@ -9,11 +9,12 @@ load Ergebnisse_Auftrieb_Momente.mat
 load Ergebnisse_Leitwerke.mat
 load Ergebnisse_Start_Landeanforderungen.mat
 load Zwischenergebnisse_PS5_Fluegelflaechen.mat
+load Ergebnisse_Widerstand_FE2.mat
 
 
 
 %%%%%%%%%%%%%%%%%%%%%% Platzhalter-> Hier richtige Werte einfügen   von    PS4
-CA_F_CR = 2.0;
+CA_F_CR = 0.5;
 CAalpha_F = Ergebnisse_Auftriebsverteilung.VWA.c_AF_anstieg;
 
 %%%%%%%%%%%%%%%%%%%%%%
@@ -23,11 +24,11 @@ CAalpha_F = Ergebnisse_Auftriebsverteilung.VWA.c_AF_anstieg;
 % CAalpha_F = Flügelauftriebsgradient im Reiseflug -> Diederich/weissinger
 
 alpha_MAC_F_CR_0 = CA_F_CR / CAalpha_F;
-
+alpha_MAC_F_CR_0_deg = rad2deg(alpha_MAC_F_CR_0);
 
 %% 2. Nullanstellwinkel Profil aus Katalog 
 % Aus Profilkatalog Alpha0 = -3° bei 0.83 Mach
-alpha0profil = -2.6;
+alpha0profil = -2.4;
 
 alpha_MAC_0_F = deg2rad(alpha0profil);
 alpha_MAC_0_F_deg = rad2deg(alpha_MAC_0_F);
@@ -81,17 +82,17 @@ F_H = HLW.F_aussen; % HLW Fläche % Richtig @Japser?
 
 F = Ergebnisse_Fluegel.F; % Flügelfläche
 
-CA = 1.5; % Auftrieb im Cruise 
+CA = 0.0; % Auftrieb im Cruise 
 
-CA_H = 0.3; % Aus Widerstand HLW CA
+CA_H = 0.2; % Aus Widerstand HLW CA
 
 
-CA_F_cruise = CA - CA_H * 0.85 * (F_H/F);      % CA Flügel alleine im Cruise
+%CA_F_cruise = CA - CA_H * 0.85 * (F_H/F);      % CA Flügel alleine im Cruise
 
 % Braucht CA Flügel bei CAgesamt = 0
 % Also Formel von oben mit CA= 0???????
 
-CA_F = - CA_H * 0.85 * (F_H/F);
+CA_F = CA - CA_H * 0.85 * (F_H/F);
 
 alpha_MAC_0 = alpha_MAC_0_F + (CA_F/CAalpha_F);
 
@@ -108,6 +109,7 @@ alpha_0_root_deg = rad2deg(alpha_0_root);
 
 alpha_0 = alpha_0_root - psi_root;
 alpha_0_deg = rad2deg(alpha_0);
+%alpha_0_deg = -2.3;
 
 
 %% Aufeglöste Polare ---->->--->->->-
@@ -119,7 +121,7 @@ phi_50_deg = rad2deg(phi_50);
 
 [~,a,~,~,~] = atmosisa(50);
 M = (landeanvorderung.v_50 * 1.3)/a;
-
+%M = 0.2;
 %CAalpha_F = Ergebnisse_Auftriebsverteilung.VWA.c_AF_anstieg;    %->Das
 %wäre für Cruise
 
@@ -128,9 +130,11 @@ M = (landeanvorderung.v_50 * 1.3)/a;
 % Alpha 0,F -> Oben bekannt aus Profilkatalog
 alpha_0;
 % CAAlpha bei MA 0.269 -> Berechnet
-CA_alpha_lowspeed =  (pi * streckung)/(1 + sqrt(1 + ((streckung/2)^2) * (tan(phi_50)^2 + (1 - M^2)))); %->muss kleiner sein als bei Highspeed
+CA_alpha_lowspeed =  (pi * Ergebnisse_Fluegel.streckung_phi25_max)/(1 + sqrt(1 + ((streckung/2)^2) * (tan(Ergebnisse_Fluegel.phi_50)^2 + (1 - M^2)))); %->muss kleiner sein als bei Highspeed
+%CA_alpha_lowspeed = 2.1;
 % Alpha CA F Max -> Ablesen
 delta_alpha_CA_F_max = deg2rad(3.6);
+delta_alpha_CA_F_max_deg = 3.6;
 %CA F Max
 
 CA22DMax = 1.4;
@@ -138,13 +142,12 @@ CA22DMax = 1.4;
 for i = 1: length(Ergebnisse_Fluegel.Fluegeltiefen_eta)
     CA_F_max_temp(i) = (CA22DMax * (Ergebnisse_Fluegel.Fluegeltiefen_eta(i)/Ergebnisse_Fluegel.l_m) - Ergebnisse_Auftriebsverteilung.gamma_b_eta(i)) / Ergebnisse_Auftriebsverteilung.gamma_a_eta(i);
 end
-[~,u] = min(CA_F_max_temp);
+[mac_hat_2h_lang_diesen_fehler_gesucht,~] = min(CA_F_max_temp);
 
-CA_F_max = Ergebnisse_Auftriebsverteilung.c_a_eta(u);
+CA_F_max = mac_hat_2h_lang_diesen_fehler_gesucht;
 
 
 %%%% Alles aufsummieren für Alpha_CA_F_Max
-
 
 alpha_CA_F_MAX = (CA_F_max/CA_alpha_lowspeed) + delta_alpha_CA_F_max + alpha_MAC_0_F;
 
@@ -155,19 +158,24 @@ alpha_CA_F_MAX_deg = rad2deg(alpha_CA_F_MAX);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Plotten
 
-alphas = -6:0.01:alpha_CA_F_MAX_deg; % normal Plotten bis alphamax - delta alpha
-CA_s = CA_alpha_lowspeed.*(deg2rad(alphas-alpha_0));
+alphas = -6:0.001:alpha_CA_F_MAX_deg-delta_alpha_CA_F_max_deg; % normal Plotten bis alphamax - delta alpha
+for i=1:length(alphas)
+CA_s(i) = CA_alpha_lowspeed*(deg2rad(alphas(i)-alpha_MAC_0_deg));%*0.8309;
+end
+
 plot(alphas,CA_s)
 
-% Noch den CA Abfall plotten !
+
+%P = polyfit(alphas,CA_s,1)
+
 hold on
-title("Aufgelöste Flügelpolare ohne Hochauftriebshilfen")
-ylabel("Auftriebsbeiwert CA")
-xlabel("Anstellwinkel Alpha")
+title("Aufgelöste Flügelpolare ohne Hochauftriebshilfen","FontSize",15)
+ylabel("Auftriebsbeiwert des Flügels C_{A} in [-]","FontWeight","bold")
+xlabel("Anstellwinkel \alpha_{F} in °","FontWeight","bold")
 P1 = [0 0];
 P2 = [-1 2];
 plot(P1,P2,'black')
-P3 = [-6 10];
+P3 = [-10 20];
 P4 = [0 0];
 plot(P3,P4,'black')
 
@@ -176,16 +184,17 @@ plot(P3,P4,'black')
 plot(alpha_CA_F_MAX_deg, 0, 'xred')
 
 %CA MAX
-plot(0,CA_F_max, 'xred')
+plot([0 20],[CA_F_max CA_F_max], 'red')
+plot(0, CA_F_max,"xred")
 
 %Alpha 0
-plot(alpha_0, 0,'xred')
+plot(alpha_MAC_0_F_deg, 0,'xred')
 
-plot([alpha_CA_F_MAX_deg , alpha_CA_F_MAX_deg-delta_alpha_CA_F_max],[CA_F_max CA_F_max],'xgreen')
+plot([alpha_CA_F_MAX_deg  alpha_CA_F_MAX_deg-delta_alpha_CA_F_max_deg],[CA_F_max CA_F_max],'xgreen')
 
 grid on
 
-save Ergebnisse_Hochauftrieb_1.mat psiRootDeg psi_sym_inst_deg alpha_CA_F_MAX_deg CA_F_max CA_alpha_lowspeed delta_alpha_CA_F_max alpha_MAC_0_F_deg CA_F alpha_MAC_0_F;
+save Ergebnisse_Hochauftrieb_1.mat psiRootDeg psi_sym_inst_deg alpha_CA_F_MAX_deg CA_F_max CA_alpha_lowspeed delta_alpha_CA_F_max alpha_MAC_0_F_deg CA_F alpha_MAC_0_F CA_alpha_lowspeed CA_s alphas alpha_0;
 
 
 

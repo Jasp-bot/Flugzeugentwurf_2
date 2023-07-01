@@ -135,7 +135,7 @@ c_A_F_off_D = ((2)/(Annahmen.kappa * ISA.p(Annahmen.hoehe_CR) * Annahmen.Ma_off_
 v_air_off_D = Annahmen.Ma_off_D(1,n_iteration) * ISA.a(Annahmen.hoehe_CR);
 
 
-c_A_F_off_D_vec = zeros(1,stuetzstellen);
+
 c_A_F_off_D_vec(1,n_iteration) = c_A_F_off_D;
 
 %% Profilwiderstand des Fluegels
@@ -174,9 +174,9 @@ c_A_F_off_D_vec(1,n_iteration) = c_A_F_off_D;
 % % % schnelltest plot
 % % plot(c_w_p)
 
-c_w_p = zeros(1,stuetzstellen);
+
 c_w_p(1,n_iteration) = Profilwiderstand(Annahmen.v_air);
-c_w_p_off_D = zeros(1,stuetzstellen);
+
 c_w_p_off_D(1,n_iteration) = Profilwiderstand(v_air_off_D);
 
 %% Induzierter Widerstand des Fluegels
@@ -220,9 +220,9 @@ c_w_ind_off_D(1,n_iteration) = Induzierter_W(c_A_F_off_D);
 % 
 % % PS4 S.4 Formel 16
 % delta_c_WM = 0.002 * exp(60 * delta_Ma);
-delta_c_WM = zeros(1,stuetzstellen);
+
 [delta_c_WM(1,n_iteration), delta_Ma(1,n_iteration)] = Transsonischer_W(Annahmen.Ma_unendlich,c_A_F);
-delta_c_WM_off_D = zeros(1,stuetzstellen);
+
 [delta_c_WM_off_D(1,n_iteration), delta_Ma_off_D(1,n_iteration)] = Transsonischer_W(Annahmen.Ma_off_D(1,n_iteration), c_A_F_off_D);
 
 

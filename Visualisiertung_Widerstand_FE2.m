@@ -2,6 +2,7 @@ clc
 clear all
 close all
 
+load Ergebnisse_stat_Flaechenbelastung_Fluegelflaeche.mat
 load Ergebnisse_Start_Landeanforderungen.mat;
 load Ergebnisse_Widerstand_FE2.mat; 
 
@@ -121,17 +122,26 @@ end
 
 % Plots erstellen
 
-atoplots = cell(numPlots, 1);
+atoplots = cell(numPlots+1, 1);
 
 for n_plot = 1:numPlots
    autoplot(n_plot,1) = plot((x_vector_sum(n_plot,:)), n_iteration_vec, 'Color', colors(n_plot, :), 'LineStyle', lineStyles{1,n_plot});
 end
-autplot(numPlots+1,1)= plot(x_vector_sum_off_D(numPlots,:),c_A_F_off_D_vec,'red');
+autoplot(numPlots+1,1)= plot(x_vector_sum_off_D(numPlots,:),c_A_F_off_D_vec,'red');
+
+% Schnittpunkt Design / Off_design
+schnittpunkt_des_off_D=InterX([x_vector_sum_off_D(numPlots,:); c_A_F_off_D_vec], [(x_vector_sum(numPlots,:)); n_iteration_vec]);
+plot(schnittpunkt_des_off_D(1,1), schnittpunkt_des_off_D(2,1), '*b');
+
+
+% Schnittpunkt Offdesign c_A_CR
+schnittpunkt_off_D_c_A_CR = InterX([x_vector_sum_off_D(numPlots,:); c_A_F_off_D_vec], [[0, 1]; [Ergebnisse_stat_Flaechenbelastung.C_A_CR, Ergebnisse_stat_Flaechenbelastung.C_A_CR]]);
+plot(schnittpunkt_off_D_c_A_CR(1,1), schnittpunkt_off_D_c_A_CR(2,1), '*g');
 
 
 % schoen machen des Plots 
 
-legend(autoplot([1:10]),{'+ SLW', '+ HLW', '+ Interferenz', '+ Rumpf', '+ Triebwerk', '+ Trimmung', '+ Abwind', '+ Profil', '+ ind. Widerstand', '+ Wellenwiderstand'},...
+legend(autoplot([1:11]),{'+ SLW', '+ HLW', '+ Interferenz', '+ Rumpf', '+ Triebwerk', '+ Trimmung', '+ Abwind', '+ Profil', '+ ind. Widerstand', '+ Wellenwiderstand', '+ Off-Design'},...
     'Location','southeast','FontSize',18);
 title('Kumulative Widerstandspolare')
 xlabel('c_W');
@@ -141,6 +151,5 @@ hold off;
 
 
 
-intersections_1 = InterX([startschub.s1; startschub.S0_GTo_To(1,:)],[startschub.s1; startschub.S0_GTo_CL(3,:)]);
 
-schnittpunkte=InterX([x_vector_sum_off_D(numPlots,:); c_A_F_off_D_vec], [(x_vector_sum(numPlots,:)); n_iteration_vec]);
+

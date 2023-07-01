@@ -97,7 +97,8 @@ Annahmen.l_int_PYL = Ergebnisse_Fluegel.Fluegeltiefen_eta(1,0.3*10^3)*0.65;
 Annahmen.n_int_PYL = 4;
 
 % Off design
-Annahmen.Ma_off_D = linspace(0.1, 1, 100);
+stuetzstellen = 30;
+Annahmen.Ma_off_D = linspace(0.1, 1, stuetzstellen);
 Annahmen.kappa = 1.4;
 
 
@@ -123,11 +124,12 @@ FUN.tau_fun = @(Streckung, lambda) 1 - Streckung * (0.002 + 0.0084 * (lambda - 0
 
 save Getroffene_Annahmen_und_FUN.mat Annahmen FUN
 
-stuetzstellen = 100;
+
+c_A_F_testvec = linspace(0, 1, stuetzstellen);
 
 for n_iteration = 1:stuetzstellen
 
-c_A_F = n_iteration * 10^(-2);
+c_A_F = c_A_F_testvec(1,n_iteration);   % n_iteration * 10^(-2);
     
 c_A_F_off_D = ((2)/(Annahmen.kappa * ISA.p(Annahmen.hoehe_CR) * Annahmen.Ma_off_D(1,n_iteration))) * Ergebnisse_stat_Flaechenbelastung.Fleachenbelastung; 
 v_air_off_D = Annahmen.Ma_off_D(1,n_iteration) * ISA.a(Annahmen.hoehe_CR);
@@ -451,12 +453,12 @@ c_w_int_fs_off_D(1,n_iteration) = Interferenz_W(v_air_off_D);
 
 
 
-n_iteration_vec(1,n_iteration) = n_iteration * 10^(-2);
+
 
 end
 
 %% Ergebnisse Speichern
-
+n_iteration_vec = linspace(0, 1, stuetzstellen); %n_iteration * 10^(-2);
 
 % Vector mit zu plottenden Werten
 
@@ -520,6 +522,8 @@ Ergebnisse_Widerstand_FE2.x_vector_sum = x_vector_sum;
 Ergebnisse_Widerstand_FE2.x_vector_sum_off_D = x_vector_sum_off_D;
 Ergebnisse_Widerstand_FE2.c_W_ges = x_vector_sum(10,:);
 Ergebnisse_Widerstand_FE2.c_W_ges_off_D = x_vector_sum_off_D(10,:);
+Ergebnisse_Widerstand_FE2.c_W_ges_inkomp = x_vector_sum(9,:);
+Ergebnisse_Widerstand_FE2.c_W_ges_off_D_inkomp = x_vector_sum_off_D(9,:);
 Ergebnisse_Widerstand_FE2.delta_Ma = delta_Ma;
 Ergebnisse_Widerstand_FE2.delta_Ma_off_D = delta_Ma_off_D;
 

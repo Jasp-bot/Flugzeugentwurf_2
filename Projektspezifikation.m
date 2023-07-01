@@ -58,7 +58,9 @@ specs.ln_TW=6.4;
 specs.lh_TW=2.1;
 specs.Dn_TW=3.9;
 specs.Dh_TW=3.17;
-specs.l_TW=8.4;    %Muss verändert werden falls der rest sich ändert
+specs.l_TW=8.4;    % Muss verändert werden falls der rest sich ändert
+
+specs.Drosselgrad=[1, 0.9, 0.8];  %Drosselgrad (0.9 für steigflug und 0.8 für cruise)
 
 % Landespezifikationen
 

@@ -123,16 +123,18 @@ FUN.tau_fun = @(Streckung, lambda) 1 - Streckung * (0.002 + 0.0084 * (lambda - 0
 
 save Getroffene_Annahmen_und_FUN.mat Annahmen FUN
 
-for n_iteration = 1:100 
+stuetzstellen = 100;
 
-    c_A_F = n_iteration * 10^(-2);
+for n_iteration = 1:stuetzstellen
+
+c_A_F = n_iteration * 10^(-2);
     
+c_A_F_off_D = ((2)/(Annahmen.kappa * ISA.p(Annahmen.hoehe_CR) * Annahmen.Ma_off_D(1,n_iteration))) * Ergebnisse_stat_Flaechenbelastung.Fleachenbelastung; 
+v_air_off_D = Annahmen.Ma_off_D(1,n_iteration) * ISA.a(Annahmen.hoehe_CR);
 
-    c_A_F_off_D = ((2)/(Annahmen.kappa * ISA.p(Annahmen.hoehe_CR) * Annahmen.Ma_off_D(1,n_iteration))) * Ergebnisse_stat_Flaechenbelastung.Fleachenbelastung; 
-    v_air_off_D = Annahmen.Ma_off_D(1,n_iteration) * ISA.a(Annahmen.hoehe_CR);
 
-    c_A_F_off_D_vec(1,n_iteration) = c_A_F_off_D;
-
+c_A_F_off_D_vec = zeros(1,stuetzstellen);
+c_A_F_off_D_vec(1,n_iteration) = c_A_F_off_D;
 
 %% Profilwiderstand des Fluegels
 
@@ -170,7 +172,9 @@ for n_iteration = 1:100
 % % % schnelltest plot
 % % plot(c_w_p)
 
+c_w_p = zeros(1,stuetzstellen);
 c_w_p(1,n_iteration) = Profilwiderstand(Annahmen.v_air);
+c_w_p_off_D = zeros(1,stuetzstellen);
 c_w_p_off_D(1,n_iteration) = Profilwiderstand(v_air_off_D);
 
 %% Induzierter Widerstand des Fluegels
@@ -214,14 +218,17 @@ c_w_ind_off_D(1,n_iteration) = Induzierter_W(c_A_F_off_D);
 % 
 % % PS4 S.4 Formel 16
 % delta_c_WM = 0.002 * exp(60 * delta_Ma);
-
-delta_c_WM(1,n_iteration) = Transsonischer_W(Annahmen.Ma_unendlich,c_A_F);
-delta_c_WM_off_D(1,n_iteration) = Transsonischer_W(Annahmen.Ma_off_D(1,n_iteration), c_A_F_off_D);
+delta_c_WM = zeros(1,stuetzstellen);
+[delta_c_WM(1,n_iteration), delta_Ma(1,n_iteration)] = Transsonischer_W(Annahmen.Ma_unendlich,c_A_F);
+delta_c_WM_off_D = zeros(1,stuetzstellen);
+[delta_c_WM_off_D(1,n_iteration), delta_Ma_off_D(1,n_iteration)] = Transsonischer_W(Annahmen.Ma_off_D(1,n_iteration), c_A_F_off_D);
 
 
 % ------------------------------------------------------------------------
 %% Rumpfwiderstand
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 if Annahmen.zaehlvariabele_itt <= 1
     c_A_ges(1, n_iteration) = 0.522;
     c_A_ges_off_D(1, n_iteration) = 0.522;
@@ -232,6 +239,8 @@ elseif  Annahmen.zaehlvariabele_itt > 1
     c_A_ges_off_D(1, n_iteration) = c_A_ges_off_D(1, n_iteration - 1);
     c_A_ges_off_D(1,1) = c_A_ges_off_D(1, n_iteration);
 end   
+
+
 % PS4 S.6 Formel 25 Abwindfaktor = delta_alpha_w/delta_alpha_oH 
 Abwindfaktor = 1.75 * ((Annahmen.c_A_alpha_F)/(pi * Ergebnisse_Fluegel.streckung_phi25_max *...
     (Ergebnisse_Fluegel.lambda * (HLW.r/(Ergebnisse_Fluegel.b/2))^0.25 *...
@@ -446,8 +455,75 @@ n_iteration_vec(1,n_iteration) = n_iteration * 10^(-2);
 
 end
 
-save Ergebnisse_Widerstand_FE2.mat 
+%% Ergebnisse Speichern
 
+
+% Vector mit zu plottenden Werten
+
+x_vector = [c_W_SLW; c_W_HLW; c_w_int_fs; c_w_R; c_w_TW; c_w_trim; delta_c_w_H; c_w_p; c_w_ind; delta_c_WM];
+
+for n_vec = 1:10
+    if n_vec == 1
+        x_vector_sum(n_vec,:) = x_vector(n_vec,:);
+    else
+        x_vector_sum(n_vec,:) = x_vector_sum(n_vec-1,:) + x_vector(n_vec,:);
+    end
+end
+
+
+
+% Offdesign Vector
+off_D_vector = [c_W_SLW_off_D; c_W_HLW_off_D; c_w_int_fs_off_D; c_w_R_off_D; c_w_TW_off_D; c_w_trim_off_D; delta_c_w_H_off_D; c_w_p_off_D; c_w_ind_off_D; delta_c_WM_off_D];
+
+for n_vec_off_D = 1:10
+    if n_vec_off_D == 1
+        x_vector_sum_off_D(n_vec_off_D,:) = off_D_vector(n_vec_off_D,:);
+    else
+        x_vector_sum_off_D(n_vec_off_D,:) = x_vector_sum_off_D(n_vec_off_D - 1,:) + off_D_vector(n_vec_off_D,:);
+    end
+end
+
+
+Ergebnisse_Widerstand_FE2.c_A_F_off_D_vec = c_A_F_off_D_vec;
+Ergebnisse_Widerstand_FE2.c_A_ges = c_A_ges;
+Ergebnisse_Widerstand_FE2.c_A_ges_off_D = c_A_ges_off_D;
+Ergebnisse_Widerstand_FE2.c_A_H = c_A_H;
+Ergebnisse_Widerstand_FE2.c_A_H_off_D = c_A_H_off_D;
+Ergebnisse_Widerstand_FE2.c_W_HLW = c_W_HLW;
+Ergebnisse_Widerstand_FE2.c_W_HLW_off_D = c_W_HLW_off_D;
+Ergebnisse_Widerstand_FE2.c_W_SLW = c_W_SLW;
+Ergebnisse_Widerstand_FE2.c_W_SLW_off_D = c_W_SLW_off_D;
+Ergebnisse_Widerstand_FE2.c_w_ind  = c_w_ind;
+Ergebnisse_Widerstand_FE2.c_w_ind_off_D = c_w_ind_off_D;
+Ergebnisse_Widerstand_FE2.c_w_int_fs =  c_w_int_fs;
+Ergebnisse_Widerstand_FE2.c_w_int_fs_off_D =  c_w_int_fs_off_D;
+Ergebnisse_Widerstand_FE2.c_w_p =  c_w_p;
+Ergebnisse_Widerstand_FE2.c_w_p_off_D =  c_w_p_off_D;
+Ergebnisse_Widerstand_FE2.c_w_R =  c_w_R;
+Ergebnisse_Widerstand_FE2.c_w_R_off_D =  c_w_R_off_D;
+Ergebnisse_Widerstand_FE2.c_w_trim =  c_w_trim;
+Ergebnisse_Widerstand_FE2.c_w_trim_off_D = c_w_trim_off_D ;
+Ergebnisse_Widerstand_FE2.c_w_TW =  c_w_TW;
+Ergebnisse_Widerstand_FE2.c_w_TW_off_D =  c_w_TW_off_D;
+Ergebnisse_Widerstand_FE2.delta_c_w_H =  delta_c_w_H;
+Ergebnisse_Widerstand_FE2.delta_c_w_H_off_D =  delta_c_w_H_off_D;
+Ergebnisse_Widerstand_FE2.delta_c_WM =  delta_c_WM;
+Ergebnisse_Widerstand_FE2.delta_c_WM_off_D = delta_c_WM_off_D ;
+Ergebnisse_Widerstand_FE2.n_iteration_vec =  n_iteration_vec;
+Ergebnisse_Widerstand_FE2.alpha_Rumpf_grad =  alpha_Rumpf_grad;
+Ergebnisse_Widerstand_FE2.alpha_Rumpf_grad_off_D =  alpha_Rumpf_grad_off_D;
+Ergebnisse_Widerstand_FE2.Annahmen = Annahmen;
+Ergebnisse_Widerstand_FE2.FUN = FUN;
+Ergebnisse_Widerstand_FE2.x_vector = x_vector;
+Ergebnisse_Widerstand_FE2.off_D_vector = off_D_vector;
+Ergebnisse_Widerstand_FE2.x_vector_sum = x_vector_sum;
+Ergebnisse_Widerstand_FE2.x_vector_sum_off_D = x_vector_sum_off_D;
+Ergebnisse_Widerstand_FE2.c_W_ges = x_vector_sum(10,:);
+Ergebnisse_Widerstand_FE2.c_W_ges_off_D = x_vector_sum_off_D(10,:);
+Ergebnisse_Widerstand_FE2.delta_Ma = delta_Ma;
+Ergebnisse_Widerstand_FE2.delta_Ma_off_D = delta_Ma_off_D;
+
+save Ergebnisse_Widerstand_FE2.mat Ergebnisse_Widerstand_FE2;
 
 
 % %% Plot design
@@ -585,13 +661,9 @@ save Ergebnisse_Widerstand_FE2.mat
 % hold off;
 
 
-
-
 %--------------------------------------------------------------------------
 %% Funktionen zur Berechnung der einzelnen Widerstandsteile
 %--------------------------------------------------------------------------
-
-
 
 %% Funktion Profilwiderstand
 function [c_w_p] = Profilwiderstand(v_gegeben)
@@ -629,7 +701,6 @@ c_w_p = trapz(c_w_p_eta .*  (Ergebnisse_Fluegel.Fluegeltiefen_eta_oR) ./ (Ergebn
 
 end
 
-
 %% Funktion Induzierter Widerstand
 
 function [c_w_ind] = Induzierter_W(c_A_F)
@@ -664,11 +735,9 @@ c_w_ind = c2 .* (c_A_F.^2)./(pi * Ergebnisse_Fluegel.streckung_phi25_max) +...
 
 end
 
-
-
 %% Funktion Wellenwiderstand
 
-function [delta_c_WM] = Transsonischer_W(Ma_unendlich, c_A_F)
+function [delta_c_WM, delta_Ma] = Transsonischer_W(Ma_unendlich, c_A_F)
 
 load Ergebnisse_Fluegel_Tank_NP.mat;
 
@@ -751,7 +820,6 @@ c_w_R = c_w_R_zu_c_w_Rmin .* c_w_Ru_min;
 
 end
 
-
 %% Funktion Triebwerkswiderstand
 
 function [c_w_TW] = Triebwerkswiderstand(v_air, alpha_Rumpf_grad)
@@ -781,7 +849,6 @@ c_w_TW = c_w_TW_zu_c_w_TWmin .* c_w_TW_min;
 end
 
 %% Funktion Leitwerkswiderstand
-
 
 function  [c_w_HLW_min, c_w_SLW_min] = Leitwerke_W(v_air)
 
@@ -826,9 +893,7 @@ c_w_SLW_min = 2 .* c_f_SLW .* (1+ k_SLW .* cos(SLW.phi_50).^2) .* ((SLW.F)/(Erge
 
 end
 
-
 %% Funktion Trimwiderstand Leitwerke
-
 
 function [c_A_H, c_A_ges, c_w_trim] = Leitwerke_Trim_W(c_A_F)
 
@@ -867,7 +932,6 @@ c_w_trim = ((c_A_H.^2) ./ (pi * HLW.streckung_phi25)) .* ...
 
 end
 
-
 %% Funktion Zusatzwiderstand
 
 function [delta_c_w_H] = Zusatz_W(c_A_F, Abwindfaktor, c_A_H)
@@ -889,7 +953,6 @@ delta_c_w_H = c_A_H .* sin(d_alpha_w) .*...
     Annahmen.qH_q .* ((HLW.F)./(Ergebnisse_Fluegel.F));
 
 end
-
 
 %% Funktion Interferenzwiderstand
 

@@ -50,7 +50,7 @@ specs.flight_level = 340;
 
 specs.bypass = 10;                                  % Bypassverhaeltnis 
 specs.n_TW = 2;      % Anzahl Triebwerke
-specs.m_TW = 7549;   % Quelle: https://www.easa.europa.eu/sites/default/files/dfu/EASA%20E111%20TCDS%20issue%2012_Trent%20XWB.pdf
+m_TW = 7549;   % Quelle: https://www.easa.europa.eu/sites/default/files/dfu/EASA%20E111%20TCDS%20issue%2012_Trent%20XWB.pdf
 specs.m_TW = m_TW * 0.10 + m_TW; % Masse eines TW in kg bsp terd XWB
 
 % Masze Triebwerk (in meter)
@@ -58,9 +58,9 @@ specs.ln_TW=6.4;
 specs.lh_TW=2.1;
 specs.Dn_TW=3.9;
 specs.Dh_TW=3.17;
-specs.l_TW=8.4;    %Muss verändert werden falls der rest sich ändert
+specs.l_TW=8.4;    % Muss verändert werden falls der rest sich ändert
 
-specs.Drosselgrad=[1,0.9,0.8];  %Drosselgrad (0.9 für steigflug und 0.8 für cruise)
+specs.Drosselgrad=[1, 0.9, 0.8];  %Drosselgrad (0.9 für steigflug und 0.8 für cruise)
 
 % Landespezifikationen
 

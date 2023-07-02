@@ -137,3 +137,25 @@ Wing_MAC.XMAC = CG_Rumpf_X + Wing_MAC.xSP_MAC_FG*(CG_Wing_M/CG_M) - Wing_MAC.xSP
 Rumpf_MAC.xSP_MAC_RG = -Wing_MAC.XMAC + CG_Rumpf_X;
 
 CG_Gesamt_x = (Rumpf_MAC.xSP_MAC_RG*CG_M + Wing_MAC.xSP_MAC_FG*CG_Wing_M)/(CG_M + CG_Wing_M);
+
+%% Bestimmung Schwerpunkt Tank
+
+% Irgendwie stimmt der Tankplot aus FE1 nicht
+
+%% Bestimmung Schwerpunkt Frachträume
+
+% CAD???
+
+%% Beladung
+
+figure(1)
+hold on 
+grid on
+xlim([0 60])
+ylim([Ergebnisse_Massen_FE2.M_OE Ergebnisse_Massen_FE2.M_TO+10000])
+
+plot(40, 160000,'b-')
+
+title('Beladung 3-Klassenbestuhlung','FontSize',20);
+xlabel('X^{MAC}_{SP}/l_{\mu}','FontSize',16)
+ylabel('kg','FontSize',16)

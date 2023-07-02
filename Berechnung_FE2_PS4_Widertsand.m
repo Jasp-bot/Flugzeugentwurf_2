@@ -175,9 +175,9 @@ c_A_F_off_D_vec(1,n_iteration) = c_A_F_off_D;
 % % plot(c_w_p)
 
 
-c_w_p(1,n_iteration) = Profilwiderstand(Annahmen.v_air);
+[c_w_p(1,n_iteration), c_w_p_min_Re(n_iteration,:)] = Profilwiderstand(Annahmen.v_air);
 
-c_w_p_off_D(1,n_iteration) = Profilwiderstand(v_air_off_D);
+[c_w_p_off_D(1,n_iteration), c_w_p_min_Re_off_D(n_iteration,:)] = Profilwiderstand(v_air_off_D);
 
 %% Induzierter Widerstand des Fluegels
 
@@ -457,6 +457,8 @@ c_w_int_fs_off_D(1,n_iteration) = Interferenz_W(v_air_off_D);
 
 end
 
+
+
 %% Ergebnisse Speichern
 n_iteration_vec = linspace(0, 1, stuetzstellen); %n_iteration * 10^(-2);
 
@@ -526,66 +528,68 @@ Ergebnisse_Widerstand_FE2.c_W_ges_inkomp = x_vector_sum(9,:);
 Ergebnisse_Widerstand_FE2.c_W_ges_off_D_inkomp = x_vector_sum_off_D(9,:);
 Ergebnisse_Widerstand_FE2.delta_Ma = delta_Ma;
 Ergebnisse_Widerstand_FE2.delta_Ma_off_D = delta_Ma_off_D;
+Ergebnisse_Widerstand_FE2.c_w_p_min_Re = c_w_p_min_Re; % Matrix mit x=Anz Stützstellen y=Anz Re zahlen über den umspühlten Flügel ohne Rumpf  
+Ergebnisse_Widerstand_FE2.c_w_p_min_Re_off_D = c_w_p_min_Re_off_D; % Matrix mit x=Anz Stützstellen y=Anz Re zahlen über den umspühlten Flügel ohne Rumpf  
 
 save Ergebnisse_Widerstand_FE2.mat Ergebnisse_Widerstand_FE2;
 
 
-% %% Plot design
+%% Plot design
+
+% figure(1)
+% hold on
+% grid on
+% xlim([0, 0.05])
+% ylim([0, 1])
 % 
-% % figure(1)
-% % hold on
-% % grid on
-% % xlim([0, 0.05])
-% % ylim([0, 1])
-% % 
-% % 
-% % 
-% % % plot Leitwerke SLW und HLW
-% % 
-% % p(1) = plot(c_W_SLW, n_iteration_vec, '.-b');   % SLW
-% % 
-% % p(2) = plot(c_W_HLW, n_iteration_vec, '.-c');   % HLW
-% % 
-% % % Interferenzwiderstand
-% % 
-% % p(3) =  plot(c_w_int_fs, n_iteration_vec, '.green');
-% % 
-% % % Plot Rumpfwiderstand
-% % p(4) = plot(c_w_R, n_iteration_vec, '-k');
-% % 
-% % 
-% % % Plot Widerstand Triebwerk
-% % p(5) = plot(c_w_TW,n_iteration_vec, '-m');
-% % 
-% % 
-% % % Plot Trimwiderstand HLW
-% % 
-% % p(6) = plot(c_w_trim, n_iteration_vec,'-blue');
-% % 
-% % % Abwindwiderstand
-% % p(7) = plot(delta_c_w_H, n_iteration_vec, 'c');
-% % 
-% % % Plot Profilwiderstand 
-% % 
-% % p(8) = plot(c_w_p, n_iteration_vec, '-.k');
-% % 
-% % % plot Induzierter Widerstand
-% % p(9) = plot(c_w_ind, n_iteration_vec, '-red');
-% % 
-% % % Plot Transsonischer Widersatnd
-% % p(10) = plot(delta_c_WM, n_iteration_vec, '-green');
-% %  
-% % 
-% % % Testplot Widerstände aufaddiert
-% % widerstaende_aufaddiert = c_w_ind + delta_c_WM + c_w_R + c_w_TW + c_w_trim + c_w_int_fs + delta_c_w_H + c_W_HLW + c_W_SLW;
-% % plot(widerstaende_aufaddiert, n_iteration_vec, '*r')
-% % 
-% % 
-% % legend(p([1:10]),{'+ SLW', '+ HLW', '+ Interferenz', '+ Rumpf', '+ Triebwerk', '+ Trimmung', '+ Abwind', '+ Profil', '+ ind. Widerstand', '+ Wellenwiderstand'},'Location','southeast','FontSize',18);
-% % title('Kumulative Widerstandspolare')
-% % xlabel('c_{W}');
-% % ylabel('c_A');
 % 
+% 
+% % plot Leitwerke SLW und HLW
+% 
+% p(1) = plot(c_W_SLW, n_iteration_vec, '.-b');   % SLW
+% 
+% p(2) = plot(c_W_HLW, n_iteration_vec, '.-c');   % HLW
+% 
+% % Interferenzwiderstand
+% 
+% p(3) =  plot(c_w_int_fs, n_iteration_vec, '.green');
+% 
+% % Plot Rumpfwiderstand
+% p(4) = plot(c_w_R, n_iteration_vec, '-k');
+% 
+% 
+% % Plot Widerstand Triebwerk
+% p(5) = plot(c_w_TW,n_iteration_vec, '-m');
+% 
+% 
+% % Plot Trimwiderstand HLW
+% 
+% p(6) = plot(c_w_trim, n_iteration_vec,'-blue');
+% 
+% % Abwindwiderstand
+% p(7) = plot(delta_c_w_H, n_iteration_vec, 'c');
+% 
+% % Plot Profilwiderstand 
+% 
+% p(8) = plot(c_w_p, n_iteration_vec, '-.k');
+% 
+% % plot Induzierter Widerstand
+% p(9) = plot(c_w_ind, n_iteration_vec, '-red');
+% 
+% % Plot Transsonischer Widersatnd
+% p(10) = plot(delta_c_WM, n_iteration_vec, '-green');
+%  
+% 
+% % Testplot Widerstände aufaddiert
+% widerstaende_aufaddiert = c_w_ind + delta_c_WM + c_w_R + c_w_TW + c_w_trim + c_w_int_fs + delta_c_w_H + c_W_HLW + c_W_SLW;
+% plot(widerstaende_aufaddiert, n_iteration_vec, '*r')
+% 
+% 
+% legend(p([1:10]),{'+ SLW', '+ HLW', '+ Interferenz', '+ Rumpf', '+ Triebwerk', '+ Trimmung', '+ Abwind', '+ Profil', '+ ind. Widerstand', '+ Wellenwiderstand'},'Location','southeast','FontSize',18);
+% title('Kumulative Widerstandspolare')
+% xlabel('c_{W}');
+% ylabel('c_A');
+
 % 
 % % atomatisches Plotten
 % figure(2)
@@ -670,7 +674,7 @@ save Ergebnisse_Widerstand_FE2.mat Ergebnisse_Widerstand_FE2;
 %--------------------------------------------------------------------------
 
 %% Funktion Profilwiderstand
-function [c_w_p] = Profilwiderstand(v_gegeben)
+function [c_w_p, c_w_p_min_Re] = Profilwiderstand(v_gegeben)
 
 load Projekt_specs.mat;
 load Ergebnisse_ISA_DATA.mat;

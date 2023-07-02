@@ -177,11 +177,12 @@ r_h = 10;
 l_mue = Ergebnisse_Fluegel.l_mue;
 deltaXSP = 3;
 
-% Formel 4
+% Formel 4      -> Muss hier für TO und LDG berechnet werden und bei 7u.8
+% eingesetzt werden
 CA_MAX = ( CA_F_max + ( (CM0 + deltaCM_HKK)/( r_h/l_mue ) ) ) / (1 - ( deltaXSP/l_mue )/( r_h/l_mue ));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Aus Formel.m
-lambda       = 0.26;   %Zuspitzung des Flügels [-]
+lambda       = 0.26;   %Zuspitzung des Flügels [-]      %% JASPER HILFE WELCHE WERTE RICHTIG?
 bf_s         = 0.7;    %prozentuale Spannweite der Hinterkantenklappen
 %nach Skript Teil D Seite 114
 dcMk_dcmK  = ( 3.739701 * lambda^4 - 10.762986 * lambda^3 + 12.791164 * lambda^2 - 8.860305 * lambda + 4.093244) * bf_s + ...
@@ -196,7 +197,7 @@ dcMk_dcAK =  (-0.254693 * lambda^3 + 0.343337 * lambda^2 - 0.172780 * lambda + 0
 
 %Formel 7 + 8 
 
-CA_REF_TO = CA_F_max_VFFK_TO/(1.2^2);
+CA_REF_TO = CA_F_max_VFFK_TO/(1.2^2);       % Etwas zu klein
 CA_REF_LDG = CA_F_max_VFFK / (1.3^2);
 
 %Formel 10
@@ -236,45 +237,45 @@ delta_CM_HKK_TO = dcMk_dcmK * delta_Cm_HKK_TO*(CA_REF_TO) + 0.7 * ((Ergebnisse_F
 
 %% Widerstandszuwachs durch Klappen
 
-C_w_F = C_W_oK + delta_C_W_K
-
-delta_C_W_K = delta_C_W_P + delta_C_W_ind + delta_C_W_int;
-delta_C_W_Fahrwerk + delta_C_W_VF
-
-
-% Profilwiderstandszuwachs
-
-F_K_F_rumpf = 300;
-F_K_F_ohnerumpf = 200;
-
-F_K_F = F_K_F_rumpf - F_K_F_ohnerumpf;
-                % Wird abglesen Landing und Takeoff einzeln rechnen!!!
-delta_C_W_P = 0.065 * F_K_F * cos(Ergebnisse_Fluegel.phi_25_max);
-
-
-% induzierter Widerstand -> w,v ablesen woher delta_...???
-w = 0.3;
-v = 0.5;
-delta_C_A_K_phi0 = 1;
-
-CA_F = CA * (1 - (delta_x_SP / l_mue)/(rh/l_mue)) - (c_m_0 + delta_C_M_K)/(rh/l_mue);
-
-delta_C_W_ind = CA_F * delta_C_A_K_phi0 * v + delta_C_A_K_phi0^2 * w;
-
-
-% inteferenz Widerstand
-delta_C_W_int = (1/3) * delta_C_W_P;
-
-
-% Fahrwerkswiderstand
-
-delta_C_W_Fahrwerk = ((1.5 * F_vorder + 0.75 * F_hinter)/ F) * (1- 0.04 * ((CA_F + delta_CA_F_0 * (1.5 * (F/F_K)-1))/(l_HFW/l_mue)))^2;
-
-
-% Vorflügelwiderstand
-
-delta_C_W_VF = 0;
-
+% C_w_F = C_W_oK + delta_C_W_K
+% 
+% delta_C_W_K = delta_C_W_P + delta_C_W_ind + delta_C_W_int;
+% delta_C_W_Fahrwerk + delta_C_W_VF;
+% 
+% 
+% % Profilwiderstandszuwachs
+% 
+% F_K_F_rumpf = 300;
+% F_K_F_ohnerumpf = 200;
+% 
+% F_K_F = F_K_F_rumpf - F_K_F_ohnerumpf;
+%                 % Wird abglesen Landing und Takeoff einzeln rechnen!!!
+% delta_C_W_P = 0.065 * F_K_F * cos(Ergebnisse_Fluegel.phi_25_max);
+% 
+% 
+% % induzierter Widerstand -> w,v ablesen woher delta_...???
+% w = 0.3;
+% v = 0.5;
+% delta_C_A_K_phi0 = 1;
+% 
+% CA_F = CA * (1 - (delta_x_SP / l_mue)/(rh/l_mue)) - (c_m_0 + delta_C_M_K)/(rh/l_mue);
+% 
+% delta_C_W_ind = CA_F * delta_C_A_K_phi0 * v + delta_C_A_K_phi0^2 * w;
+% 
+% 
+% % inteferenz Widerstand
+% delta_C_W_int = (1/3) * delta_C_W_P;
+% 
+% 
+% % Fahrwerkswiderstand
+% 
+% delta_C_W_Fahrwerk = ((1.5 * F_vorder + 0.75 * F_hinter)/ F) * (1- 0.04 * ((CA_F + delta_CA_F_0 * (1.5 * (F/F_K)-1))/(l_HFW/l_mue)))^2;
+% 
+% 
+% % Vorflügelwiderstand
+% 
+% delta_C_W_VF = 0;
+% 
 
 
 

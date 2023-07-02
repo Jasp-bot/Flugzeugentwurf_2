@@ -194,7 +194,7 @@ plot([alpha_CA_F_MAX_deg  alpha_CA_F_MAX_deg-delta_alpha_CA_F_max_deg],[CA_F_max
 
 grid on
 
-save Ergebnisse_Hochauftrieb_1.mat psiRootDeg psi_sym_inst_deg alpha_CA_F_MAX_deg CA_F_max CA_alpha_lowspeed delta_alpha_CA_F_max alpha_MAC_0_F_deg CA_F alpha_MAC_0_F CA_alpha_lowspeed CA_s alphas alpha_0;
+save Ergebnisse_Hochauftrieb_1.mat psiRootDeg psi_sym_inst_deg alpha_CA_F_MAX_deg CA_F_max CA_alpha_lowspeed delta_alpha_CA_F_max alpha_MAC_0_F_deg CA_F alpha_MAC_0_F CA_alpha_lowspeed CA_s alphas alpha_0 alpha_MAC_0_deg delta_alpha_CA_F_max_deg;
 
 
 

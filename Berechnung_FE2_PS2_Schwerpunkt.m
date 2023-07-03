@@ -138,6 +138,12 @@ Rumpf_MAC.xSP_MAC_RG = -Wing_MAC.XMAC + CG_Rumpf_X;
 
 CG_Gesamt_x = (Rumpf_MAC.xSP_MAC_RG*CG_M + Wing_MAC.xSP_MAC_FG*CG_Wing_M)/(CG_M + CG_Wing_M);
 
+%% Flügellage
+% Von Flugzeugnase zu imaginärer Spitze im Rumpf
+Wing_Position1 = Wing_MAC.XMAC - CG_Data_Wing.Fluegel(2);
+% Von Flugzeugnase zur geraden Sektion im Rumpf
+Wing_Position2 = Wing_MAC.XMAC - CG_Data_Wing.Fluegel(2) + DT.s_R*tan(Ergebnisse_Fluegel.phi_VK_max);
+
 %% Bestimmung Schwerpunkt Tank
 
 % Schwerpunkt Außentrapez

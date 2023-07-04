@@ -101,8 +101,9 @@ CG_Rumpf_Z=CG_Moment_Z/CG_MZ;
 
 
 %% Berechnung Flügelschwerpunkt
+% Achtung: Alles im Flügelkoordinatensystem
 CG_Data_Wing.Fluegel = [Anteile_einzel_Massen_FE2.Airplane_Structure.Wing_group, (NP.versatz_HK + DT.l_i_R + tan(Ergebnisse_Fluegel.phi_VK_max)*specs.R_rumpf)-NP.x_SP_ges, 0, 1]; 
-CG_Data_Wing.MainGear = [Anteile_einzel_Massen_FE2.Airplane_Structure.MainGear, 8, 0, -3]; 
+CG_Data_Wing.MainGear = [Anteile_einzel_Massen_FE2.Airplane_Structure.MainGear, 9.5, 0, -3]; 
 CG_Data_Wing.SurfaceControls = [Anteile_einzel_Massen_FE2.Airplane_Structure.Surface_control_group, (NP.versatz_HK + DT.l_i_R + tan(Ergebnisse_Fluegel.phi_VK_max)*specs.R_rumpf)-NP.x_SP_ges, 0, 1]; 
 CG_Data_Wing.EngineSection = [Anteile_einzel_Massen_FE2.Propulsion.Propulsion_group, 4.5, 0, -2.5]; 
 CG_Data_Wing.Nacelle = [Anteile_einzel_Massen_FE2.Airplane_Structure.Nacelle_group.Masse, 5.5, 0, 0.5]; 
@@ -195,7 +196,7 @@ Betankung.CG_BetankterInnentank = (Betankung.CG_BetankterAussentank*(Ergebnisse_
 Betankung.P3 = [Betankung.CG_BetankterInnentank/NP.l_mue_ges; (Betankung.Masse_Fuel_Innen_Praktisch + Ergebnisse_Massen_FE2.M_OE + Betankung.Masse_Fuel_Aussen)];
 
 
-% PAX Außen
+% PAX AUßEN
 Pax_Bording = readtable("Bording.xlsx","Sheet","Beladung");
 AussenPax = table2array(Pax_Bording(1:49,"x"));
 AussenPaxMAC = AussenPax - Wing_MAC.XMAC;
@@ -227,6 +228,64 @@ for i = 1:length(BackwardsAussenPaxMAC)
     BackwardsMass_Shift_Outer = BackwardsMass_Shift_Outer + BackwardsMasseAussenPax(i);
 end
 
+% PAX INNEN
+InnenPax = table2array(Pax_Bording(1:53,"x_1"));
+InnenPaxMAC = InnenPax - Wing_MAC.XMAC;
+MasseInnenPax = table2array(Pax_Bording(1:53,"m_1"));
+% Front to Back
+CG_Shift_Inner = zeros(length(InnenPaxMAC),1);
+InnerMassCounter = zeros(length(InnenPaxMAC),1);
+Mass_Shift_Inner = BackwardsMass_Shift_Outer;
+CG_Startposition_Innen = BackwardsCG_Startposition;
+for i = 1:length(InnenPaxMAC)
+    newCGvalue1 = (CG_Startposition_Innen*Mass_Shift_Inner + InnenPaxMAC(i)*MasseInnenPax(i))/(Mass_Shift_Inner + MasseInnenPax(i)); % Hier können Sie den neuen Wert je nach Bedarf berechnen
+    CG_Shift_Inner(i) = newCGvalue1; % Wert an der entsprechenden Stelle im Vektor zuweisen
+    InnerMassCounter(i) = Mass_Shift_Inner + MasseInnenPax(i);
+    CG_Startposition_Innen = newCGvalue1;
+    Mass_Shift_Inner = Mass_Shift_Inner + MasseInnenPax(i);
+end
+% Back to Front
+BackwardsInnenPaxMAC = flipud(InnenPaxMAC);
+BackwardsMasseInnenPax = flipud(MasseInnenPax);
+BackwardsCG_Shift_Inner = zeros(length(InnenPaxMAC),1);
+BackwardsInnerMassCounter = zeros(length(InnenPaxMAC),1);
+BackwardsMass_Shift_Inner = BackwardsMass_Shift_Outer;
+BackwardsCG_Startposition_Innen = BackwardsCG_Startposition;
+for i = 1:length(BackwardsInnenPaxMAC)
+    BackwardsnewCGvalue1 = (BackwardsCG_Startposition_Innen*BackwardsMass_Shift_Inner + BackwardsInnenPaxMAC(i)*BackwardsMasseInnenPax(i))/(BackwardsMass_Shift_Inner + BackwardsMasseInnenPax(i)); % Hier können Sie den neuen Wert je nach Bedarf berechnen
+    BackwardsCG_Shift_Inner(i) = BackwardsnewCGvalue1; % Wert an der entsprechenden Stelle im Vektor zuweisen
+    BackwardsInnerMassCounter(i) = BackwardsMass_Shift_Inner + BackwardsMasseInnenPax(i);
+    BackwardsCG_Startposition_Innen = BackwardsnewCGvalue1;
+    BackwardsMass_Shift_Inner = BackwardsMass_Shift_Inner + BackwardsMasseInnenPax(i);
+end
+
+% FRACHT
+% Frachtraum Abmaße bzw CG fehlen
+
+%% Berechnung Grenzen
+% LÄNGSSTABILITÄT AM BODEN
+LS.x_MainGear_MAC = (CG_Data_Wing.MainGear(2) - (CG_Data_Wing.Fluegel(2)-NP.l_mue_ges))/NP.l_mue_ges; %[Prozent l_mue]
+% Alle z-Positionen unklar
+%LS.z_MainGear_MAC = ;
+%LS.z_CG_Rumpf_MAC = ;
+%LS.z
+%LS.Laengsstabilitaet =  
+
+% MINIMALE BUGFAHRWERKSLAST
+BFWL.x_CG_BFW_Min_MAC = 0.06*(CG_Data.Bugfahrwerk(2)*specs.l_rumpf - Wing_MAC.XMAC + ((1/0.06)-1)*LS.x_MainGear_MAC*NP.l_mue_ges);
+
+% MAXIMALE BUGFAHRWERKSLAST
+BFWL.m_to_max = Ergebnisse_Massen_FE2.M_TO;
+BFWL.MomentanMasse = linspace(Ergebnisse_Massen_FE2.M_TO,Ergebnisse_Massen_FE2.M_ZF,100)';
+% ???? Warum negativ
+BFWL.x_CG_BFW_Max_MAC = (BFWL.m_to_max./BFWL.MomentanMasse).*0.2.*(CG_Data.Bugfahrwerk(2)*specs.l_rumpf - Wing_MAC.XMAC + ((BFWL.MomentanMasse./BFWL.m_to_max).*((1/0.2)-1).*LS.x_MainGear_MAC.*NP.l_mue_ges));
+
+% KIPPSTABILITÄT
+
+% STATISCHE STABILITÄT
+
+% NEUTRALPUNKTLAGE
+
 %% Plotten
 
 figure(1)
@@ -239,6 +298,8 @@ plot([Betankung.P1(1)*100 Betankung.P2(1)*100], [Betankung.P1(2) Betankung.P2(2)
 plot([Betankung.P2(1)*100 Betankung.P3(1)*100], [Betankung.P2(2) Betankung.P3(2)],"bo-")
 plot(CG_Shift_Outer*100/NP.l_mue_ges, NewMassCounter,"rx-")
 plot(BackwardsCG_Shift_Outer*100/NP.l_mue_ges, BackwardsNewMassCounter,"mx-")
+plot(CG_Shift_Inner*100/NP.l_mue_ges, InnerMassCounter,"rx-")
+plot(BackwardsCG_Shift_Inner*100/NP.l_mue_ges, BackwardsInnerMassCounter,"mx-")
 
 title('Beladung 3-Klassenbestuhlung','FontSize',20);
 xlabel('X^{MAC}_{SP}/l_{\mu}','FontSize',16)

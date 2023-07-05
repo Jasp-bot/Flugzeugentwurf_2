@@ -25,6 +25,10 @@ load Ergebnisse_Leitwerke.mat;
 load Ergebnisse_ISA_DATA.mat;
 load Ergebnisse_stat_Flaechenbelastung_Fluegelflaeche.mat;
 
+% Bereitstellen der Funktionen zur Widerstandsberechnung aus Unterordner 
+addpath('Unterfunktionen Widerstand');
+
+
 
 %% Allgemeine Variabelen
 
@@ -175,9 +179,9 @@ c_A_F_off_D_vec(1,n_iteration) = c_A_F_off_D;
 % % plot(c_w_p)
 
 
-c_w_p(1,n_iteration) = Profilwiderstand(Annahmen.v_air);
+[c_w_p(1,n_iteration), c_w_p_min_Re(n_iteration,:)] = Profilwiderstand(Annahmen.v_air);
 
-c_w_p_off_D(1,n_iteration) = Profilwiderstand(v_air_off_D);
+[c_w_p_off_D(1,n_iteration), c_w_p_min_Re_off_D(n_iteration,:)] = Profilwiderstand(v_air_off_D);
 
 %% Induzierter Widerstand des Fluegels
 
@@ -457,6 +461,8 @@ c_w_int_fs_off_D(1,n_iteration) = Interferenz_W(v_air_off_D);
 
 end
 
+
+
 %% Ergebnisse Speichern
 n_iteration_vec = linspace(0, 1, stuetzstellen); %n_iteration * 10^(-2);
 
@@ -526,67 +532,69 @@ Ergebnisse_Widerstand_FE2.c_W_ges_inkomp = x_vector_sum(9,:);
 Ergebnisse_Widerstand_FE2.c_W_ges_off_D_inkomp = x_vector_sum_off_D(9,:);
 Ergebnisse_Widerstand_FE2.delta_Ma = delta_Ma;
 Ergebnisse_Widerstand_FE2.delta_Ma_off_D = delta_Ma_off_D;
+Ergebnisse_Widerstand_FE2.c_w_p_min_Re = c_w_p_min_Re; % Matrix mit x=Anz Stützstellen y=Anz Re zahlen über den umspühlten Flügel ohne Rumpf  
+Ergebnisse_Widerstand_FE2.c_w_p_min_Re_off_D = c_w_p_min_Re_off_D; % Matrix mit x=Anz Stützstellen y=Anz Re zahlen über den umspühlten Flügel ohne Rumpf  
 
 save Ergebnisse_Widerstand_FE2.mat Ergebnisse_Widerstand_FE2;
 
 
-% %% Plot design
-% 
-% % figure(1)
-% % hold on
-% % grid on
-% % xlim([0, 0.05])
-% % ylim([0, 1])
-% % 
-% % 
-% % 
-% % % plot Leitwerke SLW und HLW
-% % 
-% % p(1) = plot(c_W_SLW, n_iteration_vec, '.-b');   % SLW
-% % 
-% % p(2) = plot(c_W_HLW, n_iteration_vec, '.-c');   % HLW
-% % 
-% % % Interferenzwiderstand
-% % 
-% % p(3) =  plot(c_w_int_fs, n_iteration_vec, '.green');
-% % 
-% % % Plot Rumpfwiderstand
-% % p(4) = plot(c_w_R, n_iteration_vec, '-k');
-% % 
-% % 
-% % % Plot Widerstand Triebwerk
-% % p(5) = plot(c_w_TW,n_iteration_vec, '-m');
-% % 
-% % 
-% % % Plot Trimwiderstand HLW
-% % 
-% % p(6) = plot(c_w_trim, n_iteration_vec,'-blue');
-% % 
-% % % Abwindwiderstand
-% % p(7) = plot(delta_c_w_H, n_iteration_vec, 'c');
-% % 
-% % % Plot Profilwiderstand 
-% % 
-% % p(8) = plot(c_w_p, n_iteration_vec, '-.k');
-% % 
-% % % plot Induzierter Widerstand
-% % p(9) = plot(c_w_ind, n_iteration_vec, '-red');
-% % 
-% % % Plot Transsonischer Widersatnd
-% % p(10) = plot(delta_c_WM, n_iteration_vec, '-green');
-% %  
-% % 
-% % % Testplot Widerstände aufaddiert
-% % widerstaende_aufaddiert = c_w_ind + delta_c_WM + c_w_R + c_w_TW + c_w_trim + c_w_int_fs + delta_c_w_H + c_W_HLW + c_W_SLW;
-% % plot(widerstaende_aufaddiert, n_iteration_vec, '*r')
-% % 
-% % 
-% % legend(p([1:10]),{'+ SLW', '+ HLW', '+ Interferenz', '+ Rumpf', '+ Triebwerk', '+ Trimmung', '+ Abwind', '+ Profil', '+ ind. Widerstand', '+ Wellenwiderstand'},'Location','southeast','FontSize',18);
-% % title('Kumulative Widerstandspolare')
-% % xlabel('c_{W}');
-% % ylabel('c_A');
+%% Plot design
+
+% figure(1)
+% hold on
+% grid on
+% xlim([0, 0.05])
+% ylim([0, 1])
 % 
 % 
+% 
+% % plot Leitwerke SLW und HLW
+% 
+% p(1) = plot(c_W_SLW, n_iteration_vec, '.-b');   % SLW
+% 
+% p(2) = plot(c_W_HLW, n_iteration_vec, '.-c');   % HLW
+% 
+% % Interferenzwiderstand
+% 
+% p(3) =  plot(c_w_int_fs, n_iteration_vec, '.green');
+% 
+% % Plot Rumpfwiderstand
+% p(4) = plot(c_w_R, n_iteration_vec, '-k');
+% 
+% 
+% % Plot Widerstand Triebwerk
+% p(5) = plot(c_w_TW,n_iteration_vec, '-m');
+% 
+% 
+% % Plot Trimwiderstand HLW
+% 
+% p(6) = plot(c_w_trim, n_iteration_vec,'-blue');
+% 
+% % Abwindwiderstand
+% p(7) = plot(delta_c_w_H, n_iteration_vec, 'c');
+% 
+% % Plot Profilwiderstand 
+% 
+% p(8) = plot(c_w_p, n_iteration_vec, '-.k');
+% 
+% % plot Induzierter Widerstand
+% p(9) = plot(c_w_ind, n_iteration_vec, '-red');
+% 
+% % Plot Transsonischer Widersatnd
+% p(10) = plot(delta_c_WM, n_iteration_vec, '-green');
+%  
+% 
+% % Testplot Widerstände aufaddiert
+% widerstaende_aufaddiert = c_w_ind + delta_c_WM + c_w_R + c_w_TW + c_w_trim + c_w_int_fs + delta_c_w_H + c_W_HLW + c_W_SLW;
+% plot(widerstaende_aufaddiert, n_iteration_vec, '*r')
+% 
+% 
+% legend(p([1:10]),{'+ SLW', '+ HLW', '+ Interferenz', '+ Rumpf', '+ Triebwerk', '+ Trimmung', '+ Abwind', '+ Profil', '+ ind. Widerstand', '+ Wellenwiderstand'},'Location','southeast','FontSize',18);
+% title('Kumulative Widerstandspolare')
+% xlabel('c_{W}');
+% ylabel('c_A');
+
+
 % % atomatisches Plotten
 % figure(2)
 % 
@@ -668,336 +676,339 @@ save Ergebnisse_Widerstand_FE2.mat Ergebnisse_Widerstand_FE2;
 %--------------------------------------------------------------------------
 %% Funktionen zur Berechnung der einzelnen Widerstandsteile
 %--------------------------------------------------------------------------
-
-%% Funktion Profilwiderstand
-function [c_w_p] = Profilwiderstand(v_gegeben)
-
-load Projekt_specs.mat;
-load Ergebnisse_ISA_DATA.mat;
-load Ergebnisse_Fluegel_Tank_NP.mat;
-load Ergebnisse_Auftrieb_Momente.mat;
-load Getroffene_Annahmen_und_FUN.mat;
-
-% PS4 S.2, Formel 4 
-k = 0.27 * specs.d_l + 100 * (specs.d_l)^4;
-
-%PS4 S.3, Formel 7
-Re_u = FUN.Re_CR_fun(Annahmen.x_u, v_gegeben);                                           %Annahmen.x_u * v_gegeben / ISA.kin_visk(Annahmen.hoehe_CR);
-Re_oR = FUN.Re_CR_fun(Ergebnisse_Fluegel.Fluegeltiefen_eta_oR, v_gegeben);       %Ergebnisse_Fluegel.Fluegeltiefen_eta_oR * v_gegeben / ISA.kin_visk(Annahmen.hoehe_CR);     % Annahme pleas confirm
-
-% PS4 S.2, Formel 6
-c_f_la_xu = FUN.c_f_la_fun(Re_u);                               %1.328./(sqrt(Re_u));
-c_f_tu_xu = FUN.c_f_tu_fun(Re_u);                               %0.455./(log(Re_u).^(2.58));
-c_f_tu_l = FUN.c_f_la_fun(Re_oR);                               % 0.455./(log(Re).^(2.58));
-
-% PS4 S.2, Formel 5
-c_f = c_f_tu_l  - Annahmen.xu_l * (c_f_tu_xu - c_f_la_xu);
-
-% PS4 S.2, Formel 3 
-c_w_p_min_Re = 2 * c_f * (1 + k * cos(Annahmen.phi_50)^2);
-
-% PS4 S.2, Formel 2 
-c_w_p_eta = c_w_p_min_Re + 0.03 .*...
-    (Ergebnisse_Auftriebsverteilung.c_a_eta(1,Ergebnisse_Fluegel.zaehlvariabele_eta_Ru:length(Ergebnisse_Auftriebsverteilung.c_a_eta))).^6;
-
-% PS4 S.3, Formel 10 %%% Sieht alles noch sehr inkorekt aus
-c_w_p = trapz(c_w_p_eta .*  (Ergebnisse_Fluegel.Fluegeltiefen_eta_oR) ./ (Ergebnisse_Fluegel.l_m)) * 10^(-3); % Achtung Potenz kann inkoreckt sein
-
-end
-
-%% Funktion Induzierter Widerstand
-
-function [c_w_ind] = Induzierter_W(c_A_F)
-
-load Projekt_specs.mat;
-load Ergebnisse_Fluegel_Tank_NP.mat;
-load Ergebnisse_Auftrieb_Momente.mat;
-load Getroffene_Annahmen_und_FUN.mat;
-
-
-% PS4 S.4, Formel 12
-c0 = VWA.c_AF_anstieg^2 * (0.0088 * Ergebnisse_Fluegel.lambda - 0.0051 * Ergebnisse_Fluegel.lambda^2) * (1 - 0.0006 * Ergebnisse_Fluegel.streckung_phi25_max^2);
-
-% PS4 S.4, Formel 13
-% c1 = GRA.c_a_anstieg * (0.0134 * (Ergebnisse_Fluegel.lambda - 0.3) - 0.0037 * Ergebnisse_Fluegel.lambda^2);
-c1 = VWA.c_AF_anstieg * (0.0134 * (Ergebnisse_Fluegel.lambda - 0.3) - 0.0037 * Ergebnisse_Fluegel.lambda^2); %% nicht sicer mit welchem Auftriebsanstieg gerechnet werden muss
-% PS4 S.4, Formel 15
-%tau = 1 - Ergebnisse_Fluegel.streckung_phi25_max * (0.002 + 0.0084 * (Ergebnisse_Fluegel.lambda-0.2)^2);
-tau = FUN.tau_fun(Ergebnisse_Fluegel.streckung_phi25_max, Ergebnisse_Fluegel.lambda);
-
-% PS4 S.4, Formel 14
-c2 = (1/tau) * (1 + (5*10^(-6)) * (rad2deg(Ergebnisse_Fluegel.phi_25_max))^3); 
-
-% delta eps keine ahnung wie das berechnet werden soll
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% achtung nachfragen!!!!!!!!!!!!!!!!
-eta_Ru = length(VWA.epsilon_eta_Ru)*10^(-3);
-delta_eps = abs(VWA.epsilon - VWA.epsilon .* eta_Ru);
-
-% PS4 S.4, Formel 11
-c_w_ind = c2 .* (c_A_F.^2)./(pi * Ergebnisse_Fluegel.streckung_phi25_max) +...
-    c1 .* c_A_F .* delta_eps + c0 .* delta_eps^2;
-
-end
-
-%% Funktion Wellenwiderstand
-
-function [delta_c_WM, delta_Ma] = Transsonischer_W(Ma_unendlich, c_A_F)
-
-load Ergebnisse_Fluegel_Tank_NP.mat;
-
-% PS4 S.5 Formel 18
-k_vector = [0.758, 0.1, -0.090, 0, -0.100];
-
-for n_DD = 1:5
-    M_DD_profil_phi25_vec(1,n_DD) = k_vector(1,n_DD) .* c_A_F.^(n_DD-1);
-end    
-M_DD_profil_phi25 = sum(M_DD_profil_phi25_vec);
-
-% PS4 S.5 Formel 17
-delta_Ma = Ma_unendlich - M_DD_profil_phi25./(sqrt(cos(Ergebnisse_Fluegel.phi_25_max)));
-
-% PS4 S.4 Formel 16
-delta_c_WM = 0.002 * exp(60 * delta_Ma);
-
-end
-
-%% Funktion Rumpfwiderstand
-
-function [c_w_R, alpha_Rumpf_grad] = Rumpfwiderstand(Machzahl, Abwindfaktor, c_A_ges)
-
-
-load Projekt_specs.mat;
-load Ergebnisse_stat_Flaechenbelastung_Fluegelflaeche.mat;
-load Ergebnisse_Fluegel_Tank_NP.mat;
-load Ergebnisse_Auftrieb_Momente.mat;
-load Ergebnisse_Leitwerke.mat;
-load Getroffene_Annahmen_und_FUN.mat;
+% Funktionen sin im Unterordern: Unterfunktionen Widerstand zu finden
 
 
 
-%Re_Ru = (specs.l_rumpf * (specs.Ma_CR * ISA.a(Annahmen.hoehe_CR)))/(ISA.kin_visk(Annahmen.hoehe_CR));
-Re_Ru = FUN.Re_CR_fun(specs.l_rumpf, Annahmen.v_air);
-
-% PS4 S.5 Formel 19
-c_f_tu_Ru = FUN.c_f_tu_fun(Re_Ru); %(0.455)/(log(Re_Ru)^(2.58));
-
-% PS4 S.5 Formel 21
-k_Rumpf = 2.2 * (specs.D_rumpf / specs.l_rumpf)^(3/2) + 3.8 * (specs.D_rumpf/specs.l_rumpf)^(3);
-
-
-% PS4 S.5 Formel 21
-c_w_Ru_min = c_f_tu_Ru * (1 + k_Rumpf) * Annahmen.S_G_Ru/Ergebnisse_Fluegel.F;
-
-% Kommentar: Ich habe keine Berechnungen fuer den Widerstand unter
-% betrachtung des Anstellwinkes des Rumpfes gemacht, das bedeutet, dise
-% Rechnung gilt nur fuer CR-Zustand Wenn das hinzugefuegt werden muss PFluegeltiefen_eta_oRS4
-% S.5 und fogend
-
-% PS4 S.6 Formel 26
-c_A_alpha_H = (pi * HLW.streckung_phi25)/...
-    (1 + sqrt(1 + 0.25 * HLW.streckung_phi25^2 * (tan(HLW.phi_50)^2 + (1 - Machzahl^2))));
-
-% PS4 S.6 Formel 25 Abwindfaktor = delta_alpha_w/delta_alpha_oH 
-% Abwindfaktor = 1.75 * ((Annahmen.c_A_alpha_F)/(pi * Ergebnisse_Fluegel.streckung_phi25_max *...
-%     (Ergebnisse_Fluegel.lambda * (HLW.r/(Ergebnisse_Fluegel.b/2))^0.25 *...
-%     (1+ (abs(Annahmen.z_abstand))/((Ergebnisse_Fluegel.b/2))) )));
-
-% PS4 S.5 Formel 24 annahme Annahmen.c_A_alpha_F = c_A_alpha_oH da der Rumpf kein
-% wirklichen Auftrieb erzeugt
-c_A_alpha = Annahmen.c_A_alpha_F * (1+ ((c_A_alpha_H)/(Annahmen.c_A_alpha_F)) *...
-    (HLW.F/Ergebnisse_Fluegel.F) * (1 - Abwindfaktor) );
-
-% PS4 S.5 Formel 23
-% if Annahmen.zaehlvariabele_itt <= 1
-%     c_A_ges(1, n_iteration) = 0.522;
+% %% Funktion Profilwiderstand
+% function [c_w_p, c_w_p_min_Re] = Profilwiderstand(v_gegeben)
 % 
-% elseif  Annahmen.zaehlvariabele_itt > 1
-%     c_A_ges(1, n_iteration) = c_A_ges(1, n_iteration - 1);
-%     c_A_ges(1,1) = c_A_ges(1, n_iteration)
+% load Projekt_specs.mat;
+% load Ergebnisse_ISA_DATA.mat;
+% load Ergebnisse_Fluegel_Tank_NP.mat;
+% load Ergebnisse_Auftrieb_Momente.mat;
+% load Getroffene_Annahmen_und_FUN.mat;
+% 
+% % PS4 S.2, Formel 4 
+% k = 0.27 * specs.d_l + 100 * (specs.d_l)^4;
+% 
+% %PS4 S.3, Formel 7
+% Re_u = FUN.Re_CR_fun(Annahmen.x_u, v_gegeben);                                           %Annahmen.x_u * v_gegeben / ISA.kin_visk(Annahmen.hoehe_CR);
+% Re_oR = FUN.Re_CR_fun(Ergebnisse_Fluegel.Fluegeltiefen_eta_oR, v_gegeben);       %Ergebnisse_Fluegel.Fluegeltiefen_eta_oR * v_gegeben / ISA.kin_visk(Annahmen.hoehe_CR);     % Annahme pleas confirm
+% 
+% % PS4 S.2, Formel 6
+% c_f_la_xu = FUN.c_f_la_fun(Re_u);                               %1.328./(sqrt(Re_u));
+% c_f_tu_xu = FUN.c_f_tu_fun(Re_u);                               %0.455./(log(Re_u).^(2.58));
+% c_f_tu_l = FUN.c_f_la_fun(Re_oR);                               % 0.455./(log(Re).^(2.58));
+% 
+% % PS4 S.2, Formel 5
+% c_f = c_f_tu_l  - Annahmen.xu_l * (c_f_tu_xu - c_f_la_xu);
+% 
+% % PS4 S.2, Formel 3 
+% c_w_p_min_Re = 2 * c_f * (1 + k * cos(Annahmen.phi_50)^2);
+% 
+% % PS4 S.2, Formel 2 
+% c_w_p_eta = c_w_p_min_Re + 0.03 .*...
+%     (Ergebnisse_Auftriebsverteilung.c_a_eta(1,Ergebnisse_Fluegel.zaehlvariabele_eta_Ru:length(Ergebnisse_Auftriebsverteilung.c_a_eta))).^6;
+% 
+% % PS4 S.3, Formel 10 %%% Sieht alles noch sehr inkorekt aus
+% c_w_p = trapz(c_w_p_eta .*  (Ergebnisse_Fluegel.Fluegeltiefen_eta_oR) ./ (Ergebnisse_Fluegel.l_m)) * 10^(-3); % Achtung Potenz kann inkoreckt sein
+% 
+% end
+
+% %% Funktion Induzierter Widerstand
+% 
+% function [c_w_ind] = Induzierter_W(c_A_F)
+% 
+% load Projekt_specs.mat;
+% load Ergebnisse_Fluegel_Tank_NP.mat;
+% load Ergebnisse_Auftrieb_Momente.mat;
+% load Getroffene_Annahmen_und_FUN.mat;
+% 
+% 
+% % PS4 S.4, Formel 12
+% c0 = VWA.c_AF_anstieg^2 * (0.0088 * Ergebnisse_Fluegel.lambda - 0.0051 * Ergebnisse_Fluegel.lambda^2) * (1 - 0.0006 * Ergebnisse_Fluegel.streckung_phi25_max^2);
+% 
+% % PS4 S.4, Formel 13
+% % c1 = GRA.c_a_anstieg * (0.0134 * (Ergebnisse_Fluegel.lambda - 0.3) - 0.0037 * Ergebnisse_Fluegel.lambda^2);
+% c1 = VWA.c_AF_anstieg * (0.0134 * (Ergebnisse_Fluegel.lambda - 0.3) - 0.0037 * Ergebnisse_Fluegel.lambda^2); %% nicht sicer mit welchem Auftriebsanstieg gerechnet werden muss
+% % PS4 S.4, Formel 15
+% %tau = 1 - Ergebnisse_Fluegel.streckung_phi25_max * (0.002 + 0.0084 * (Ergebnisse_Fluegel.lambda-0.2)^2);
+% tau = FUN.tau_fun(Ergebnisse_Fluegel.streckung_phi25_max, Ergebnisse_Fluegel.lambda);
+% 
+% % PS4 S.4, Formel 14
+% c2 = (1/tau) * (1 + (5*10^(-6)) * (rad2deg(Ergebnisse_Fluegel.phi_25_max))^3); 
+% 
+% % delta eps keine ahnung wie das berechnet werden soll
+% % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% achtung nachfragen!!!!!!!!!!!!!!!!
+% eta_Ru = length(VWA.epsilon_eta_Ru)*10^(-3);
+% delta_eps = abs(VWA.epsilon - VWA.epsilon .* eta_Ru);
+% 
+% % PS4 S.4, Formel 11
+% c_w_ind = c2 .* (c_A_F.^2)./(pi * Ergebnisse_Fluegel.streckung_phi25_max) +...
+%     c1 .* c_A_F .* delta_eps + c0 .* delta_eps^2;
+% 
+% end
+
+% %% Funktion Wellenwiderstand
+% 
+% function [delta_c_WM, delta_Ma] = Transsonischer_W(Ma_unendlich, c_A_F)
+% 
+% load Ergebnisse_Fluegel_Tank_NP.mat;
+% 
+% % PS4 S.5 Formel 18
+% k_vector = [0.758, 0.1, -0.090, 0, -0.100];
+% 
+% for n_DD = 1:5
+%     M_DD_profil_phi25_vec(1,n_DD) = k_vector(1,n_DD) .* c_A_F.^(n_DD-1);
 % end    
-alpha_Rumpf_grad = ((c_A_ges - Ergebnisse_stat_Flaechenbelastung.C_A_CR)/(c_A_alpha)) * ...
-    (180 / pi);
-% PS4 S.5 Formel 22
-c_w_R_zu_c_w_Rmin = 0.000208 * abs(alpha_Rumpf_grad).^3 + 0.00125 * abs(alpha_Rumpf_grad).^2 + 0.029 * abs(alpha_Rumpf_grad) + 1;
-
-c_w_R = c_w_R_zu_c_w_Rmin .* c_w_Ru_min;
-
-end
-
-%% Funktion Triebwerkswiderstand
-
-function [c_w_TW] = Triebwerkswiderstand(v_air, alpha_Rumpf_grad)
-
-load Projekt_specs.mat;
-load Ergebnisse_ISA_DATA.mat;
-load Ergebnisse_Fluegel_Tank_NP.mat;
-load Getroffene_Annahmen_und_FUN.mat;
-
-k_TW = 0.2;
-Re_TW = FUN.Re_CR_fun(Annahmen.l_TW, v_air); %(Annahmen.l_TW * (specs.Ma_CR * ISA.a(Annahmen.hoehe_CR))) / (ISA.kin_visk(Annahmen.hoehe_CR));
-
-% PS4 S.5 Formel 19
-c_f_tu_TW = FUN.c_f_tu_fun(Re_TW); % (0.455)/(log(Re_TW)^(2.58));
-
-% PS4 S.5 Formel 23
-alpha_TW_grad = alpha_Rumpf_grad + Annahmen.TW_Einbauwinkel;
-
-% PS4 S.5 Formel 20
-c_w_TW_min = c_f_tu_TW * (1 + k_TW) * (Annahmen.S_G_TW * 2)/Ergebnisse_Fluegel.F;
-
-% PS4 S.5 Formel 22
-c_w_TW_zu_c_w_TWmin = 0.000208 * abs(alpha_TW_grad).^3 + 0.00125 * abs(alpha_TW_grad).^2 + 0.029 * abs(alpha_TW_grad) + 1;
-
-c_w_TW = c_w_TW_zu_c_w_TWmin .* c_w_TW_min;
-
-end
-
-%% Funktion Leitwerkswiderstand
-
-function  [c_w_HLW_min, c_w_SLW_min] = Leitwerke_W(v_air)
-
-load Projekt_specs.mat;
-load Ergebnisse_ISA_DATA.mat;
-load Ergebnisse_Fluegel_Tank_NP.mat;
-load Ergebnisse_Leitwerke.mat;
-load Getroffene_Annahmen_und_FUN.mat;
-
-% Profilwiderstand Leitwerk
-
-
-% PS4 S.3 Formel 7 angewendet auf Leitwerke
-Re_u_HLW = FUN.Re_CR_fun(Annahmen.x_u_HLW, v_air);  %Annahmen.x_u_HLW * v_air / ISA.kin_visk(Annahmen.hoehe_CR);
-Re_u_SLW = FUN.Re_CR_fun(Annahmen.x_u_SLW, v_air);  %Annahmen.x_u_SLW * v_air / ISA.kin_visk(Annahmen.hoehe_CR);
-
-Re_HLW = FUN.Re_CR_fun(HLW.Fluegeltiefen_eta_oR, v_air);    % HLW.Fluegeltiefen_eta_oR .* v_air ./ ISA.kin_visk(Annahmen.hoehe_CR);
-Re_SLW = FUN.Re_CR_fun(SLW.Fluegeltiefen_eta_oR, v_air);    % SLW.Fluegeltiefen_eta_oR .* v_air ./ ISA.kin_visk(Annahmen.hoehe_CR);
-
-
-% PS4 S.2 Formel 6 angewendet auf Leitwerke
-c_f_la_xu_HLW = FUN.c_f_la_fun(Re_u_HLW); % (1.328)./(sqrt(Re_u_HLW));
-c_f_la_xu_SLW = FUN.c_f_la_fun(Re_u_SLW); % (1.328)./(sqrt(Re_u_SLW));
-
-c_f_tu_xu_HLW = FUN.c_f_tu_fun(Re_u_HLW); % 0.455./(log(Re_u_HLW).^(2.58));
-c_f_tu_xu_SLW = FUN.c_f_tu_fun(Re_u_SLW); % 0.455./(log(Re_u_SLW).^(2.58));
-
-c_f_tu_l_HLW = FUN.c_f_tu_fun(Re_HLW); % 0.455./(log(Re_HLW).^(2.58));
-c_f_tu_l_SLW = FUN.c_f_tu_fun(Re_SLW); % 0.455./(log(Re_SLW).^(2.58));
-
-% PS4 S.2 Formel 5 angewendet auf Leitwerke
-c_f_HLW = c_f_tu_l_HLW - Annahmen.xu_l_HLW .* (c_f_tu_xu_HLW - c_f_la_xu_HLW);
-c_f_SLW = c_f_tu_l_SLW - Annahmen.xu_l_SLW .* (c_f_tu_xu_SLW - c_f_la_xu_SLW);
-
-% PS4 S.6 Formel 28 % Annahme 
-k_HLW = 2.7 .* Annahmen.d_l_HLW + 100 .* Annahmen.d_l_HLW.^4;
-k_SLW = 2.7 .* Annahmen.d_l_SLW + 100 .* Annahmen.d_l_SLW.^4;
-
-% PS4 S.6 Formel 27
-c_w_HLW_min = 2 .* c_f_HLW .* (1+ k_HLW .* cos(HLW.phi_50).^2) .* ((HLW.F)/(Ergebnisse_Fluegel.F));
-c_w_SLW_min = 2 .* c_f_SLW .* (1+ k_SLW .* cos(SLW.phi_50).^2) .* ((SLW.F)/(Ergebnisse_Fluegel.F));
-
-end
-
-%% Funktion Trimwiderstand Leitwerke
-
-function [c_A_H, c_A_ges, c_w_trim] = Leitwerke_Trim_W(c_A_F)
-
-
-load Projekt_specs.mat;
-load Ergebnisse_Fluegel_Tank_NP.mat;
-load Ergebnisse_Leitwerke.mat;
-load Getroffene_Annahmen_und_FUN.mat;
-
-
-% PS4 S.7 Formel 33 
-
-% c_A_H(1,n_iteration) = (Annahmen.c_M_0_F + c_A_F * ((Annahmen.x_SP_MAC)/(Annahmen.l_mue))) / ...
-%     (Annahmen.qH_q * ((HLW.F)/(Ergebnisse_Fluegel.F)) * ((HLW.r - Annahmen.x_SP_MAC)/(Annahmen.l_mue)));
-
-c_A_H = (Annahmen.c_M_0_F + c_A_F * (0.1)) ./ ...
-                        (Annahmen.qH_q * ((HLW.F)/(Ergebnisse_Fluegel.F)) *...
-                        (((HLW.r/Annahmen.l_mue) - (0.1))));
-
-
-% PS4 S.7 Formel 29
-c_A_ges = c_A_F + c_A_H * Annahmen.qH_q * ((HLW.F)/(Ergebnisse_Fluegel.F));
-% c_A_ges_vec(Annahmen.zaehlvariabele_itt,1) = c_A_ges(1,n_iteration);
-
-Annahmen.zaehlvariabele_itt = Annahmen.zaehlvariabele_itt + 1;
-
-
-% PS4 S.4 Formel 15
-tau_H = FUN.tau_fun(HLW.streckung_phi25, HLW.lambda); %1 - HLW.streckung_phi25 * (0.002 + 0.0084 * (HLW.lambda - 0.2)^2);
-
-% PS4 S.7 Formel 30
-c_w_trim = ((c_A_H.^2) ./ (pi * HLW.streckung_phi25)) .* ...
-    ((1 + (5*10^(-6)) .* (abs(rad2deg(HLW.phi_25))).^3)./(tau_H)) .*...
-    ((HLW.F)./(Ergebnisse_Fluegel.F));
-
-
-end
-
-%% Funktion Zusatzwiderstand
-
-function [delta_c_w_H] = Zusatz_W(c_A_F, Abwindfaktor, c_A_H)
-
-
-load Ergebnisse_Fluegel_Tank_NP.mat;
-load Ergebnisse_Leitwerke.mat;
-load Getroffene_Annahmen_und_FUN.mat;
-
-% PS4 S.8 Formel 38
-% Achtung Annahmen.c_A_F_laufvar soll eien Laufvariabele sein 
-d_alpha_oH = c_A_F ./ Annahmen.c_A_alpha_F;
-
-% PS4 S.8 Formel 37
-d_alpha_w = Abwindfaktor .* d_alpha_oH;
-
-% PS4 S.8 Formel 36
-delta_c_w_H = c_A_H .* sin(d_alpha_w) .*...
-    Annahmen.qH_q .* ((HLW.F)./(Ergebnisse_Fluegel.F));
-
-end
-
-%% Funktion Interferenzwiderstand
-
-function [c_w_int_fs] = Interferenz_W(v_air)
-
-load Ergebnisse_ISA_DATA.mat;
-load Ergebnisse_Fluegel_Tank_NP.mat;
-load Getroffene_Annahmen_und_FUN.mat;
-
-Re_F_wurzel = FUN.Re_CR_fun(Annahmen.l_int_F, v_air); % Annahmen.l_int_F * Annahmen.v_air / ISA.kin_visk(Annahmen.hoehe_CR);
-% PS4 S.9 Formel 40
-c_w_int_F = ((0.1369)/(Re_F_wurzel)^0.4) * Annahmen.l_int_F^2 * Annahmen.n_int_F;
-        
-
-        % HLW
-Re_HLW_wurzel = FUN.Re_CR_fun(Annahmen.l_int_HLW, v_air); %  Annahmen.l_int_HLW * Annahmen.v_air / ISA.kin_visk(Annahmen.hoehe_CR);
-% PS4 S.9 Formel 40
-c_w_int_HLW = ((0.1369)/(Re_HLW_wurzel)^0.4) * Annahmen.l_int_HLW^2 * Annahmen.n_int_HLW;
-
-
-        % SLW
-Re_SLW_wurzel = FUN.Re_CR_fun(Annahmen.l_int_SLW, v_air); %  Annahmen.l_int_SLW * Annahmen.v_air / ISA.kin_visk(Annahmen.hoehe_CR);
-% PS4 S.9 Formel 40
-c_w_int_SLW = ((0.1369)/(Re_SLW_wurzel)) * Annahmen.l_int_SLW^2 * Annahmen.n_int_SLW;
-
-
-        % TW Nacell
-Re_NC_wurzel = FUN.Re_CR_fun(Annahmen.l_int_NC, v_air); %  Annahmen.l_int_NC * Annahmen.v_air / ISA.kin_visk(Annahmen.hoehe_CR);
-% PS4 S.9 Formel 40
-c_w_int_NC = ((0.1369)/(Re_NC_wurzel)^0.4) * Annahmen.l_int_NC^2 * Annahmen.n_int_NC;
-
-
-        % Pyl Nacell
-Re_PYL_wurzel = FUN.Re_CR_fun(Annahmen.l_int_PYL, v_air); %  Annahmen.l_int_PYL * Annahmen.v_air / ISA.kin_visk(Annahmen.hoehe_CR);
-% PS4 S.9 Formel 40
-c_w_int_PYL = ((0.1369)/(Re_PYL_wurzel)^0.4) * Annahmen.l_int_PYL^2 * Annahmen.n_int_PYL;
-
-    % zusammenfassung
-
-c_w_int_fs = (c_w_int_F + c_w_int_HLW + ...
-    c_w_int_SLW +c_w_int_NC + c_w_int_PYL)/...
-    Ergebnisse_Fluegel.F;
-
-end
+% M_DD_profil_phi25 = sum(M_DD_profil_phi25_vec);
+% 
+% % PS4 S.5 Formel 17
+% delta_Ma = Ma_unendlich - M_DD_profil_phi25./(sqrt(cos(Ergebnisse_Fluegel.phi_25_max)));
+% 
+% % PS4 S.4 Formel 16
+% delta_c_WM = 0.002 * exp(60 * delta_Ma);
+% 
+% end
+
+% %% Funktion Rumpfwiderstand
+% 
+% function [c_w_R, alpha_Rumpf_grad] = Rumpfwiderstand(Machzahl, Abwindfaktor, c_A_ges)
+% 
+% 
+% load Projekt_specs.mat;
+% load Ergebnisse_stat_Flaechenbelastung_Fluegelflaeche.mat;
+% load Ergebnisse_Fluegel_Tank_NP.mat;
+% load Ergebnisse_Auftrieb_Momente.mat;
+% load Ergebnisse_Leitwerke.mat;
+% load Getroffene_Annahmen_und_FUN.mat;
+% 
+% 
+% 
+% %Re_Ru = (specs.l_rumpf * (specs.Ma_CR * ISA.a(Annahmen.hoehe_CR)))/(ISA.kin_visk(Annahmen.hoehe_CR));
+% Re_Ru = FUN.Re_CR_fun(specs.l_rumpf, Annahmen.v_air);
+% 
+% % PS4 S.5 Formel 19
+% c_f_tu_Ru = FUN.c_f_tu_fun(Re_Ru); %(0.455)/(log(Re_Ru)^(2.58));
+% 
+% % PS4 S.5 Formel 21
+% k_Rumpf = 2.2 * (specs.D_rumpf / specs.l_rumpf)^(3/2) + 3.8 * (specs.D_rumpf/specs.l_rumpf)^(3);
+% 
+% 
+% % PS4 S.5 Formel 21
+% c_w_Ru_min = c_f_tu_Ru * (1 + k_Rumpf) * Annahmen.S_G_Ru/Ergebnisse_Fluegel.F;
+% 
+% % Kommentar: Ich habe keine Berechnungen fuer den Widerstand unter
+% % betrachtung des Anstellwinkes des Rumpfes gemacht, das bedeutet, dise
+% % Rechnung gilt nur fuer CR-Zustand Wenn das hinzugefuegt werden muss PFluegeltiefen_eta_oRS4
+% % S.5 und fogend
+% 
+% % PS4 S.6 Formel 26
+% c_A_alpha_H = (pi * HLW.streckung_phi25)/...
+%     (1 + sqrt(1 + 0.25 * HLW.streckung_phi25^2 * (tan(HLW.phi_50)^2 + (1 - Machzahl^2))));
+% 
+% % PS4 S.6 Formel 25 Abwindfaktor = delta_alpha_w/delta_alpha_oH 
+% % Abwindfaktor = 1.75 * ((Annahmen.c_A_alpha_F)/(pi * Ergebnisse_Fluegel.streckung_phi25_max *...
+% %     (Ergebnisse_Fluegel.lambda * (HLW.r/(Ergebnisse_Fluegel.b/2))^0.25 *...
+% %     (1+ (abs(Annahmen.z_abstand))/((Ergebnisse_Fluegel.b/2))) )));
+% 
+% % PS4 S.5 Formel 24 annahme Annahmen.c_A_alpha_F = c_A_alpha_oH da der Rumpf kein
+% % wirklichen Auftrieb erzeugt
+% c_A_alpha = Annahmen.c_A_alpha_F * (1+ ((c_A_alpha_H)/(Annahmen.c_A_alpha_F)) *...
+%     (HLW.F/Ergebnisse_Fluegel.F) * (1 - Abwindfaktor) );
+% 
+% % PS4 S.5 Formel 23
+% % if Annahmen.zaehlvariabele_itt <= 1
+% %     c_A_ges(1, n_iteration) = 0.522;
+% % 
+% % elseif  Annahmen.zaehlvariabele_itt > 1
+% %     c_A_ges(1, n_iteration) = c_A_ges(1, n_iteration - 1);
+% %     c_A_ges(1,1) = c_A_ges(1, n_iteration)
+% % end    
+% alpha_Rumpf_grad = ((c_A_ges - Ergebnisse_stat_Flaechenbelastung.C_A_CR)/(c_A_alpha)) * ...
+%     (180 / pi);
+% % PS4 S.5 Formel 22
+% c_w_R_zu_c_w_Rmin = 0.000208 * abs(alpha_Rumpf_grad).^3 + 0.00125 * abs(alpha_Rumpf_grad).^2 + 0.029 * abs(alpha_Rumpf_grad) + 1;
+% 
+% c_w_R = c_w_R_zu_c_w_Rmin .* c_w_Ru_min;
+% 
+% end
+
+% %% Funktion Triebwerkswiderstand
+% 
+% function [c_w_TW] = Triebwerkswiderstand(v_air, alpha_Rumpf_grad)
+% 
+% load Projekt_specs.mat;
+% load Ergebnisse_ISA_DATA.mat;
+% load Ergebnisse_Fluegel_Tank_NP.mat;
+% load Getroffene_Annahmen_und_FUN.mat;
+% 
+% k_TW = 0.2;
+% Re_TW = FUN.Re_CR_fun(Annahmen.l_TW, v_air); %(Annahmen.l_TW * (specs.Ma_CR * ISA.a(Annahmen.hoehe_CR))) / (ISA.kin_visk(Annahmen.hoehe_CR));
+% 
+% % PS4 S.5 Formel 19
+% c_f_tu_TW = FUN.c_f_tu_fun(Re_TW); % (0.455)/(log(Re_TW)^(2.58));
+% 
+% % PS4 S.5 Formel 23
+% alpha_TW_grad = alpha_Rumpf_grad + Annahmen.TW_Einbauwinkel;
+% 
+% % PS4 S.5 Formel 20
+% c_w_TW_min = c_f_tu_TW * (1 + k_TW) * (Annahmen.S_G_TW * 2)/Ergebnisse_Fluegel.F;
+% 
+% % PS4 S.5 Formel 22
+% c_w_TW_zu_c_w_TWmin = 0.000208 * abs(alpha_TW_grad).^3 + 0.00125 * abs(alpha_TW_grad).^2 + 0.029 * abs(alpha_TW_grad) + 1;
+% 
+% c_w_TW = c_w_TW_zu_c_w_TWmin .* c_w_TW_min;
+% 
+% end
+
+% %% Funktion Leitwerkswiderstand
+% 
+% function  [c_w_HLW_min, c_w_SLW_min] = Leitwerke_W(v_air)
+% 
+% load Projekt_specs.mat;
+% load Ergebnisse_ISA_DATA.mat;
+% load Ergebnisse_Fluegel_Tank_NP.mat;
+% load Ergebnisse_Leitwerke.mat;
+% load Getroffene_Annahmen_und_FUN.mat;
+% 
+% % Profilwiderstand Leitwerk
+% 
+% 
+% % PS4 S.3 Formel 7 angewendet auf Leitwerke
+% Re_u_HLW = FUN.Re_CR_fun(Annahmen.x_u_HLW, v_air);  %Annahmen.x_u_HLW * v_air / ISA.kin_visk(Annahmen.hoehe_CR);
+% Re_u_SLW = FUN.Re_CR_fun(Annahmen.x_u_SLW, v_air);  %Annahmen.x_u_SLW * v_air / ISA.kin_visk(Annahmen.hoehe_CR);
+% 
+% Re_HLW = FUN.Re_CR_fun(HLW.Fluegeltiefen_eta_oR, v_air);    % HLW.Fluegeltiefen_eta_oR .* v_air ./ ISA.kin_visk(Annahmen.hoehe_CR);
+% Re_SLW = FUN.Re_CR_fun(SLW.Fluegeltiefen_eta_oR, v_air);    % SLW.Fluegeltiefen_eta_oR .* v_air ./ ISA.kin_visk(Annahmen.hoehe_CR);
+% 
+% 
+% % PS4 S.2 Formel 6 angewendet auf Leitwerke
+% c_f_la_xu_HLW = FUN.c_f_la_fun(Re_u_HLW); % (1.328)./(sqrt(Re_u_HLW));
+% c_f_la_xu_SLW = FUN.c_f_la_fun(Re_u_SLW); % (1.328)./(sqrt(Re_u_SLW));
+% 
+% c_f_tu_xu_HLW = FUN.c_f_tu_fun(Re_u_HLW); % 0.455./(log(Re_u_HLW).^(2.58));
+% c_f_tu_xu_SLW = FUN.c_f_tu_fun(Re_u_SLW); % 0.455./(log(Re_u_SLW).^(2.58));
+% 
+% c_f_tu_l_HLW = FUN.c_f_tu_fun(Re_HLW); % 0.455./(log(Re_HLW).^(2.58));
+% c_f_tu_l_SLW = FUN.c_f_tu_fun(Re_SLW); % 0.455./(log(Re_SLW).^(2.58));
+% 
+% % PS4 S.2 Formel 5 angewendet auf Leitwerke
+% c_f_HLW = c_f_tu_l_HLW - Annahmen.xu_l_HLW .* (c_f_tu_xu_HLW - c_f_la_xu_HLW);
+% c_f_SLW = c_f_tu_l_SLW - Annahmen.xu_l_SLW .* (c_f_tu_xu_SLW - c_f_la_xu_SLW);
+% 
+% % PS4 S.6 Formel 28 % Annahme 
+% k_HLW = 2.7 .* Annahmen.d_l_HLW + 100 .* Annahmen.d_l_HLW.^4;
+% k_SLW = 2.7 .* Annahmen.d_l_SLW + 100 .* Annahmen.d_l_SLW.^4;
+% 
+% % PS4 S.6 Formel 27
+% c_w_HLW_min = 2 .* c_f_HLW .* (1+ k_HLW .* cos(HLW.phi_50).^2) .* ((HLW.F)/(Ergebnisse_Fluegel.F));
+% c_w_SLW_min = 2 .* c_f_SLW .* (1+ k_SLW .* cos(SLW.phi_50).^2) .* ((SLW.F)/(Ergebnisse_Fluegel.F));
+% 
+% end
+
+% %% Funktion Trimwiderstand Leitwerke
+% 
+% function [c_A_H, c_A_ges, c_w_trim] = Leitwerke_Trim_W(c_A_F)
+% 
+% 
+% load Projekt_specs.mat;
+% load Ergebnisse_Fluegel_Tank_NP.mat;
+% load Ergebnisse_Leitwerke.mat;
+% load Getroffene_Annahmen_und_FUN.mat;
+% 
+% 
+% % PS4 S.7 Formel 33 
+% 
+% % c_A_H(1,n_iteration) = (Annahmen.c_M_0_F + c_A_F * ((Annahmen.x_SP_MAC)/(Annahmen.l_mue))) / ...
+% %     (Annahmen.qH_q * ((HLW.F)/(Ergebnisse_Fluegel.F)) * ((HLW.r - Annahmen.x_SP_MAC)/(Annahmen.l_mue)));
+% 
+% c_A_H = (Annahmen.c_M_0_F + c_A_F * (0.1)) ./ ...
+%                         (Annahmen.qH_q * ((HLW.F)/(Ergebnisse_Fluegel.F)) *...
+%                         (((HLW.r/Annahmen.l_mue) - (0.1))));
+% 
+% 
+% % PS4 S.7 Formel 29
+% c_A_ges = c_A_F + c_A_H * Annahmen.qH_q * ((HLW.F)/(Ergebnisse_Fluegel.F));
+% % c_A_ges_vec(Annahmen.zaehlvariabele_itt,1) = c_A_ges(1,n_iteration);
+% 
+% Annahmen.zaehlvariabele_itt = Annahmen.zaehlvariabele_itt + 1;
+% 
+% 
+% % PS4 S.4 Formel 15
+% tau_H = FUN.tau_fun(HLW.streckung_phi25, HLW.lambda); %1 - HLW.streckung_phi25 * (0.002 + 0.0084 * (HLW.lambda - 0.2)^2);
+% 
+% % PS4 S.7 Formel 30
+% c_w_trim = ((c_A_H.^2) ./ (pi * HLW.streckung_phi25)) .* ...
+%     ((1 + (5*10^(-6)) .* (abs(rad2deg(HLW.phi_25))).^3)./(tau_H)) .*...
+%     ((HLW.F)./(Ergebnisse_Fluegel.F));
+% 
+% 
+% end
+
+% %% Funktion Zusatzwiderstand
+% 
+% function [delta_c_w_H] = Zusatz_W(c_A_F, Abwindfaktor, c_A_H)
+% 
+% 
+% load Ergebnisse_Fluegel_Tank_NP.mat;
+% load Ergebnisse_Leitwerke.mat;
+% load Getroffene_Annahmen_und_FUN.mat;
+% 
+% % PS4 S.8 Formel 38
+% % Achtung Annahmen.c_A_F_laufvar soll eien Laufvariabele sein 
+% d_alpha_oH = c_A_F ./ Annahmen.c_A_alpha_F;
+% 
+% % PS4 S.8 Formel 37
+% d_alpha_w = Abwindfaktor .* d_alpha_oH;
+% 
+% % PS4 S.8 Formel 36
+% delta_c_w_H = c_A_H .* sin(d_alpha_w) .*...
+%     Annahmen.qH_q .* ((HLW.F)./(Ergebnisse_Fluegel.F));
+% 
+% end
+
+% %% Funktion Interferenzwiderstand
+% 
+% function [c_w_int_fs] = Interferenz_W(v_air)
+% 
+% load Ergebnisse_ISA_DATA.mat;
+% load Ergebnisse_Fluegel_Tank_NP.mat;
+% load Getroffene_Annahmen_und_FUN.mat;
+% 
+% Re_F_wurzel = FUN.Re_CR_fun(Annahmen.l_int_F, v_air); % Annahmen.l_int_F * Annahmen.v_air / ISA.kin_visk(Annahmen.hoehe_CR);
+% % PS4 S.9 Formel 40
+% c_w_int_F = ((0.1369)/(Re_F_wurzel)^0.4) * Annahmen.l_int_F^2 * Annahmen.n_int_F;
+%         
+% 
+%         % HLW
+% Re_HLW_wurzel = FUN.Re_CR_fun(Annahmen.l_int_HLW, v_air); %  Annahmen.l_int_HLW * Annahmen.v_air / ISA.kin_visk(Annahmen.hoehe_CR);
+% % PS4 S.9 Formel 40
+% c_w_int_HLW = ((0.1369)/(Re_HLW_wurzel)^0.4) * Annahmen.l_int_HLW^2 * Annahmen.n_int_HLW;
+% 
+% 
+%         % SLW
+% Re_SLW_wurzel = FUN.Re_CR_fun(Annahmen.l_int_SLW, v_air); %  Annahmen.l_int_SLW * Annahmen.v_air / ISA.kin_visk(Annahmen.hoehe_CR);
+% % PS4 S.9 Formel 40
+% c_w_int_SLW = ((0.1369)/(Re_SLW_wurzel)) * Annahmen.l_int_SLW^2 * Annahmen.n_int_SLW;
+% 
+% 
+%         % TW Nacell
+% Re_NC_wurzel = FUN.Re_CR_fun(Annahmen.l_int_NC, v_air); %  Annahmen.l_int_NC * Annahmen.v_air / ISA.kin_visk(Annahmen.hoehe_CR);
+% % PS4 S.9 Formel 40
+% c_w_int_NC = ((0.1369)/(Re_NC_wurzel)^0.4) * Annahmen.l_int_NC^2 * Annahmen.n_int_NC;
+% 
+% 
+%         % Pyl Nacell
+% Re_PYL_wurzel = FUN.Re_CR_fun(Annahmen.l_int_PYL, v_air); %  Annahmen.l_int_PYL * Annahmen.v_air / ISA.kin_visk(Annahmen.hoehe_CR);
+% % PS4 S.9 Formel 40
+% c_w_int_PYL = ((0.1369)/(Re_PYL_wurzel)^0.4) * Annahmen.l_int_PYL^2 * Annahmen.n_int_PYL;
+% 
+%     % zusammenfassung
+% 
+% c_w_int_fs = (c_w_int_F + c_w_int_HLW + ...
+%     c_w_int_SLW +c_w_int_NC + c_w_int_PYL)/...
+%     Ergebnisse_Fluegel.F;
+% 
+% end

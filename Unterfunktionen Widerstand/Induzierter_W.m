@@ -1,4 +1,6 @@
 %% Funktion Induzierter Widerstand
+%[c_w_ind] = Induzierter_W(c_A_F)
+
 
 function [c_w_ind] = Induzierter_W(c_A_F)
 

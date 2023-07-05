@@ -74,8 +74,8 @@ delta_CA_F_SF_phi = (F_k / Ergebnisse_Fluegel.F) * (cos(Ergebnisse_Fluegel.phi_2
 
 % Große Formel VFFK
                                                     %In Übungfolien ist
-                                                    %hier ein +
-alpha_F_max_VFFK = (CA_F_max_VFFK / CA_alpha_F_FK_phi) - (((CA_F * (alpha_MAC_0_F + deg2rad(6)) + delta_CA_F_SF_phi)) / CA_alpha_F_FK_phi) + deg2rad(6) + delta_alpha_CA_F_max;
+                                                    %hier ein +                                                                             %+
+alpha_F_max_VFFK = (CA_F_max_VFFK / CA_alpha_F_FK_phi) + (((CA_F * (alpha_MAC_0_F + deg2rad(6)) + delta_CA_F_SF_phi)) / CA_alpha_F_FK_phi) - deg2rad(6) + delta_alpha_CA_F_max;
 
 alpha_F_max_VFFK_deg = rad2deg(alpha_F_max_VFFK);
 
@@ -130,8 +130,8 @@ delta_CA_F_SF_phi_TO = (F_k / Ergebnisse_Fluegel.F) * cos(Ergebnisse_Fluegel.phi
 
 % Große Formel VFFK
                                                         %IN ÜBUNG IST HIER
-                                                        %+
-alpha_F_max_VFFK_TO = (CA_F_max_VFFK_TO/CA_alpha_F_FK_phi_TO) - (((CA_F * (alpha_MAC_0_F + deg2rad(6)) + delta_CA_F_SF_phi_TO))/CA_alpha_F_FK_phi_TO) + deg2rad(6) + delta_alpha_CA_F_max;
+                                                        %+                                                                                           %+ 
+alpha_F_max_VFFK_TO = (CA_F_max_VFFK_TO/CA_alpha_F_FK_phi_TO) + (((CA_F * (alpha_MAC_0_F + deg2rad(6)) + delta_CA_F_SF_phi_TO))/CA_alpha_F_FK_phi_TO) - deg2rad(6) + delta_alpha_CA_F_max;
 
 alpha_F_max_VFFK_deg_TO = rad2deg(alpha_F_max_VFFK_TO);
 
@@ -182,7 +182,7 @@ deltaXSP = 3;
 CA_MAX = ( CA_F_max + ( (CM0 + deltaCM_HKK)/( r_h/l_mue ) ) ) / (1 - ( deltaXSP/l_mue )/( r_h/l_mue ));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Aus Formel.m
-lambda       = 0.26;   %Zuspitzung des Flügels [-]      %% JASPER HILFE WELCHE WERTE RICHTIG?
+lambda       = 1;   %Zuspitzung des Flügels [-]      %% JASPER HILFE WELCHE WERTE RICHTIG?
 bf_s         = 0.7;    %prozentuale Spannweite der Hinterkantenklappen
 %nach Skript Teil D Seite 114
 dcMk_dcmK  = ( 3.739701 * lambda^4 - 10.762986 * lambda^3 + 12.791164 * lambda^2 - 8.860305 * lambda + 4.093244) * bf_s + ...

@@ -118,6 +118,6 @@ Neutralpunkt=X_NP_durch_l_mue*Ergebnisse_Fluegel.l_mue+l_fn
 
 
 
-save Ergebnisse_CG.mat Neutralpunkt F_ges_Fluegel_MAC
+save Ergebnisse_CG.mat Neutralpunkt F_ges_Fluegel_MAC Flaeche_im_Rumpf_oberes_dreieck
 
 

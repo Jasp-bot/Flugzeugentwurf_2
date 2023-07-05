@@ -2,68 +2,79 @@ clc
 clear all
 close all
 
+Berechnung_FE2_PS4_Widerstand;
+
+
 load Ergebnisse_stat_Flaechenbelastung_Fluegelflaeche.mat
 load Ergebnisse_Start_Landeanforderungen.mat;
 load Ergebnisse_Widerstand_FE2.mat; 
 
+
+
 %% Plot design
 
-% figure(1)
-% hold on
-% grid on
-% xlim([0, 0.05])
-% ylim([0, 1])
-% 
-% 
-% 
-% % plot Leitwerke SLW und HLW
-% 
-% p(1) = plot(c_W_SLW, n_iteration_vec, '.-b');   % SLW
-% 
-% p(2) = plot(c_W_HLW, n_iteration_vec, '.-c');   % HLW
-% 
-% % Interferenzwiderstand
-% 
-% p(3) =  plot(c_w_int_fs, n_iteration_vec, '.green');
-% 
-% % Plot Rumpfwiderstand
-% p(4) = plot(c_w_R, n_iteration_vec, '-k');
-% 
-% 
-% % Plot Widerstand Triebwerk
-% p(5) = plot(c_w_TW,n_iteration_vec, '-m');
-% 
-% 
-% % Plot Trimwiderstand HLW
-% 
-% p(6) = plot(c_w_trim, n_iteration_vec,'-blue');
-% 
-% % Abwindwiderstand
-% p(7) = plot(delta_c_w_H, n_iteration_vec, 'c');
-% 
-% % Plot Profilwiderstand 
-% 
-% p(8) = plot(c_w_p, n_iteration_vec, '-.k');
-% 
-% % plot Induzierter Widerstand
-% p(9) = plot(c_w_ind, n_iteration_vec, '-red');
-% 
-% % Plot Transsonischer Widersatnd
-% p(10) = plot(delta_c_WM, n_iteration_vec, '-green');
-%  
-% 
-% % Testplot Widerstände aufaddiert
-% widerstaende_aufaddiert = c_w_ind + delta_c_WM + c_w_R + c_w_TW + c_w_trim + c_w_int_fs + delta_c_w_H + c_W_HLW + c_W_SLW;
-% plot(widerstaende_aufaddiert, n_iteration_vec, '*r')
-% 
-% 
-% legend(p([1:10]),{'+ SLW', '+ HLW', '+ Interferenz', '+ Rumpf', '+ Triebwerk', '+ Trimmung', '+ Abwind', '+ Profil', '+ ind. Widerstand', '+ Wellenwiderstand'},'Location','southeast','FontSize',18);
-% title('Kumulative Widerstandspolare')
-% xlabel('c_{W}');
-% ylabel('c_A');
+figure(1)
+
+hold on
+grid on
+
+xlim([0, 0.05])
+ylim([0, 1])
+
+sz = size(Ergebnisse_Widerstand_FE2.x_vector);
+numPlots = sz(1,1); %6;     % muss veraendert werden um off Design noch zu plotten
 
 
-% atomatisches Plotten
+% Farbverlauf definieren
+colorStart = [0, 0, 1];   % Startfarbe (RGB)
+colorEnd = [0, 0, 0];     % Endfarbe (RGB)
+
+% Farbwerte für jeden Plot berechnen
+%colors = zeros(numPlots/2, 3);
+for n_color = 1:(numPlots)
+    colors(n_color, :) = colorStart + (n_color-1) * (colorEnd - colorStart) / ((numPlots)-1);
+end
+
+colors = vertcat(colors, colors);
+
+
+% Linienarten definieren
+lineStyles = {'--', ':', '-.', '-', '--', ':', '-.', '-', '--', ':', '-.', '-' }; % Gestrichelt, Gepunktet
+
+
+% Plots erstellen
+for n_plot = 1:numPlots
+   autoplot(n_plot,1) = plot((Ergebnisse_Widerstand_FE2.x_vector_sum(n_plot,:)), Ergebnisse_Widerstand_FE2.c_A_F, 'LineStyle', lineStyles{1,n_plot}); % , 'Color', colors(n_plot, :), 'LineStyle', lineStyles{1,n_plot});
+end
+autoplot(numPlots+1, 1) = plot(Ergebnisse_Widerstand_FE2.x_vector_sum_off_D(numPlots,:), Ergebnisse_Widerstand_FE2.c_A_F_off_D,'red'); % Plot Off_Design
+
+
+% Schnittpunkt Design / Off_design
+schnittpunkt_des_off_D=InterX([Ergebnisse_Widerstand_FE2.x_vector_sum_off_D(numPlots,:); Ergebnisse_Widerstand_FE2.c_A_F_off_D], [(Ergebnisse_Widerstand_FE2.x_vector_sum(numPlots,:)); Ergebnisse_Widerstand_FE2.c_A_F]);
+autoplot(numPlots+2, 1) = plot(schnittpunkt_des_off_D(1,1), schnittpunkt_des_off_D(2,1), '*b');
+
+
+% Schnittpunkt Offdesign c_A_CR
+schnittpunkt_off_D_c_A_CR = InterX([Ergebnisse_Widerstand_FE2.x_vector_sum_off_D(numPlots,:); Ergebnisse_Widerstand_FE2.c_A_F_off_D], [[0, 1]; [Ergebnisse_stat_Flaechenbelastung.C_A_CR, Ergebnisse_stat_Flaechenbelastung.C_A_CR]]);
+autoplot(numPlots+3, 1) = plot(schnittpunkt_off_D_c_A_CR(1,1), schnittpunkt_off_D_c_A_CR(2,1), 'og');
+
+
+
+
+
+
+% schoen machen des Plots 
+
+legend(autoplot([1:n_plot+3]),{'+ SLW', '+ HLW', '+ Interferenz', '+ Rumpf', '+ Triebwerk', '+ Trimmung', '+ Abwind', '+ Profil', '+ ind. Widerstand', '+ Wellenwiderstand', '+Off-Design', 'Schnittpunkt von Design / Off-Design', 'C_{A,CR}'},...
+    'Location','southeast','FontSize',18);
+
+title('Kumulative Widerstandspolare')
+xlabel('c_W');
+ylabel('c_A');
+
+hold off;
+
+% % atomatisches Plotten
 figure(2)
 
 hold on
@@ -124,20 +135,21 @@ lineStyles = {'--', ':', '-.', '-', '--', ':', '-.', '-', '--', ':', '-.', '-' }
 
 atoplots = cell(numPlots+1, 1);
 
+% Plots erstellen
 for n_plot = 1:numPlots
-   autoplot(n_plot,1) = plot((Ergebnisse_Widerstand_FE2.x_vector_sum(n_plot,:)), Ergebnisse_Widerstand_FE2.n_iteration_vec, 'Color', colors(n_plot, :), 'LineStyle', lineStyles{1,n_plot});
+   autoplot(n_plot,1) = plot((Ergebnisse_Widerstand_FE2.x_vector_sum(n_plot,:)), Ergebnisse_Widerstand_FE2.c_A_F, 'LineStyle', lineStyles{1,n_plot}, 'Color', colors(n_plot, :), 'LineStyle', lineStyles{1,n_plot});
 end
-autoplot(numPlots+1,1)= plot(Ergebnisse_Widerstand_FE2.x_vector_sum_off_D(numPlots,:), Ergebnisse_Widerstand_FE2.c_A_F_off_D_vec,'red');
+autoplot(numPlots+1, 1) = plot(Ergebnisse_Widerstand_FE2.x_vector_sum_off_D(numPlots,:), Ergebnisse_Widerstand_FE2.c_A_F_off_D,'red'); % Plot Off_Design
 
-% % Schnittpunkt Design / Off_design
-% schnittpunkt_des_off_D=InterX([Ergebnisse_Widerstand_FE2.x_vector_sum_off_D(numPlots,:); Ergebnisse_Widerstand_FE2.c_A_F_off_D_vec], [(Ergebnisse_Widerstand_FE2.x_vector_sum(numPlots,:)); Ergebnisse_Widerstand_FE2.n_iteration_vec]);
-% plot(schnittpunkt_des_off_D(1,1), schnittpunkt_des_off_D(2,1), '*b');
-% 
-% 
-% % Schnittpunkt Offdesign c_A_CR
-% schnittpunkt_off_D_c_A_CR = InterX([Ergebnisse_Widerstand_FE2.x_vector_sum_off_D(numPlots,:); Ergebnisse_Widerstand_FE2.c_A_F_off_D_vec], [[0, 1]; [Ergebnisse_stat_Flaechenbelastung.C_A_CR, Ergebnisse_stat_Flaechenbelastung.C_A_CR]]);
-% plot(schnittpunkt_off_D_c_A_CR(1,1), schnittpunkt_off_D_c_A_CR(2,1), '*g');
 
+% Schnittpunkt Design / Off_design
+schnittpunkt_des_off_D=InterX([Ergebnisse_Widerstand_FE2.x_vector_sum_off_D(numPlots,:); Ergebnisse_Widerstand_FE2.c_A_F_off_D], [(Ergebnisse_Widerstand_FE2.x_vector_sum(numPlots,:)); Ergebnisse_Widerstand_FE2.c_A_F]);
+autoplot(numPlots+2, 1) = plot(schnittpunkt_des_off_D(1,1), schnittpunkt_des_off_D(2,1), '*b');
+
+
+% Schnittpunkt Offdesign c_A_CR
+schnittpunkt_off_D_c_A_CR = InterX([Ergebnisse_Widerstand_FE2.x_vector_sum_off_D(numPlots,:); Ergebnisse_Widerstand_FE2.c_A_F_off_D], [[0, 1]; [Ergebnisse_stat_Flaechenbelastung.C_A_CR, Ergebnisse_stat_Flaechenbelastung.C_A_CR]]);
+autoplot(numPlots+3, 1) = plot(schnittpunkt_off_D_c_A_CR(1,1), schnittpunkt_off_D_c_A_CR(2,1), 'og');
 
 
 % schoen machen des Plots 
@@ -149,8 +161,8 @@ xlabel('c_W');
 ylabel('c_A');
 
 hold off;
-
-
-
-
-
+% 
+% 
+% 
+% 
+% 

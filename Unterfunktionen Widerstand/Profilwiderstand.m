@@ -20,7 +20,7 @@ c_f_tu_xu = FUN.c_f_tu_fun(Re_u);                               %0.455./(log(Re_
 c_f_tu_l = FUN.c_f_la_fun(Re_oR);                               % 0.455./(log(Re).^(2.58));
 
 % PS4 S.2, Formel 5
-c_f = c_f_tu_l  - Annahmen.xu_l * (c_f_tu_xu - c_f_la_xu);
+c_f = c_f_tu_l  - Annahmen.xu_l .* (c_f_tu_xu - c_f_la_xu);
 
 % PS4 S.2, Formel 3 
 c_w_p_min_Re = 2 * c_f * (1 + k * cos(Annahmen.phi_50)^2);
@@ -29,7 +29,9 @@ c_w_p_min_Re = 2 * c_f * (1 + k * cos(Annahmen.phi_50)^2);
 c_w_p_eta = c_w_p_min_Re + 0.03 .*...
     (Ergebnisse_Auftriebsverteilung.c_a_eta(1,Ergebnisse_Fluegel.zaehlvariabele_eta_Ru:length(Ergebnisse_Auftriebsverteilung.c_a_eta))).^6;
 
+
+for wert= 1:length(v_gegeben)
 % PS4 S.3, Formel 10 %%% Sieht alles noch sehr inkorekt aus
-c_w_p = trapz(c_w_p_eta .*  (Ergebnisse_Fluegel.Fluegeltiefen_eta_oR) ./ (Ergebnisse_Fluegel.l_m)) * 10^(-3); % Achtung Potenz kann inkoreckt sein
+c_w_p(1,wert) = trapz(c_w_p_eta(wert,:) .*  (Ergebnisse_Fluegel.Fluegeltiefen_eta_oR) ./ (Ergebnisse_Fluegel.l_m)) * 10^(-3); % Achtung Potenz kann inkoreckt sein
 
 end

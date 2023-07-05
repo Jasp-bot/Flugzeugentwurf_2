@@ -1,4 +1,5 @@
-%% Funktion Trimwiderstand Leitwerke
+% Funktion Trimwiderstand Leitwerke
+% [c_A_H, c_A_ges, c_w_trim] = Leitwerke_Trim_W(c_A_F)
 
 function [c_A_H, c_A_ges, c_w_trim] = Leitwerke_Trim_W(c_A_F)
 

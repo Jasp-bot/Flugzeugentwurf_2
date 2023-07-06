@@ -1,6 +1,6 @@
 %% Funktion Rumpfwiderstand
 
-function [c_w_R, alpha_Rumpf_grad] = Rumpfwiderstand(Machzahl, Abwindfaktor, c_A_ges)
+function [c_w_R, alpha_Rumpf_grad] = Rumpfwiderstand(Machzahl, Abwindfaktor, c_A_ges, v_air)
 
 
 load Projekt_specs.mat;
@@ -13,7 +13,7 @@ load Getroffene_Annahmen_und_FUN.mat;
 
 
 %Re_Ru = (specs.l_rumpf * (specs.Ma_CR * ISA.a(Annahmen.hoehe_CR)))/(ISA.kin_visk(Annahmen.hoehe_CR));
-Re_Ru = FUN.Re_CR_fun(specs.l_rumpf, Annahmen.v_air);
+Re_Ru = FUN.Re_CR_fun(specs.l_rumpf, v_air);
 
 % PS4 S.5 Formel 19
 c_f_tu_Ru = FUN.c_f_tu_fun(Re_Ru); %(0.455)/(log(Re_Ru)^(2.58));
@@ -31,8 +31,8 @@ c_w_Ru_min = c_f_tu_Ru * (1 + k_Rumpf) * Annahmen.S_G_Ru/Ergebnisse_Fluegel.F;
 % S.5 und fogend
 
 % PS4 S.6 Formel 26
-c_A_alpha_H = (pi * HLW.streckung_phi25)/...
-    (1 + sqrt(1 + 0.25 * HLW.streckung_phi25^2 * (tan(HLW.phi_50)^2 + (1 - Machzahl^2))));
+c_A_alpha_H = (pi * HLW.streckung_phi25)./...
+    (1 + sqrt(1 + 0.25 .* HLW.streckung_phi25.^2 * (tan(HLW.phi_50).^2 + (1 - Machzahl.^2))));
 
 % PS4 S.6 Formel 25 Abwindfaktor = delta_alpha_w/delta_alpha_oH 
 % Abwindfaktor = 1.75 * ((Annahmen.c_A_alpha_F)/(pi * Ergebnisse_Fluegel.streckung_phi25_max *...
@@ -52,11 +52,11 @@ c_A_alpha = Annahmen.c_A_alpha_F * (1+ ((c_A_alpha_H)/(Annahmen.c_A_alpha_F)) *.
 %     c_A_ges(1, n_iteration) = c_A_ges(1, n_iteration - 1);
 %     c_A_ges(1,1) = c_A_ges(1, n_iteration)
 % end    
-alpha_Rumpf_grad = ((c_A_ges - Ergebnisse_stat_Flaechenbelastung.C_A_CR)/(c_A_alpha)) * ...
-    (180 / pi);
+alpha_Rumpf_grad = (((c_A_ges - Ergebnisse_stat_Flaechenbelastung.C_A_CR)./(c_A_alpha)) .* ...
+    (180 ./ pi));
 % PS4 S.5 Formel 22
-c_w_R_zu_c_w_Rmin = 0.000208 * abs(alpha_Rumpf_grad).^3 + 0.00125 * abs(alpha_Rumpf_grad).^2 + 0.029 * abs(alpha_Rumpf_grad) + 1;
+c_w_R_zu_c_w_Rmin = 0.000208 .* abs(alpha_Rumpf_grad).^3 + 0.00125 * abs(alpha_Rumpf_grad).^2 + 0.029 .* abs(alpha_Rumpf_grad) + 1;
 
-c_w_R = c_w_R_zu_c_w_Rmin .* c_w_Ru_min;
+c_w_R = (c_w_R_zu_c_w_Rmin .* c_w_Ru_min);
 
 end

@@ -22,6 +22,6 @@ c_w_TW_min = c_f_tu_TW * (1 + k_TW) * (Annahmen.S_G_TW * 2)/Ergebnisse_Fluegel.F
 % PS4 S.5 Formel 22
 c_w_TW_zu_c_w_TWmin = 0.000208 * abs(alpha_TW_grad).^3 + 0.00125 * abs(alpha_TW_grad).^2 + 0.029 * abs(alpha_TW_grad) + 1;
 
-c_w_TW = c_w_TW_zu_c_w_TWmin .* c_w_TW_min;
+c_w_TW = diag(c_w_TW_zu_c_w_TWmin .* c_w_TW_min);
 
 end

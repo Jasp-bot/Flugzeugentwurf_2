@@ -61,7 +61,7 @@ Rumpf_SP_Faktoren.zSP_ResFuel =-2.5;
 CG_Data.Rumpf = [Anteile_einzel_Massen_FE2.Airplane_Structure.Fuselage_group.M + Anteile_einzel_Massen_FE2.Airplane_Structure.Tail_group - M_HLW.W_HLW_basic - M_SLW.W_SLW_basic,0.43,0,0];
 CG_Data.HLW = [M_HLW.W_HLW_basic, 0.96, 0, 1];
 CG_Data.SLW = [M_SLW.W_SLW_basic, 0.96, 0, 5];
-CG_Data.Bugfahrwerk = [Anteile_einzel_Massen_FE2.Airplane_Structure.FrontGear, 0.05, 0, -4.5];
+CG_Data.Bugfahrwerk = [Anteile_einzel_Massen_FE2.Airplane_Structure.FrontGear, 0.065, 0, -4.5];
 CG_Data.APU = [specs.m_APU, 0.97, 0, 0];
 CG_Data.CockpitInstruments = [Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Intruments_Nav_Electr, 0.07,0,0];
 CG_Data.HydraulicsElectricalWing = [Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Hydraulics_Electric*0.6,0.45, 0, -2];
@@ -103,7 +103,7 @@ CG_Rumpf_Z=CG_Moment_Z/CG_MZ;
 %% Berechnung Flügelschwerpunkt
 % Achtung: Alles im Flügelkoordinatensystem
 CG_Data_Wing.Fluegel = [Anteile_einzel_Massen_FE2.Airplane_Structure.Wing_group, (NP.versatz_HK + DT.l_i_R + tan(Ergebnisse_Fluegel.phi_VK_max)*specs.R_rumpf)-NP.x_SP_ges, 0, 1]; 
-CG_Data_Wing.MainGear = [Anteile_einzel_Massen_FE2.Airplane_Structure.MainGear, 9.5, 0, -3]; 
+CG_Data_Wing.MainGear = [Anteile_einzel_Massen_FE2.Airplane_Structure.MainGear, 7.5, 0, -3]; 
 CG_Data_Wing.SurfaceControls = [Anteile_einzel_Massen_FE2.Airplane_Structure.Surface_control_group, (NP.versatz_HK + DT.l_i_R + tan(Ergebnisse_Fluegel.phi_VK_max)*specs.R_rumpf)-NP.x_SP_ges, 0, 1]; 
 CG_Data_Wing.EngineSection = [Anteile_einzel_Massen_FE2.Propulsion.Propulsion_group, 4.5, 0, -2.5]; 
 CG_Data_Wing.Nacelle = [Anteile_einzel_Massen_FE2.Airplane_Structure.Nacelle_group.Masse, 5.5, 0, 0.5]; 
@@ -184,16 +184,17 @@ CG_Fuel_X.CG_Tank_MAC = CG_Fuel_X.CG_Tank_FG - (CG_Data_Wing.Fluegel(2)-NP.l_mue
 
 % FUEL
 % Treibstoffmasse
-Betankung.Masse_Fuel_Aussen = 2*Tank.V_OB_A*Tank.ka*Tank.kb*1000*Tank.rho_kerosin;
-Betankung.Masse_Fuel_Innen_Theoretisch = 2*Tank.V_OB_I*Tank.ka*Tank.kb*1000*Tank.rho_kerosin;
-Betankung.Masse_Fuel_Innen_Praktisch = Ergebnisse_Massen_FE2.M_F-Betankung.Masse_Fuel_Aussen;
+Betankung.Masse_Fuel_Aussen_Theoretisch = 2*Tank.V_OB_A*Tank.ka*Tank.kb*1000*Tank.rho_kerosin;
+Betankung.Masse_Fuel_Innen = 2*Tank.V_OB_I*Tank.ka*Tank.kb*1000*Tank.rho_kerosin;
+Betankung.Masse_Fuel_Aussen_Praktisch = Ergebnisse_Massen_FE2.M_F-Betankung.Masse_Fuel_Innen;
+
 % Betankung Außentank
-Betankung.CG_BetankterAussentank = (CG_Gesamt_x*Ergebnisse_Massen_FE2.M_OE + CG_Fuel_X.Aussentrapez_MAC*Betankung.Masse_Fuel_Aussen)/(Ergebnisse_Massen_FE2.M_OE + Betankung.Masse_Fuel_Aussen);
+Betankung.CG_BetankterInnentank = (CG_Gesamt_x*Ergebnisse_Massen_FE2.M_OE + CG_Fuel_X.Innentrapez_MAC*Betankung.Masse_Fuel_Innen)/(Ergebnisse_Massen_FE2.M_OE + Betankung.Masse_Fuel_Innen);
 Betankung.P1 = [CG_Gesamt_x/NP.l_mue_ges; Ergebnisse_Massen_FE2.M_OE];
-Betankung.P2 = [Betankung.CG_BetankterAussentank/NP.l_mue_ges; Ergebnisse_Massen_FE2.M_OE + Betankung.Masse_Fuel_Aussen];
+Betankung.P2 = [Betankung.CG_BetankterInnentank/NP.l_mue_ges; Ergebnisse_Massen_FE2.M_OE + Betankung.Masse_Fuel_Innen];
 % Betankung Innentank
-Betankung.CG_BetankterInnentank = (Betankung.CG_BetankterAussentank*(Ergebnisse_Massen_FE2.M_OE + Betankung.Masse_Fuel_Aussen) + CG_Fuel_X.Innentrapez_MAC*Betankung.Masse_Fuel_Innen_Praktisch)/(Betankung.Masse_Fuel_Innen_Praktisch + Ergebnisse_Massen_FE2.M_OE + Betankung.Masse_Fuel_Aussen);
-Betankung.P3 = [Betankung.CG_BetankterInnentank/NP.l_mue_ges; (Betankung.Masse_Fuel_Innen_Praktisch + Ergebnisse_Massen_FE2.M_OE + Betankung.Masse_Fuel_Aussen)];
+Betankung.CG_BetankterAussentank = (Betankung.CG_BetankterInnentank*(Ergebnisse_Massen_FE2.M_OE + Betankung.Masse_Fuel_Innen) + CG_Fuel_X.Aussentrapez_MAC*Betankung.Masse_Fuel_Aussen_Praktisch)/(Betankung.Masse_Fuel_Aussen_Praktisch + Ergebnisse_Massen_FE2.M_OE + Betankung.Masse_Fuel_Innen);
+Betankung.P3 = [Betankung.CG_BetankterAussentank/NP.l_mue_ges; (Betankung.Masse_Fuel_Aussen_Praktisch + Ergebnisse_Massen_FE2.M_OE + Betankung.Masse_Fuel_Innen)];
 
 
 % PAX AUßEN
@@ -205,7 +206,7 @@ MasseAussenPax = table2array(Pax_Bording(1:49,"m"));
 CG_Shift_Outer = zeros(length(AussenPaxMAC),1);
 NewMassCounter = zeros(length(AussenPaxMAC),1);
 Mass_Shift_Outer = Ergebnisse_Massen_FE2.M_OE + Ergebnisse_Massen_FE2.M_F;
-CG_Startposition = Betankung.CG_BetankterInnentank;
+CG_Startposition = Betankung.CG_BetankterAussentank;
 for i = 1:length(AussenPaxMAC)
     newCGvalue = (CG_Startposition*Mass_Shift_Outer + AussenPaxMAC(i)*MasseAussenPax(i))/(Mass_Shift_Outer + MasseAussenPax(i)); % Hier können Sie den neuen Wert je nach Bedarf berechnen
     CG_Shift_Outer(i) = newCGvalue; % Wert an der entsprechenden Stelle im Vektor zuweisen
@@ -219,7 +220,7 @@ BackwardsMasseAussenPax = flipud(MasseAussenPax);
 BackwardsCG_Shift_Outer = zeros(length(AussenPaxMAC),1);
 BackwardsNewMassCounter = zeros(length(AussenPaxMAC),1);
 BackwardsMass_Shift_Outer = Ergebnisse_Massen_FE2.M_OE + Ergebnisse_Massen_FE2.M_F;
-BackwardsCG_Startposition = Betankung.CG_BetankterInnentank;
+BackwardsCG_Startposition = Betankung.CG_BetankterAussentank;
 for i = 1:length(BackwardsAussenPaxMAC)
     BackwardsnewCGvalue = (BackwardsCG_Startposition*BackwardsMass_Shift_Outer + BackwardsAussenPaxMAC(i)*BackwardsMasseAussenPax(i))/(BackwardsMass_Shift_Outer + BackwardsMasseAussenPax(i)); % Hier können Sie den neuen Wert je nach Bedarf berechnen
     BackwardsCG_Shift_Outer(i) = BackwardsnewCGvalue; % Wert an der entsprechenden Stelle im Vektor zuweisen
@@ -304,3 +305,45 @@ plot(BackwardsCG_Shift_Inner*100/NP.l_mue_ges, BackwardsInnerMassCounter,"mx-")
 title('Beladung 3-Klassenbestuhlung','FontSize',20);
 xlabel('X^{MAC}_{SP}/l_{\mu}','FontSize',16)
 ylabel('kg','FontSize',16)
+
+hold off
+
+%-------------------------------------
+% Plot Schwerpunktlage
+figure(2)
+hold on
+grid on
+% RUMPF
+% Mittelpunkt der Ellipse
+center_x = specs.l_rumpf/2;
+center_y = 0;
+% Erstellen der Ellipse
+theta = linspace(0, 2*pi, 100); % Winkel für die Ellipsenpunkte
+x = center_x + (specs.l_rumpf/2) * cos(theta);
+y = center_y + (specs.D_rumpf/2) * sin(theta);
+
+% ERSATZFLÜGEL
+x1 = Wing_MAC.XMAC;
+y1 = -24;
+x2 = Wing_MAC.XMAC + NP.l_mue_ges;
+y2 = 24;
+
+
+
+% Plot
+plot(x, y, 'r', 'LineWidth', 2);
+rectangle('Position', [x1, y1, x2-x1, y2-y1], 'EdgeColor', 'red', 'LineWidth', 1);
+plot([Wing_Position1, Wing_Position1 + (DT.s_A+DT.s_I+DT.s_R)*tan(DT.phi_VK_max)], [0, (DT.s_A+DT.s_I+DT.s_R)], 'r', 'LineWidth', 2);
+plot([Wing_Position1, Wing_Position1 + (DT.s_A+DT.s_I+DT.s_R)*tan(DT.phi_VK_max)], [0, -(DT.s_A+DT.s_I+DT.s_R)], 'r', 'LineWidth', 2);
+plot(CG_Rumpf_X,0,'xb');
+plot(Wing_Position1+CG_Wing_X,0,'ob');
+plot(CG_Data_Wing.MainGear(2) - CG_Data_Wing.Fluegel(2)+NP.l_mue_ges +Wing_MAC.XMAC, 0, 'xk');
+plot(CG_Data.Bugfahrwerk(2)*specs.l_rumpf,0,'*k');
+plot(CG_Gesamt_x + Wing_MAC.XMAC,0,'og','LineWidth', 3)
+axis equal;
+legend('','','','CG Rumpf','CG Flügelgruppe','CG HFW', 'CG BFW', 'CG Gesamt')
+
+% Achsenbeschriftungen und Titel
+xlabel('x [m]');
+ylabel('y [m]');
+title('Schwerpunktlagen');

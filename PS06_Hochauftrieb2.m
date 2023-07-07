@@ -12,7 +12,7 @@ load Zwischenergebnisse_PS5_Fluegelflaechen.mat
 load Ergebnisse_Hochauftrieb_1.mat
 load Ergebnisse_CG.mat
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Berechnung F_K
 % Tiefdecker
@@ -20,8 +20,8 @@ b_k_a = Ergebnisse_Fluegel.b * 0.7;
 b_k_i = specs.D_rumpf + 0.03 * Ergebnisse_Fluegel.b; %  3% Abstand zum Rump über Halbspannweite
 
 % Fläche Berechnen
-X = linspace(0,0.7,700);
-Fluegel = Ergebnisse_Fluegel.Fluegeltiefen_eta(1,1:700);
+X = linspace(0,0.7,600);
+Fluegel = Ergebnisse_Fluegel.Fluegeltiefen_eta(1,1:600);
 F_k = 2 * (Ergebnisse_Fluegel.b/2)*trapz(X,Fluegel); % MIT RUMPF!
 
 % Rumpf + extra stücke 3%
@@ -61,8 +61,8 @@ CA_F_max_VFFK = CA_F_max + delta_CA_F_max_SF_phi + delta_CA_F_max_VF;
 
 % Neuer Auftriebsanstieg
 c = Ergebnisse_Fluegel.l_m; % Mittlere Flügeltiefe benutzen
-c_ = 2.5 + Ergebnisse_Fluegel.l_m; % Quelle GPT und ACAMP
-test2=c_/c;
+c_ = 2 + Ergebnisse_Fluegel.l_m; % Quelle GPT und ACAMP
+%test2=c_/c;
 
 CA_alpha_F_FK_phi = CA_alpha_lowspeed * (((c_/c)-1) * (F_klappen/Ergebnisse_Fluegel.F)+1);
 
@@ -70,7 +70,8 @@ CA_alpha_F_FK_phi = CA_alpha_lowspeed * (((c_/c)-1) * (F_klappen/Ergebnisse_Flue
 %delta_CA_F_SF_phi
 c_k = c - (Ergebnisse_Fluegel.l_m * 0.65);
 test = c_k / c; % -> Für Landing ist dann der Faktor = 1.84
-delta_CA_F_SF_phi = (F_k / Ergebnisse_Fluegel.F) * (cos(Ergebnisse_Fluegel.phi_25_max)^2) *  1.84;
+delta_C_a_FK = 1.84;
+delta_CA_F_SF_phi = (F_k / Ergebnisse_Fluegel.F) * (cos(Ergebnisse_Fluegel.phi_25_max)^2) *  delta_C_a_FK;
 
 % Große Formel VFFK
                                                     %In Übungfolien ist
@@ -117,7 +118,7 @@ CA_F_max_VFFK_TO = CA_F_max + delta_CA_F_max_SF_phi_TO + delta_CA_F_max_VF_TO;
 
 % Neuer Auftriebsanstieg
 c_TO = Ergebnisse_Fluegel.l_m; % Mittlere Flügeltiefe benutzen
-c__TO = 2+Ergebnisse_Fluegel.l_m; % Quelle GPT und ACAMP
+c__TO = 1+Ergebnisse_Fluegel.l_m; % Quelle GPT und ACAMP
 test2=c_/c;
 
 CA_alpha_F_FK_phi_TO = CA_alpha_lowspeed * (((c__TO/c_TO)-1) * (F_klappen/Ergebnisse_Fluegel.F)+1);
@@ -126,7 +127,8 @@ CA_alpha_F_FK_phi_TO = CA_alpha_lowspeed * (((c__TO/c_TO)-1) * (F_klappen/Ergebn
 %delta_CA_F_SF_phi
 c_k = c - (Ergebnisse_Fluegel.l_m * 0.65);
 test = c_k / c; % -> Für Takeoff ist dann der Faktor = 1.3
-delta_CA_F_SF_phi_TO = (F_k / Ergebnisse_Fluegel.F) * cos(Ergebnisse_Fluegel.phi_25_max)^2 *  1.3;
+delta_C_a_FK_TO = 1.3;
+delta_CA_F_SF_phi_TO = (F_k / Ergebnisse_Fluegel.F) * cos(Ergebnisse_Fluegel.phi_25_max)^2 *  delta_C_a_FK_TO;
 
 % Große Formel VFFK
                                                         %IN ÜBUNG IST HIER
@@ -183,7 +185,7 @@ CA_MAX = ( CA_F_max + ( (CM0 + deltaCM_HKK)/( r_h/l_mue ) ) ) / (1 - ( deltaXSP/
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Aus Formel.m
 lambda       = 1;   %Zuspitzung des Flügels [-]      %% JASPER HILFE WELCHE WERTE RICHTIG?
-bf_s         = 0.7;    %prozentuale Spannweite der Hinterkantenklappen
+bf_s         = 0.7;    %prozentuale Spannweite der Hinterkantenklappen      %% Iterabel?
 %nach Skript Teil D Seite 114
 dcMk_dcmK  = ( 3.739701 * lambda^4 - 10.762986 * lambda^3 + 12.791164 * lambda^2 - 8.860305 * lambda + 4.093244) * bf_s + ...
                             (-5.744622 * lambda^4 + 17.487598 * lambda^3 - 21.515763 * lambda^2 + 13.990786 * lambda - 4.219788) * bf_s^2 +...
@@ -201,7 +203,7 @@ CA_REF_TO = CA_F_max_VFFK_TO/(1.2^2);       % Etwas zu klein
 CA_REF_LDG = CA_F_max_VFFK / (1.3^2);
 
 %Formel 10
-ck_1 = c - c * 0.65;
+ck_1 = c - c * 0.68;            % Nach 65% Holm etwas Toleranz
 theta = acos(2 * (ck_1/c) -1);
 
 %Formel 9
@@ -237,6 +239,80 @@ delta_CM_HKK_TO = dcMk_dcmK * delta_Cm_HKK_TO*(CA_REF_TO) + 0.7 * ((Ergebnisse_F
 
 %% Widerstandszuwachs durch Klappen
 
+
+% Profilwiderstand % Unterschiedlich bei TO /LDG
+delta_C_W_P_phi = 0.081;
+delta_C_W_P_phi_TO = 0.015;
+
+delta_C_W_P = delta_C_W_P_phi * (F_klappen/Ergebnisse_Fluegel.F) * cos(Ergebnisse_Fluegel.phi_25_max);
+delta_C_W_P_TO = delta_C_W_P_phi_TO * (F_klappen/Ergebnisse_Fluegel.F) * cos(Ergebnisse_Fluegel.phi_25_max);
+
+%Induzierter Widerstand % Unterschiedlich für TO/LDG
+
+delta_Ca_max_SF_phi_TO;
+delta_Ca_max_SF_phi;
+
+delta_Ca_max_SF_phi;
+
+
+% Klappenspannweite durch Spannweite 
+temp = 0.6;
+Ergebnisse_Fluegel.lambda;
+v = 0.001;                    % Richtig abgelesen?!?!
+w = 0.0073;
+
+delta_CM_K = 0.5; % Wie kommt man auf den Wert ?
+CA = 0.5;
+CA_F = CA * (1- ((deltaXSP/Ergebnisse_Fluegel.l_mue)/(r_h/Ergebnisse_Fluegel.l_mue))) - ((CM0+delta_CM_K)/(r_h/Ergebnisse_Fluegel.l_mue))/(r_h/Ergebnisse_Fluegel.l_mue);
+
+
+delta_C_W_Ind = CA_F * delta_C_a_FK * v + delta_Ca_max_SF_phi^2 *w;
+
+delta_C_W_Ind_TO = CA_F * delta_C_a_FK * v + delta_Ca_max_SF_phi_TO^2 *w;
+
+
+% Inteferenzwiderstand % Unterschiedlich bei TO/LDG
+
+
+delta_C_W_Inf = (1/3) * delta_C_W_P;
+delta_C_W_Inf_TO = (1/3) * delta_C_W_P_TO;
+
+% Vorflügelwiderstand % Gleich für TO/LDG weil gleiche Settings gewählt
+
+C_W_P_Min_RE = 0.3; %% JASPER WERT PLS!
+
+%Fläche Vorflügel ist von Holm vorne bis Vorderkante    % Über mittlere
+%Flügeltiefe ok?
+tiefe_Slats = Ergebnisse_Fluegel.l_m * 0.3;
+laenge_Slats = 24; % m
+laenge_Fluegel = Ergebnisse_Fluegel.b/2 - 3.15; %Ohne Rumpf?
+
+% A*b ansatz ? Genau genug
+F_VF = tiefe_Slats * laenge_Slats;
+
+
+delta_CW_VF = C_W_P_Min_RE * (F_VF/Ergebnisse_Fluegel.F) * (laenge_Slats/laenge_Fluegel) *cos(Ergebnisse_Fluegel.phi_25_max);
+
+
+% Fahrwerkswiderstand % Bleibt gleich bei TO/LDG
+
+% Braucht finale Werte aus Fahrwerk 
+durchmesser = 2;
+breite = 0.5;
+F_vorder = durchmesser*breite*4;   % Gleiche Werte weil vorne und hinten gleich groß sind
+F_hinter = durchmesser*breite*4;
+l_HFW = 30; % Ríchtiger Wert aus CG?
+delta_CA_F_0 = 0.3; % Richtiger Wert aus wo?
+
+delta_C_W_Fahrwerk = ((1.5 * F_vorder + 0.75 * F_hinter)/Ergebnisse_Fluegel.F) * (1 - 0.04 * ((CA_F + delta_CA_F_0 *(1.5 * (Ergebnisse_Fluegel.F / F_klappen)-1))/(l_HFW/Ergebnisse_Fluegel.l_m)));
+
+%% Plotten der 
+
+
+
+
+                                %% Archiv
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % C_w_F = C_W_oK + delta_C_W_K
 % 
 % delta_C_W_K = delta_C_W_P + delta_C_W_ind + delta_C_W_int;

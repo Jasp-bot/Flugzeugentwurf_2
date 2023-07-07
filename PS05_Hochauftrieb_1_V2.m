@@ -14,7 +14,7 @@ load Ergebnisse_Widerstand_FE2.mat
 
 
 %%%%%%%%%%%%%%%%%%%%%% Platzhalter-> Hier richtige Werte einfügen   von    PS4
-CA_F_CR = 0.5;
+CA_F_CR = 1.3;
 CAalpha_F = Ergebnisse_Auftriebsverteilung.VWA.c_AF_anstieg;
 
 %%%%%%%%%%%%%%%%%%%%%%
@@ -84,7 +84,7 @@ F = Ergebnisse_Fluegel.F; % Flügelfläche
 
 CA = 0.0; % Auftrieb im Cruise 
 
-CA_H = 0.2; % Aus Widerstand HLW CA
+CA_H = Ergebnisse_Widerstand_FE2.c_A_H(1); % Aus Widerstand HLW CA  %%
 
 
 %CA_F_cruise = CA - CA_H * 0.85 * (F_H/F);      % CA Flügel alleine im Cruise
@@ -149,7 +149,7 @@ CA_F_max = mac_hat_2h_lang_diesen_fehler_gesucht;
 
 %%%% Alles aufsummieren für Alpha_CA_F_Max
 
-alpha_CA_F_MAX = (CA_F_max/CA_alpha_lowspeed) + delta_alpha_CA_F_max + alpha_MAC_0_F;
+alpha_CA_F_MAX = (CA_F_max/CA_alpha_lowspeed) + delta_alpha_CA_F_max + alpha_MAC_0;
 
 alpha_CA_F_MAX_deg = rad2deg(alpha_CA_F_MAX);
 

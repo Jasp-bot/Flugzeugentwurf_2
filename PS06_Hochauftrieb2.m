@@ -71,7 +71,7 @@ CA_alpha_F_FK_phi = CA_alpha_lowspeed * (((c_/c)-1) * (F_klappen/Ergebnisse_Flue
 c_k = c - (Ergebnisse_Fluegel.l_m * 0.65);
 test = c_k / c; % -> Für Landing ist dann der Faktor = 1.84
 delta_C_a_FK = 1.84;
-delta_CA_F_SF_phi = (F_k / Ergebnisse_Fluegel.F) * (cos(Ergebnisse_Fluegel.phi_25_max)^2) *  delta_C_a_FK;
+delta_CA_F_SF_phi = (F_klappen / Ergebnisse_Fluegel.F) * (cos(Ergebnisse_Fluegel.phi_25_max)^2) *  delta_C_a_FK;
 
 % Große Formel VFFK
                                                     %In Übungfolien ist
@@ -128,7 +128,7 @@ CA_alpha_F_FK_phi_TO = CA_alpha_lowspeed * (((c__TO/c_TO)-1) * (F_klappen/Ergebn
 c_k = c - (Ergebnisse_Fluegel.l_m * 0.65);
 test = c_k / c; % -> Für Takeoff ist dann der Faktor = 1.3
 delta_C_a_FK_TO = 1.3;
-delta_CA_F_SF_phi_TO = (F_k / Ergebnisse_Fluegel.F) * cos(Ergebnisse_Fluegel.phi_25_max)^2 *  delta_C_a_FK_TO;
+delta_CA_F_SF_phi_TO = (F_klappen / Ergebnisse_Fluegel.F) * cos(Ergebnisse_Fluegel.phi_25_max)^2 *  delta_C_a_FK_TO;
 
 % Große Formel VFFK
                                                         %IN ÜBUNG IST HIER
@@ -217,8 +217,8 @@ dCM_dCA_deltaCA = 0.5 * (1 - (ck_1/c)) * (sin(theta)) / (pi - (theta - sin(theta
                                                             %und Takeoff ->
                                                             %Abgelesen aus
                                                             %Grafik!!!!!!
-delta_Cm_HKK_LDG = dCM_dCA_deltaCA * (c_/c) - ((CA_REF_LDG + 1.84 * (1-(F_k/Ergebnisse_Fluegel.F))) / (8)) * (c_/c) * ((c_/c)-1);
-delta_Cm_HKK_TO = dCM_dCA_deltaCA * (c_/c) - ((CA_REF_TO + 1.3 * (1-(F_k/Ergebnisse_Fluegel.F))) / (8)) * (c_/c) * ((c_/c)-1);
+delta_Cm_HKK_LDG = dCM_dCA_deltaCA * (c_/c) - ((CA_REF_LDG + 1.84 * (1-(F_klappen/Ergebnisse_Fluegel.F))) / (8)) * (c_/c) * ((c_/c)-1);
+delta_Cm_HKK_TO = dCM_dCA_deltaCA * (c_/c) - ((CA_REF_TO + 1.3 * (1-(F_klappen/Ergebnisse_Fluegel.F))) / (8)) * (c_/c) * ((c_/c)-1);
 
 %-> Für Landing ist dann der Faktor = 1.84
 %-> Für takeoff ist dann der Faktor = 1.3
@@ -306,7 +306,15 @@ delta_CA_F_0 = 0.3; % Richtiger Wert aus wo?
 
 delta_C_W_Fahrwerk = ((1.5 * F_vorder + 0.75 * F_hinter)/Ergebnisse_Fluegel.F) * (1 - 0.04 * ((CA_F + delta_CA_F_0 *(1.5 * (Ergebnisse_Fluegel.F / F_klappen)-1))/(l_HFW/Ergebnisse_Fluegel.l_m)));
 
-%% Plotten der 
+%% Plotten der Reziproken Gleitzahlen mit und ohne Fahrwerk für TO,LDG und Clean
+
+
+
+
+
+%% Vergleichen mit Schubanforderung FE1
+
+
 
 
 

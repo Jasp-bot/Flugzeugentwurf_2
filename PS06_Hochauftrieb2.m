@@ -2,6 +2,8 @@ clc
 clear
 close
 
+%% Aus FE 2
+
 load Projekt_specs.mat
 load Ergebnisse_Auftrieb_Momente.mat
 load Ergebnisse_Fluegel_Tank_NP.mat
@@ -11,6 +13,28 @@ load Ergebnisse_Start_Landeanforderungen.mat
 load Zwischenergebnisse_PS5_Fluegelflaechen.mat
 load Ergebnisse_Hochauftrieb_1.mat
 load Ergebnisse_CG.mat
+
+%% Aus FE 1
+
+load Projekt_specs.mat;
+load Ergebnisse_ISA_DATA.mat
+load Ergebnisse_Basis_stat_m.mat
+load Ergebnisse_stat_Flaechenbelastung_Fluegelflaeche.mat
+load Ergebnisse_Start_Landeanforderungen.mat
+load Ergebnisse_Fluegel_Tank_NP.mat;
+
+load Ergebnisse_Endwerte_Iteration_V1.mat
+Endwerte_Iteration = Berechnungen_PS10_Widerstand;
+
+%% Laden der Dateien
+
+load Projekt_specs.mat;
+load Ergebnisse_ISA_DATA.mat;
+load Ergebnisse_Basis_stat_m.mat;
+load Ergebnisse_stat_Flaechenbelastung_Fluegelflaeche.mat;
+load Ergebnisse_Start_Landeanforderungen.mat;
+load Ergebnisse_Fluegel_Tank_NP.mat;
+load Ergebnisse_Widerstand.mat;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -88,7 +112,7 @@ ylabel("Auftriebsbeiwert des Flügels C_{A} in [-]","FontWeight","bold")
 xlabel("Anstellwinkel \alpha_{F} in °","FontWeight","bold")
 
 
-alphas = -14:0.01:alpha_F_max_VFFK_deg-delta_alpha_CA_F_max_deg; % normal Plotten bis alphamax - delta alpha
+alphas = -15:0.01:alpha_F_max_VFFK_deg-delta_alpha_CA_F_max_deg; % normal Plotten bis alphamax - delta alpha
 CA_s = CA_alpha_lowspeed.*(deg2rad(alphas-alpha_MAC_0_deg)) + delta_CA_F_max_SF_phi;
 plot(alphas,CA_s,'green')
 
@@ -143,14 +167,67 @@ alpha_F_max_VFFK_deg_TO = rad2deg(alpha_F_max_VFFK_TO);
 alphas = -12:0.01:alpha_F_max_VFFK_deg_TO-delta_alpha_CA_F_max_deg; % normal Plotten bis alphamax - delta alpha
 CA_s = CA_alpha_lowspeed.*(deg2rad(alphas-alpha_MAC_0_deg)) + delta_CA_F_max_SF_phi_TO;
 plot(alphas,CA_s,'red')
-
+grid on
 plot([alpha_F_max_VFFK_deg_TO-delta_alpha_CA_F_max_deg],[0],'redx')
 plot([alpha_F_max_VFFK_deg-delta_alpha_CA_F_max_deg],[0],'greenx')
 
 plot([0],[CA_F_max_VFFK_TO],'redx')
 plot([0],[CA_F_max_VFFK],'greenx')
 
-grid on
+
+plot(alpha_CA_F_MAX_deg, 0, 'xblue')
+%CA MAX
+plot(0, CA_F_max,"xblue")
+
+%% Abfall der Polaren Plotten
+
+% Parameter der quadratischen Funktion
+a = 0.0057; % Koeffizient von x^2
+h = alpha_F_max_VFFK_deg; % x-Koordinate des Maximums
+k = CA_F_max_VFFK; % y-Koordinate des Maximums
+
+% Bereich der x-Achse
+x = linspace(h-6, h+7, 10); % Hier können Sie den Bereich anpassen
+
+% Quadratische Funktion berechnen
+y = -a * (x - h).^2 + k;
+
+% Plot erstellen
+plot(x, y,"green--")
+plot(h, k, 'gx')
+
+
+% Parameter der quadratischen Funktion
+a = 0.0052; % Koeffizient von x^2
+h = alpha_F_max_VFFK_deg_TO; % x-Koordinate des Maximums
+k = CA_F_max_VFFK_TO; % y-Koordinate des Maximums
+
+% Bereich der x-Achse
+x = linspace(h-7, h+7, 10); % Hier können Sie den Bereich anpassen
+
+% Quadratische Funktion berechnen
+y = -a * (x - h).^2 + k;
+
+% Plot erstellen
+plot(x, y,"red--")
+plot(h, k, 'rx')
+
+
+
+% Parameter der quadratischen Funktion
+a = 0.0058; % Koeffizient von x^2
+h = alpha_CA_F_MAX_deg; % x-Koordinate des Maximums
+k = CA_F_max; % y-Koordinate des Maximums
+
+% Bereich der x-Achse
+x = linspace(h-7, h+7, 10); % Hier können Sie den Bereich anpassen
+
+% Quadratische Funktion berechnen
+y = -a * (x - h).^2 + k;
+
+% Plot erstellen
+plot(x, y,"blue--")
+plot(h, k, 'bx')
 
 % Kritische Points
 %Alpha MAX
@@ -172,7 +249,9 @@ P3 = [-14 30];
 P4 = [0 0];
 plot(P3,P4,'black')
 
-legend("0° Klappenausschlag","Landing mit 45° Klappenausschlag","Takeoff mit 20° Klappenausschlag",'','','','')
+ylim([-1, 3])
+
+legend("Clean Konfiguration mit 0° Klappenausschlag","Landing mit 45° Klappenausschlag","Takeoff mit 20° Klappenausschlag",'','','','','Location', 'southeast')
 
 
 
@@ -311,6 +390,20 @@ delta_CA_F_0 = 0.3; % Richtiger Wert aus wo?
 delta_C_W_Fahrwerk = ((1.5 * F_vorder + 0.75 * F_hinter)/Ergebnisse_Fluegel.F) * (1 - 0.04 * ((CA_F + delta_CA_F_0 *(1.5 * (Ergebnisse_Fluegel.F / F_klappen)-1))/(l_HFW/Ergebnisse_Fluegel.l_m)));
 
 
+%% Gesamtwiderstand durch klappen
+
+delta_CW_klappen_LDG = delta_CW_VF + delta_C_W_Ind + delta_C_W_Inf + delta_C_W_P;
+delta_CW_klappen_TO = delta_CW_VF + delta_C_W_Ind_TO + delta_C_W_Inf_TO + delta_C_W_P_TO;
+
+delta_CW_klappen_LDG_fahrwerk = delta_CW_VF + delta_C_W_Ind + delta_C_W_Inf + delta_C_W_P + delta_C_W_Fahrwerk;
+delta_CW_klappen_TO_fahrwerk = delta_CW_VF + delta_C_W_Ind_TO + delta_C_W_Inf_TO + delta_C_W_P_TO + delta_C_W_Fahrwerk;
+
+%% Aufaddieren zu dem vorhandenen Widerstand
+
+Widerstand.C_w_clean_all = Widerstand.C_w_clean_all + delta_CW_VF + delta_C_W_Ind + delta_C_W_Inf + delta_C_W_P;
+
+
+
 %% Prüfen ob CA max passt für alle Flugphasen
 
 % check ob StartCA erreicht
@@ -319,7 +412,261 @@ startschub.c_A_max_thrust_match < CA_F_max_VFFK_TO
 % Check ob lande CA erreicht
 landeanvorderung.c_A_max_LDG < CA_F_max_VFFK
 
+
+
+
+
+
+
+
+
+
 %% Plotten der Reziproken Gleitzahlen mit und ohne Fahrwerk für TO,LDG und Clean
+% Gleitzahl -> x ist Cw y ist Ca
+
+% Alle CA´s bestimmen für verschiedene Alpha
+% Alle CW_s bestimmen für verschiedene Alpha
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Flughoehe = specs.flight_level * 10^2 ;                         % in ft
+% hoehe = round(unitsratio('m','ft')*Flughoehe);     % in m
+% 
+% p_CR = ISA.p(hoehe); % p_Basis Druckvector aus ISA+15
+% rho_CR = ISA.rho(hoehe);  % rho_Basis Dichtevector aus ISA+15
+% 
+% G_To = Ergebnisse_stat_Flaechenbelastung.G_To;
+% 
+% %% Berechnung Reynolds
+% 
+% Ind_W.u_cr = specs.Ma_CR * ISA.a(hoehe) ; % fuer reynolds Umstroemungsgeachw
+% 
+% 
+% v_kin = ISA.kin_visk(hoehe); % kin vis
+% Ind_W.Re_crit = (Ind_W.u_cr * specs.l_rumpf)/v_kin;
+% % cf_turb = 0.455 / (log(Re_crit)^2.58); % const
+% 
+% %% Flügel
+%                                     %d/l Aus Wingdata
+% Ind_W.CwF_Fluegel_I = 0.0054 * 1 * (1 + 3 * 0.13 * (cos(NP.phi_25_I))^2) * DT.F_I;
+% Ind_W.CwF_Fluegel_A = 0.0054 * 1 * (1 + 3 * 0.13 * (cos(NP.phi_25_A))^2) * DT.F_A;
+% %CwF_Fluegel_R = 0.0054 * 1 * (1 + 3 * 0.13 * (cos(phi_25_R))^2) * F_R; %
+% %Hat keinen Einfluss auf den Cw wert
+% 
+% Ind_W.CwF_Fluegel = (Ind_W.CwF_Fluegel_I + Ind_W.CwF_Fluegel_A)*2;% + CwF_Fluegel_R;
+% 
+% %% Rumpf
+% Ind_W.b_rumpf = specs.D_rumpf;
+% Ind_W.h_rumpf = specs.D_rumpf;
+% Ind_W.r_rumpf_faktor = 1; 
+% 
+% Ind_W.CwF_Rumpf = 0.0031 * Ind_W.r_rumpf_faktor * specs.l_rumpf * (Ind_W.b_rumpf + Ind_W.h_rumpf); % Formel 6 
+% 
+% %% Leitwerk
+% 
+% % Ind_W.CwF_LWT = (Ind_W.CwF_Rumpf + Ind_W.CwF_Fluegel) * 0.24;  % 1.24
+% Ind_W.CwF_LWT = 1.24; % Annahme aud Aufgabenstellung
+% %% TW
+%     % Formfaktor r_n, berücksichtigt Widerstand von Pylonen sowie Interferenz
+%         %  1,50  alle Triebwerke in Gondeln am Flügel 
+%         %  1,65  dito, jedoch ein Triebwerk im Rumpfheck
+%         %  1,25  Triebwerke in Gondeln am Rumpfheck
+%         %  1,00  interne Triebwerke im Rumpfeinlauf
+%         %  0,30  Triebwerke in der Flügelwurzel 
+%     % Formfaktor für Schubumkehr
+%         %  1,00  mit Schubumkehranlage
+% 
+% % Muss nochmal überprüft werden Ind_W.S_0
+%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Ind_W.S_0 = startschub.S0_GTo_To(1,startschub.Startstrecke) * G_To; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% Ind_W.PSI = 30; % (24s - 40s) [s] %%%%%%% kein plan !!!!!!!!!!! nachfragen
+% 
+% Ind_W.CwF_TW = 1.72 * 1.5 * 1 * ((5 + specs.bypass)/(1+specs.bypass)) * ((Ind_W.S_0)/(ISA.p0 * Ind_W.PSI));
+% 
+% %% Fahrwerk
+% Ind_W.r_uc = 1; % Formfaktor Fahrwerk 
+%                 %  1,00  voll einziehbares Fahrwerk ohne Verkleidung
+%                 %  1,03  Hauptfahrwerk in PTL-Triebwerksgondel
+%                 %        eingezogen
+%                 %  1,08  Hauptfahrwerk in Rumpfgondel eingezogen
+%                 %        (Transall)
+%                 %  1,25  nicht einziehbares Fahrwerk
+%                 %  1,35  nicht einziehbares Fahrwerk, unverkleidet
+% 
+% %% Cw0 
+% 
+% N_W.r_re = 47 * Ind_W.Re_crit^(-0.2); % const
+% 
+% N_W.Cw0F = N_W.r_re * Ind_W.r_uc * ( Ind_W.CwF_LWT * (Ind_W.CwF_Fluegel + Ind_W.CwF_Rumpf) + Ind_W.CwF_TW);
+% N_W.Cw0 = N_W.Cw0F / ((DT.F_I + DT.F_A )*2);%+ F_R ); %% Frage die ganze Flügelfläche(F/2) oder nur die Umspülte Flügelfläche 
+% % Cw0 = 0.016
+% 
+% %% CA Werte
+% 
+% 
+% Widerstand.y_CR = 0:0.001:0.85; % gewählter wert aus profilPDF Seite 4     %% REISEFLUG -> CA Anpassen an maxmialen Wert CA_max
+% oswald_clean = 0.9; % von 0.85 bis 0.9
+% d_cW_compr_clean = 0;
+% 
+% oswald_comp_LR = 0.8;
+% d_cW_compr_LR = 0.0005;
+% 
+% oswald_comp_HS = 0.75;
+% d_cW_compr_HS = 0.002;
+% 
+% 
+% for x = 1 : length(Widerstand.y_CR)       
+%  % CLEAN
+%     Widerstand.C_w_clean = N_W.Cw0 + ((Widerstand.y_CR(x)^2)/...
+%         (pi*Ergebnisse_Fluegel.streckung_phi25_max * oswald_clean)) + d_cW_compr_clean; 
+%     Widerstand.C_w_clean_all(x) = Widerstand.C_w_clean;
+%  % COMPRSIBILITY LR
+%     Widerstand.C_w_LR = N_W.Cw0 + ((Widerstand.y_CR(x)^2)/...
+%         (pi*Ergebnisse_Fluegel.streckung_phi25_max*oswald_comp_LR)) + d_cW_compr_LR;
+%     Widerstand.C_w_LR_all(x) = Widerstand.C_w_LR;
+%  % COMPRESIBILITY HIGH SPEED
+%     Widerstand.C_w_HS = N_W.Cw0 + ((Widerstand.y_CR(x)^2)/...
+%         (pi*Ergebnisse_Fluegel.streckung_phi25_max*oswald_comp_HS)) + d_cW_compr_HS; 
+%     Widerstand.C_w_HS_all(x) = Widerstand.C_w_HS;
+% 
+% end
+% 
+% %% LANGSAMFLUG / Lsndeanflug / Takeoff
+% 
+% %for x = 1 : length(y)       %CLEAN zum Vergleich
+% 
+% %    C_w_clean = Cw0 + ((y(x)^2)/(pi*10.9*0.9))+0;
+% %    C_w_clean_all(x) = C_w_clean;
+% %end
+% 
+% %plot(C_w_clean_all,y)
+% Widerstand.y_to = 0:0.001:startschub.c_A_max_thrust_match;
+% 
+% oswald_comp_TO = 0.85; % 0.8 - 0.85
+% d_cW_compr_TO = 0.02; % 0.01 bis 0.02
+% 
+% d_cW_compr_GD = 0.0115; % 0.0115 - 0.025
+% 
+% for x = 1 : length(Widerstand.y_to)       %TO CLEAN ohne Fahrwerk
+% 
+%     Widerstand.C_w_TO_clean = N_W.Cw0 + ((Widerstand.y_to(x)^2)/(pi * Ergebnisse_Fluegel.streckung_phi25_max * oswald_comp_TO)) + d_cW_compr_TO;
+%     Widerstand.C_w_TO_clean_all(x) = Widerstand.C_w_TO_clean;
+%     %TO mit Fahrwerk
+%     Widerstand.C_w_TO = N_W.Cw0 + ((Widerstand.y_to(x)^2)/(pi * Ergebnisse_Fluegel.streckung_phi25_max * oswald_comp_TO)) + d_cW_compr_TO + d_cW_compr_GD;
+%     Widerstand.C_w_TO_all(x) = Widerstand.C_w_TO;
+% end
+% 
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%% LANGSAMFLUG LANDING
+% 
+% Widerstand.y = 0:0.001:landeanvorderung.c_A_max_LDG;
+% oswald_comp_LDG = 0.8; % 0.75 bis 0.8
+% d_cW_compr_LDG = 0.065; % 0.055 - 0.065
+% 
+% for x = 1 : length(Widerstand.y)       %LDG ohne Fahrwerk
+% 
+%     Widerstand.C_w_LDG_clean = N_W.Cw0 + ((Widerstand.y(x)^2)/(pi * Ergebnisse_Fluegel.streckung_phi25_max * oswald_comp_LDG)) + d_cW_compr_LDG;
+%     Widerstand.C_w_LDG_clean_all(x) = Widerstand.C_w_LDG_clean;
+%     %LDG mit Fahrwerk
+%     Widerstand.C_w_LDG = N_W.Cw0 + ((Widerstand.y(x)^2)/(pi * Ergebnisse_Fluegel.streckung_phi25_max * oswald_comp_LDG)) + d_cW_compr_LDG + d_cW_compr_GD;
+%     Widerstand.C_w_LDG_all(x) = Widerstand.C_w_LDG;
+% end
+% 
+% %%%%%%%%%%%%%%%% REZIPROKE GLEITZAHLEN! 
+% 
+% 
+% % E = CA / CW
+% GZ.CA_CW_Clean = Widerstand.y_CR./Widerstand.C_w_clean_all;
+% GZ.CA_CW_LR = Widerstand.y_CR./Widerstand.C_w_LR_all;
+% GZ.CA_CW_HS = Widerstand.y_CR./Widerstand.C_w_HS_all;
+% GZ.CA_CW_TO_Clean = Widerstand.y_to./Widerstand.C_w_TO_clean_all;
+% GZ.CA_CW_TO = Widerstand.y_to./Widerstand.C_w_TO_all;
+% GZ.CA_CW_LDG_Clean = Widerstand.y./Widerstand.C_w_LDG_clean_all;
+% GZ.CA_CW_LDG = Widerstand.y./Widerstand.C_w_LDG_all;
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+figure(2)
+hold on
+grid on
+title('Lilienthalpolare')
+plot(Widerstand.C_w_clean_all,Widerstand.y_CR,'k')
+plot(Widerstand.C_w_LR_all,Widerstand.y_CR,'b')
+plot(Widerstand.C_w_HS_all,Widerstand.y_CR,'--k')
+legend('Cruise Clean Configuration','Cruise Long Range','Cruise High Speed','Location','southeast')
+
+xlabel('Widerstandsbeiwert C_w')
+ylabel('Auftriebsbeiwert C_A')
+hold off
+
+
+
+figure(3)
+hold on
+grid on
+title('Lilienthalpolare')
+plot(Widerstand.C_w_clean_all,Widerstand.y_CR,'k')
+plot(Widerstand.C_w_TO_clean_all,Widerstand.y_to)
+plot(Widerstand.C_w_TO_all,Widerstand.y_to)
+
+% Landung
+
+plot(Widerstand.C_w_LDG_clean_all,Widerstand.y)
+plot(Widerstand.C_w_LDG_all,Widerstand.y)
+
+legend('Cruise Clean Configuration','TO Clean Configuration','TO Gear Down','LD Clean Configuration','LD Gear Down', 'Location','southeast')
+
+xlabel('Widerstandsbeiwert C_w')
+ylabel('Auftriebsbeiwert C_A')
+ylim([0 2.7])
+hold off
+
+figure(4)
+hold on
+grid on
+title('Reziproke Gleitzahl')
+plot(Widerstand.y_CR,GZ.CA_CW_Clean, 'b');
+plot(Widerstand.y_CR,GZ.CA_CW_LR,'b--');
+plot(Widerstand.y_CR,GZ.CA_CW_HS,'b-.');
+plot(Widerstand.y_to,GZ.CA_CW_TO_Clean,'r');
+plot(Widerstand.y_to,GZ.CA_CW_TO,'r--');
+plot(Widerstand.y,GZ.CA_CW_LDG_Clean,'m');
+plot(Widerstand.y,GZ.CA_CW_LDG,'m--')
+xlabel("Auftriebsbeiwert C_A")
+ylabel("Reziproke Gleitzahl E")
+
+xlim([0 2.7])
+
+
+plot(Ergebnisse_stat_Flaechenbelastung.C_A_CR, schub_CR.Eta, 'oblack','MarkerSize', 8)
+plot(startschub.c_A_max_thrust_match, startschub.Eta_To_inv(3,1),'xblack','MarkerSize', 8)
+plot(landeanvorderung.c_A_max_LDG,(1/landeanvorderung.Eta_LDG),'*black','MarkerSize', 8)
+
+plot(Widerstand.y_CR(1,(round(Ergebnisse_stat_Flaechenbelastung.C_A_CR * 10^3))),...
+    GZ.CA_CW_LR(1,(round(Ergebnisse_stat_Flaechenbelastung.C_A_CR * 10^3))),'or','MarkerSize', 8) % 523
+plot(Widerstand.y_to(1,(round(startschub.c_A_max_thrust_match * 10^3))),...
+    GZ.CA_CW_TO(1,(round(startschub.c_A_max_thrust_match * 10^3))),'xr','MarkerSize', 8) % 1801
+plot(Widerstand.y(1,(round(landeanvorderung.c_A_max_LDG * 10^3))),...
+    GZ.CA_CW_LDG(1,(round(landeanvorderung.c_A_max_LDG * 10^3))),'*red','MarkerSize', 8) % 2401
+
+legend("Cruise Clean","Cruise LR","Cruise HS","TO Clean","TO Gear Down","LDG clean","LDG Gear Down",...
+    'Reale Gleitzahl CR','Reale Gleitzahl TO','Reale Gleitzahl LDG','Ideale Gleitzahl CR','Ideale Gleitzahl TO','Ideale Gleitzahl LDG')
+
+hold off
+
+
+
+
+
+
+
+
 
 
 
@@ -332,47 +679,6 @@ landeanvorderung.c_A_max_LDG < CA_F_max_VFFK
 
 
 
-                                %% Archiv
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% C_w_F = C_W_oK + delta_C_W_K
-% 
-% delta_C_W_K = delta_C_W_P + delta_C_W_ind + delta_C_W_int;
-% delta_C_W_Fahrwerk + delta_C_W_VF;
-% 
-% 
-% % Profilwiderstandszuwachs
-% 
-% F_K_F_rumpf = 300;
-% F_K_F_ohnerumpf = 200;
-% 
-% F_K_F = F_K_F_rumpf - F_K_F_ohnerumpf;
-%                 % Wird abglesen Landing und Takeoff einzeln rechnen!!!
-% delta_C_W_P = 0.065 * F_K_F * cos(Ergebnisse_Fluegel.phi_25_max);
-% 
-% 
-% % induzierter Widerstand -> w,v ablesen woher delta_...???
-% w = 0.3;
-% v = 0.5;
-% delta_C_A_K_phi0 = 1;
-% 
-% CA_F = CA * (1 - (delta_x_SP / l_mue)/(rh/l_mue)) - (c_m_0 + delta_C_M_K)/(rh/l_mue);
-% 
-% delta_C_W_ind = CA_F * delta_C_A_K_phi0 * v + delta_C_A_K_phi0^2 * w;
-% 
-% 
-% % inteferenz Widerstand
-% delta_C_W_int = (1/3) * delta_C_W_P;
-% 
-% 
-% % Fahrwerkswiderstand
-% 
-% delta_C_W_Fahrwerk = ((1.5 * F_vorder + 0.75 * F_hinter)/ F) * (1- 0.04 * ((CA_F + delta_CA_F_0 * (1.5 * (F/F_K)-1))/(l_HFW/l_mue)))^2;
-% 
-% 
-% % Vorflügelwiderstand
-% 
-% delta_C_W_VF = 0;
-% 
 
 
 
@@ -385,6 +691,20 @@ landeanvorderung.c_A_max_LDG < CA_F_max_VFFK
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
 %% OLD/ ARCHIV
 % 
 % 

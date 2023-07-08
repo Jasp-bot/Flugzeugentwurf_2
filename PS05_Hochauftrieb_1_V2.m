@@ -11,13 +11,17 @@ load Ergebnisse_Start_Landeanforderungen.mat
 load Zwischenergebnisse_PS5_Fluegelflaechen.mat
 load Ergebnisse_Widerstand_FE2.mat
 
-
+phi_50 = atan(tan(Ergebnisse_Fluegel.phi_25_max)-(4/Ergebnisse_Fluegel.streckung_phi25_max)* (0.5-0.25) * (1-Ergebnisse_Fluegel.lambda)/(1-Ergebnisse_Fluegel.lambda));
 
 %%%%%%%%%%%%%%%%%%%%%% Platzhalter-> Hier richtige Werte einfügen   von    PS4
-CA_F_CR = 1.3;
-CAalpha_F = Ergebnisse_Auftriebsverteilung.VWA.c_AF_anstieg;
+CA_F_CR = 0.5;  % JASPER HILFE!
+%CAalpha_F = Ergebnisse_Auftriebsverteilung.VWA.c_AF_anstieg;
+
+CAalpha_F = (pi * Ergebnisse_Fluegel.streckung_phi25_max) / (1+sqrt(1 + ((Ergebnisse_Fluegel.streckung_phi25_max/2)^2) * (tan(phi_50)^2 + (1-specs.Ma_CR^2))))
 
 %%%%%%%%%%%%%%%%%%%%%%
+
+
 
 %% 1. Winkel Bezugsflügel zur Nullauftriebsrichtung
 % CA_F_CR = Flügelauftriebsbeiwert Reiseflug aus Trimmbetrachtung
@@ -120,7 +124,7 @@ phi_50 = atan(tan(Ergebnisse_Fluegel.phi_25_max)-(4/streckung)* (0.5-0.25) * (1-
 phi_50_deg = rad2deg(phi_50);
 
 [~,a,~,~,~] = atmosisa(50);
-M = (landeanvorderung.v_50 * 1.3)/a;
+M = (landeanvorderung.v_50)/a;
 %M = 0.2;
 %CAalpha_F = Ergebnisse_Auftriebsverteilung.VWA.c_AF_anstieg;    %->Das
 %wäre für Cruise
@@ -130,12 +134,12 @@ M = (landeanvorderung.v_50 * 1.3)/a;
 % Alpha 0,F -> Oben bekannt aus Profilkatalog
 alpha_0;
 % CAAlpha bei MA 0.269 -> Berechnet
-CA_alpha_lowspeed =  (pi * Ergebnisse_Fluegel.streckung_phi25_max)/(1 + sqrt(1 + ((streckung/2)^2) * (tan(Ergebnisse_Fluegel.phi_50)^2 + (1 - M^2)))); %->muss kleiner sein als bei Highspeed
-%CA_alpha_lowspeed = 2.1;
+CA_alpha_lowspeed =  (pi * Ergebnisse_Fluegel.streckung_phi25_max)/(1 + sqrt(1 + ((Ergebnisse_Fluegel.streckung_phi25_max/2)^2) * (tan(Ergebnisse_Fluegel.phi_50)^2 + (1 - (M^2))))); %->muss kleiner sein als bei Highspeed
+% CA_alpha_lowspeed = 2.1;
 % Alpha CA F Max -> Ablesen
 delta_alpha_CA_F_max = deg2rad(3.6);
 delta_alpha_CA_F_max_deg = 3.6;
-%CA F Max
+% CA F Max
 
 CA22DMax = 1.4;
 
@@ -188,7 +192,7 @@ plot([0 20],[CA_F_max CA_F_max], 'red')
 plot(0, CA_F_max,"xred")
 
 %Alpha 0
-plot(alpha_MAC_0_F_deg, 0,'xred')
+plot(alpha_MAC_0_deg, 0,'xred')
 
 plot([alpha_CA_F_MAX_deg  alpha_CA_F_MAX_deg-delta_alpha_CA_F_max_deg],[CA_F_max CA_F_max],'xgreen')
 

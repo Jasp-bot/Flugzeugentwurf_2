@@ -44,14 +44,14 @@ F_klappen = F_k - F_rumpf;
 CA_F_max; %-> Übernehmen
 
 % kleine Formel deltaCAFMAX,SF,phi
-delta_Ca_max_SF_phi = 1.59;  % Ablesen aus Grafik bei Klappenausschlag ~45°
+delta_Ca_max_SF_phi = 1.57;  % Ablesen aus Grafik bei Klappenausschlag ~45°
 %                                                                       in Rad oder Grad?
-delta_CA_F_max_SF_phi = delta_Ca_max_SF_phi * (F_klappen/Ergebnisse_Fluegel.F) * cos(Ergebnisse_Fluegel.phi_25_max)^2;
+delta_CA_F_max_SF_phi = delta_Ca_max_SF_phi * (F_klappen/Ergebnisse_Fluegel.F) * cos(Ergebnisse_Fluegel.phi_25_max^2);
     
 %Annahme eta_opt für slat = 55°
 % Vorflügel           % 0.93 = Faktor für Vorflügel/Slat        % Annahme
 % 74% des Flügels mit Slats belegt      Annahme Slats tiefe = 1m -> 1/l_m=6,57 = 0.152 
-delta_CA_F_max_VF = 0.93 * 0.64 * 0.69 * 1.0 * (cos(Ergebnisse_Fluegel.phi_25_max)^2);
+delta_CA_F_max_VF = 0.93 * 0.94 * 0.99 * 0.8 * (cos(rad2deg(Ergebnisse_Fluegel.phi_25_max)-5))^2;
                                                         %Rad oder Degree ? 
 
 
@@ -61,7 +61,7 @@ CA_F_max_VFFK = CA_F_max + delta_CA_F_max_SF_phi + delta_CA_F_max_VF;
 
 % Neuer Auftriebsanstieg
 c = Ergebnisse_Fluegel.l_m; % Mittlere Flügeltiefe benutzen
-c_ = 2 + Ergebnisse_Fluegel.l_m; % Quelle GPT und ACAMP
+c_ = 2.5 + Ergebnisse_Fluegel.l_m; % Quelle GPT und ACAMP
 %test2=c_/c;
 
 CA_alpha_F_FK_phi = CA_alpha_lowspeed * (((c_/c)-1) * (F_klappen/Ergebnisse_Fluegel.F)+1);
@@ -71,12 +71,12 @@ CA_alpha_F_FK_phi = CA_alpha_lowspeed * (((c_/c)-1) * (F_klappen/Ergebnisse_Flue
 c_k = c - (Ergebnisse_Fluegel.l_m * 0.65);
 test = c_k / c; % -> Für Landing ist dann der Faktor = 1.84
 delta_C_a_FK = 1.84;
-delta_CA_F_SF_phi = (F_klappen / Ergebnisse_Fluegel.F) * (cos(Ergebnisse_Fluegel.phi_25_max)^2) *  delta_C_a_FK;
+delta_CA_F_SF_phi = (F_klappen / Ergebnisse_Fluegel.F) * (cos(Ergebnisse_Fluegel.phi_25_max^2)) *  delta_C_a_FK;
 
 % Große Formel VFFK
                                                     %In Übungfolien ist
                                                     %hier ein +                                                                             %+
-alpha_F_max_VFFK = (CA_F_max_VFFK / CA_alpha_F_FK_phi) + (((CA_F * (alpha_MAC_0_F + deg2rad(6)) + delta_CA_F_SF_phi)) / CA_alpha_F_FK_phi) - deg2rad(6) + delta_alpha_CA_F_max;
+alpha_F_max_VFFK = (CA_F_max_VFFK / CA_alpha_F_FK_phi) - (((CA_F * (alpha_MAC_0_F + deg2rad(6)) + delta_CA_F_SF_phi)) / CA_alpha_F_FK_phi) + deg2rad(6) + delta_alpha_CA_F_max + alpha_MAC_0_F;
 
 alpha_F_max_VFFK_deg = rad2deg(alpha_F_max_VFFK);
 
@@ -103,12 +103,12 @@ CA_F_max; %-> Übernehmen
 % kleine Formel deltaCAFMAX,SF,phi
 delta_Ca_max_SF_phi_TO = 1.1;  % Ablesen aus Grafik bei Klappenausschlag ~45°
 %                                                                       in Rad oder Grad?
-delta_CA_F_max_SF_phi_TO = delta_Ca_max_SF_phi_TO * (F_klappen/Ergebnisse_Fluegel.F) * cos(Ergebnisse_Fluegel.phi_25_max)^2;
+delta_CA_F_max_SF_phi_TO = delta_Ca_max_SF_phi_TO * (F_klappen/Ergebnisse_Fluegel.F) * cos(Ergebnisse_Fluegel.phi_25_max^2);
     
 %Annahme eta_opt für slat = 55°
 % Vorflügel           % 0.93 = Faktor für Vorflügel/Slat        % Annahme
 % 74% des Flügels mit Slats belegt      Annahme Slats tiefe = 1m -> 1/l_m=6,57 = 0.152 
-delta_CA_F_max_VF_TO = 0.93 * 0.64 * 0.69 * 1.0 * (cos(Ergebnisse_Fluegel.phi_25_max)^2);
+delta_CA_F_max_VF_TO = 0.93 * 0.94 * 0.99 * 0.8 * (cos(rad2deg(Ergebnisse_Fluegel.phi_25_max)-5))^2; %0.93 * 0.64 * 0.69 * 1.0 * (cos(Ergebnisse_Fluegel.phi_25_max)^2);
                                                         %Rad oder Degree ? 
 
 
@@ -117,23 +117,23 @@ delta_CA_F_max_VF_TO = 0.93 * 0.64 * 0.69 * 1.0 * (cos(Ergebnisse_Fluegel.phi_25
 CA_F_max_VFFK_TO = CA_F_max + delta_CA_F_max_SF_phi_TO + delta_CA_F_max_VF_TO;
 
 % Neuer Auftriebsanstieg
-c_TO = Ergebnisse_Fluegel.l_m; % Mittlere Flügeltiefe benutzen
-c__TO = 1+Ergebnisse_Fluegel.l_m; % Quelle GPT und ACAMP
-test2=c_/c;
+c_TO = 0.5; %Ergebnisse_Fluegel.l_m; % Mittlere Flügeltiefe benutzen
+c__TO = .686; %1.5+Ergebnisse_Fluegel.l_m; % Quelle GPT und ACAMP
+test2= c__TO/c_TO;
 
-CA_alpha_F_FK_phi_TO = CA_alpha_lowspeed * (((c__TO/c_TO)-1) * (F_klappen/Ergebnisse_Fluegel.F)+1);
+CA_alpha_F_FK_phi_TO = CA_alpha_lowspeed * (((c__TO/c_TO)-1) * (F_klappen/Ergebnisse_Fluegel.F) + 1);
 
 
 %delta_CA_F_SF_phi
 c_k = c - (Ergebnisse_Fluegel.l_m * 0.65);
 test = c_k / c; % -> Für Takeoff ist dann der Faktor = 1.3
 delta_C_a_FK_TO = 1.3;
-delta_CA_F_SF_phi_TO = (F_klappen / Ergebnisse_Fluegel.F) * cos(Ergebnisse_Fluegel.phi_25_max)^2 *  delta_C_a_FK_TO;
+delta_CA_F_SF_phi_TO = (F_klappen / Ergebnisse_Fluegel.F) * cos(Ergebnisse_Fluegel.phi_25_max^2) *  delta_C_a_FK_TO;
 
 % Große Formel VFFK
                                                         %IN ÜBUNG IST HIER
                                                         %+                                                                                           %+ 
-alpha_F_max_VFFK_TO = (CA_F_max_VFFK_TO/CA_alpha_F_FK_phi_TO) + (((CA_F * (alpha_MAC_0_F + deg2rad(6)) + delta_CA_F_SF_phi_TO))/CA_alpha_F_FK_phi_TO) - deg2rad(6) + delta_alpha_CA_F_max;
+alpha_F_max_VFFK_TO = (CA_F_max_VFFK_TO/CA_alpha_F_FK_phi_TO) - (((CA_F * (alpha_MAC_0_F + deg2rad(6)) + delta_CA_F_SF_phi_TO))/CA_alpha_F_FK_phi_TO) + deg2rad(6) + delta_alpha_CA_F_max + alpha_MAC_0_F;
 
 alpha_F_max_VFFK_deg_TO = rad2deg(alpha_F_max_VFFK_TO);
 
@@ -144,13 +144,17 @@ alphas = -12:0.01:alpha_F_max_VFFK_deg_TO-delta_alpha_CA_F_max_deg; % normal Plo
 CA_s = CA_alpha_lowspeed.*(deg2rad(alphas-alpha_MAC_0_deg)) + delta_CA_F_max_SF_phi_TO;
 plot(alphas,CA_s,'red')
 
+plot([alpha_F_max_VFFK_deg_TO-delta_alpha_CA_F_max_deg],[0],'redx')
+plot([alpha_F_max_VFFK_deg-delta_alpha_CA_F_max_deg],[0],'greenx')
 
+plot([0],[CA_F_max_VFFK_TO],'redx')
+plot([0],[CA_F_max_VFFK],'greenx')
 
 grid on
 
 % Kritische Points
 %Alpha MAX
-plot(alpha_CA_F_MAX_deg, 0, 'xred')
+%plot(alpha_CA_F_MAX_deg, 0, 'xred')
 
 %CA MAX
 
@@ -159,7 +163,7 @@ plot(alpha_CA_F_MAX_deg, 0, 'xred')
 %Alpha 0
 %plot(alpha_MAC_0_F_deg, 0,'xblue')
 
-plot([alpha_CA_F_MAX_deg  alpha_CA_F_MAX_deg-delta_alpha_CA_F_max_deg],[CA_F_max CA_F_max],'xgreen')
+%plot([alpha_CA_F_MAX_deg  alpha_CA_F_MAX_deg-delta_alpha_CA_F_max_deg],[CA_F_max CA_F_max],'xgreen')
 
 P1 = [0 0];
 P2 = [-1 3];
@@ -305,6 +309,15 @@ l_HFW = 30; % Ríchtiger Wert aus CG?
 delta_CA_F_0 = 0.3; % Richtiger Wert aus wo?
 
 delta_C_W_Fahrwerk = ((1.5 * F_vorder + 0.75 * F_hinter)/Ergebnisse_Fluegel.F) * (1 - 0.04 * ((CA_F + delta_CA_F_0 *(1.5 * (Ergebnisse_Fluegel.F / F_klappen)-1))/(l_HFW/Ergebnisse_Fluegel.l_m)));
+
+
+%% Prüfen ob CA max passt für alle Flugphasen
+
+% check ob StartCA erreicht
+startschub.c_A_max_thrust_match < CA_F_max_VFFK_TO
+
+% Check ob lande CA erreicht
+landeanvorderung.c_A_max_LDG < CA_F_max_VFFK
 
 %% Plotten der Reziproken Gleitzahlen mit und ohne Fahrwerk für TO,LDG und Clean
 

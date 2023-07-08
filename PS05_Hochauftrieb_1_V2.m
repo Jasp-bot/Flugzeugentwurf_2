@@ -123,7 +123,7 @@ streckung = Ergebnisse_Fluegel.streckung_phi25_max; % -> Richtig?
 phi_50 = atan(tan(Ergebnisse_Fluegel.phi_25_max)-(4/streckung)* (0.5-0.25) * (1-Ergebnisse_Fluegel.lambda)/(1-Ergebnisse_Fluegel.lambda));
 phi_50_deg = rad2deg(phi_50);
 
-[~,a,~,~,~] = atmosisa(50);
+[~,a,~,~,~] = atmosisa(15.24);
 M = (landeanvorderung.v_50)/a;
 %M = 0.2;
 %CAalpha_F = Ergebnisse_Auftriebsverteilung.VWA.c_AF_anstieg;    %->Das

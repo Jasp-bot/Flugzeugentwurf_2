@@ -56,7 +56,7 @@ Rumpf_SP_Faktoren.zSP_Seating = 0;
 Rumpf_SP_Faktoren.zSP_ResFuel =-2.5;
 
 % Berechnung Momente und CGX, CGZ
-% [Masse,x,y,z]
+% [Masse,x(%),y,z]
 
 CG_Data.Rumpf = [Anteile_einzel_Massen_FE2.Airplane_Structure.Fuselage_group.M + Anteile_einzel_Massen_FE2.Airplane_Structure.Tail_group - M_HLW.W_HLW_basic - M_SLW.W_SLW_basic,0.43,0,0];
 CG_Data.HLW = [M_HLW.W_HLW_basic, 0.93, 0, 1];
@@ -122,9 +122,10 @@ CG_Wing_Moment_Z=0;
 CG_Wing_MZ=0; 
 for C=1:length(CG_DataMatrix_Wing)       %%Der Schwerpunkt wird ausgrechnet mit der Schwerpunkt Formel 
     CG_Wing_Moment_Z=CG_Wing_Moment_Z+(CG_DataMatrix_Wing(C,1)*(CG_DataMatrix_Wing(C,4))); 
-    CG_Wing_MZ=CG_MZ+CG_DataMatrix_Wing(C,1); 
+    CG_Wing_MZ=CG_Wing_MZ+CG_DataMatrix_Wing(C,1); 
 end 
-CG_Wing_Z=CG_Wing_Moment_Z/CG_Wing_MZ;
+CG_Wing_Z_FG=CG_Wing_Moment_Z/CG_Wing_MZ;
+CG_Wing_Z_RG=CG_Wing_Z_FG-2.19;
 
 %% Bestimmung von X_MAC
 
@@ -139,6 +140,7 @@ Wing_MAC.XMAC = CG_Rumpf_X + Wing_MAC.xSP_MAC_FG*(CG_Wing_M/CG_M) - Wing_MAC.xSP
 Rumpf_MAC.xSP_MAC_RG = -Wing_MAC.XMAC + CG_Rumpf_X;
 
 CG_Gesamt_x = (Rumpf_MAC.xSP_MAC_RG*CG_M + Wing_MAC.xSP_MAC_FG*CG_Wing_M)/(CG_M + CG_Wing_M);
+CG_Gesamt_z = (CG_Rumpf_Z*CG_MZ+CG_Wing_Z_RG*CG_Wing_MZ)/(CG_MZ+CG_Wing_MZ);
 
 %% Flügellage
 % Von Flugzeugnase zu imaginärer Spitze im Rumpf
@@ -200,9 +202,9 @@ Betankung.P3 = [Betankung.CG_BetankterAussentank/NP.l_mue_ges; (Betankung.Masse_
 
 % PAX AUßEN
 Pax_Bording = readtable("Bording.xlsx","Sheet","Beladung");
-AussenPax = table2array(Pax_Bording(1:49,"x"));
+AussenPax = table2array(Pax_Bording(1:38,"x"));
 AussenPaxMAC = AussenPax - Wing_MAC.XMAC;
-MasseAussenPax = table2array(Pax_Bording(1:49,"m"));
+MasseAussenPax = table2array(Pax_Bording(1:38,"m"));
 % Front to Back
 CG_Shift_Outer = zeros(length(AussenPaxMAC),1);
 NewMassCounter = zeros(length(AussenPaxMAC),1);
@@ -231,9 +233,9 @@ for i = 1:length(BackwardsAussenPaxMAC)
 end
 
 % PAX INNEN
-InnenPax = table2array(Pax_Bording(1:53,"x_1"));
+InnenPax = table2array(Pax_Bording(1:42,"x_1"));
 InnenPaxMAC = InnenPax - Wing_MAC.XMAC;
-MasseInnenPax = table2array(Pax_Bording(1:53,"m_1"));
+MasseInnenPax = table2array(Pax_Bording(1:42,"m_1"));
 % Front to Back
 CG_Shift_Inner = zeros(length(InnenPaxMAC),1);
 InnerMassCounter = zeros(length(InnenPaxMAC),1);
@@ -267,11 +269,10 @@ end
 %% Berechnung Grenzen
 % LÄNGSSTABILITÄT AM BODEN
 LS.x_MainGear_MAC = (0.5*NP.l_mue_ges -(CG_Data_Wing.Fluegel(2)-CG_Data_Wing.MainGear(2)))/NP.l_mue_ges; %[Prozent l_mue]
-% Alle z-Positionen unklar
-%LS.z_MainGear_MAC = ;
-%LS.z_CG_Rumpf_MAC = ;
-%LS.z
-%LS.Laengsstabilitaet =  
+LS.l_MainGear = 2.5;
+LS.delta = deg2rad(16); % Min 15deg
+% LS in Prozent
+LS.Laengsstabilitaet = LS.x_MainGear_MAC -(LS.l_MainGear+0.5*specs.D_rumpf-CG_Gesamt_z)*(tan(LS.delta)/NP.l_mue_ges);
 
 % MINIMALE BUGFAHRWERKSLAST
 BFWL.x_CG_BFW_Min_MAC = 0.06*(CG_Data.Bugfahrwerk(2)*specs.l_rumpf - Wing_MAC.XMAC + ((1/0.06)-1)*LS.x_MainGear_MAC*NP.l_mue_ges);
@@ -283,9 +284,73 @@ BFWL.MomentanMasse = linspace(Ergebnisse_Massen_FE2.M_TO,Ergebnisse_Massen_FE2.M
 % ???? Warum negativ
 BFWL.x_CG_BFW_Max_MAC = (BFWL.m_to_max./BFWL.MomentanMasse).*0.2.*(CG_Data.Bugfahrwerk(2)*specs.l_rumpf - Wing_MAC.XMAC + ((BFWL.MomentanMasse./BFWL.m_to_max).*((1/0.2)-1).*LS.x_MainGear_MAC.*NP.l_mue_ges));
 BFWL.x_CG_BFW_Max_MAC_Prozent = BFWL.x_CG_BFW_Max_MAC./NP.l_mue_ges;
+
 % KIPPSTABILITÄT
+KS.s = 12.7/2;
+KS.psi = deg2rad(60);
+KS.h_sp = (311*80*0.3 + CG_Gesamt_z*Ergebnisse_Massen_FE2.M_OE)/(Ergebnisse_Massen_FE2.M_OE+311*80) + LS.l_MainGear + 0.5*specs.D_rumpf;
+KS.arctan = atan(KS.s/(Wing_MAC.XMAC-(CG_Data.Bugfahrwerk(2)*specs.l_rumpf)+(LS.x_MainGear_MAC*NP.l_mue_ges)));
+KS.Kippstabilitaet = (KS.h_sp/(tan(KS.psi)*sin(KS.arctan))) - Wing_MAC.XMAC + (CG_Data.Bugfahrwerk(2)*specs.l_rumpf);
+KS.Kippstabilitaet_Prozent = KS.Kippstabilitaet/NP.l_mue_ges;
 
 % STATISCHE STABILITÄT
+StatStab.c_A_alpha_F = VWA.c_AF_anstieg; 
+Umrechnung_Z_FG_RG = 2.19;
+StatStab.z_abstand = -CG_Data_Wing.Fluegel(4)+Umrechnung_Z_FG_RG + CG_Data.HLW(4); % Abstand zwischen Profilsehnen angenommen vergleiche Torenbeek s480
+
+l_fn=Wing_Position2;            %%Abstand Flugzeugnase zu Fluegel Schnittpunkt mit Rumpf NICHT MAC!!! Muss noch ver�ndert werden
+Durchmesser_Flugzeug_wo_Fluegel_durchgeht=2*sqrt((0.5*specs.D_rumpf)^2-Umrechnung_Z_FG_RG^2); 
+r_H = specs.l_rumpf-Wing_Position2-specs.coanlaenge+specs.HLW_beginn;
+Abwindfaktor = 1.75 * (StatStab.c_A_alpha_F/(pi * Ergebnisse_Fluegel.streckung_phi25_max *...
+    (Ergebnisse_Fluegel.lambda * (r_H/(Ergebnisse_Fluegel.b/2)))^0.25 *...
+    (1+ (abs(StatStab.z_abstand/(Ergebnisse_Fluegel.b/2))))));
+
+
+c_A_alpha_H = (pi * HLW.streckung_phi25)/(1 + sqrt(1 + 0.25 * HLW.streckung_phi25^2 * (tan(HLW.phi_50)^2 + (1 - specs.Ma_CR^2))));
+
+c_A_alpha = StatStab.c_A_alpha_F * (1+ ((c_A_alpha_H)/(StatStab.c_A_alpha_F)) *...
+    (HLW.F/Ergebnisse_stat_Flaechenbelastung.F) * 0.85 * (1 - Abwindfaktor) );
+
+
+
+d_F1_X_NP_durch_l_mue=(-1.8/StatStab.c_A_alpha_F)*(specs.D_rumpf*specs.h_rumpf *l_fn)/(Ergebnisse_Fluegel.F*Ergebnisse_Fluegel.l_mue)    %%Einfluss des rumpfes vor und hinter dem Fluegel Formel 28
+
+%-------- Ab hier noch Kontrollieren
+d_F2_X_NP_durch_l_mue=(0.273*specs.D_rumpf^2*Ergebnisse_Fluegel.l_m*(Ergebnisse_Fluegel.b+specs.D_rumpf))/((1+Ergebnisse_Fluegel.lambda)*Ergebnisse_Fluegel.l_mue^2*(Ergebnisse_Fluegel.b+2.15*specs.D_rumpf))*tan(Ergebnisse_Fluegel.phi_25_max) %Einfluss des Rumpf Fl�gel �berganges auf den NP FORMEL 29 PS02
+
+d_TW_X_NP_durch_l_mue=(specs.Dn_TW^2 *specs.l_TW)/(Ergebnisse_Fluegel.F*Ergebnisse_Fluegel.l_mue*StatStab.c_A_alpha_F) %Einfluss Triebwerk auf NP Formel 30 PS02
+
+l_i_Mitte= DT.l_i_I+(tan(Ergebnisse_Fluegel.phi_VK_max)*Durchmesser_Flugzeug_wo_Fluegel_durchgeht*0.5)    %Ausrechnen von tiefe des Fluges imagin�r IM rumpf     
+
+Flaeche_im_Rumpf_oberes_dreieck=(l_i_Mitte-DT.l_i_I)*Durchmesser_Flugzeug_wo_Fluegel_durchgeht*0.5;
+
+
+%Gesamte Fluegelflaeche mit dem Dreieck im Rumpf
+F_ges_Fluegel_MAC=Flaeche_im_Rumpf_oberes_dreieck+Ergebnisse_Fluegel.F;
+%gesamte streckung mit teil im rumpf (dreieck)
+Streckung_ges=(Ergebnisse_Fluegel.b^2)/F_ges_Fluegel_MAC;
+
+%%NP des Fl�gels berechnen Formel 24 PS02
+X_NP_F=l_i_Mitte*(0.25+(Streckung_ges/12)*(1+2*Ergebnisse_Fluegel.lambda*tan(Ergebnisse_Fluegel.phi_25_max)));
+
+
+X_NP_OH_durch_l_mue=(X_NP_F/Ergebnisse_Fluegel.l_mue)+d_F1_X_NP_durch_l_mue+d_F2_X_NP_durch_l_mue+d_TW_X_NP_durch_l_mue
+
+
+%X_NP_OH_durch_l_mue*Ergebnisse_Fluegel.l_mue
+
+X_NP_durch_l_mue=X_NP_OH_durch_l_mue+((HLW.r/Ergebnisse_Fluegel.l_mue)*0.85*c_A_alpha_H/c_A_alpha*(1-Abwindfaktor))
+
+
+Neutralpunkt=X_NP_durch_l_mue*Ergebnisse_Fluegel.l_mue+l_fn
+
+
+
+
+
+
+
+
 
 % NEUTRALPUNKTLAGE
 
@@ -303,12 +368,16 @@ plot(CG_Shift_Outer*100/NP.l_mue_ges, NewMassCounter,"rx-")
 plot(BackwardsCG_Shift_Outer*100/NP.l_mue_ges, BackwardsNewMassCounter,"mx-")
 plot(CG_Shift_Inner*100/NP.l_mue_ges, InnerMassCounter,"rx-")
 plot(BackwardsCG_Shift_Inner*100/NP.l_mue_ges, BackwardsInnerMassCounter,"mx-")
+
+%Grenzen
 plot([BFWL.x_CG_BFW_Min_MAC_Prozent*100,BFWL.x_CG_BFW_Min_MAC_Prozent*100],[Ergebnisse_Massen_FE2.M_OE Ergebnisse_Massen_FE2.M_TO+10000],"-k")
 plot(BFWL.x_CG_BFW_Max_MAC_Prozent*100,BFWL.MomentanMasse,"--k")
+plot([LS.Laengsstabilitaet*100,LS.Laengsstabilitaet*100],[Ergebnisse_Massen_FE2.M_OE Ergebnisse_Massen_FE2.M_TO+10000],"-b")
 
 title('Beladung 3-Klassenbestuhlung','FontSize',20);
 xlabel('X^{MAC}_{SP}/l_{\mu}','FontSize',16)
 ylabel('kg','FontSize',16)
+legend('','','','','','','Minimale BFWL','Maximale BFWL','Längsstabilität')
 
 hold off
 

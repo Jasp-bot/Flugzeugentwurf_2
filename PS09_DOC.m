@@ -93,8 +93,31 @@ DOC_zuSKO_COR = (DOC./SKO) * (n_pax / (n_pax + n_PAX_CAR));
 
 plot(R,SMC)
 grid on
+% Noch zweite Funktion plotten !
+
+kerosin_data = readtable("kerosin2.xlsx");
+%kerosin_data_2 = table2array(kerosin_data(5,:))
+kerosin_preis = kerosin_data.x_ProKg;
+
+vektor = linspace(1,length(kerosin_preis),length(kerosin_preis));
+plot(vektor,kerosin_preis)
+hold on
+
+f = fittype('a*x^2+b');
+vorhersage = fit(vektor.',kerosin_preis,f);
+coeffvals = coeffvalues(vorhersage)
+
+x = coeffvals(1,1)
+b = coeffvals(1,2)
+
+y = x .* vektor.^2 + b;
+
+plot(vektor, y)
+
+legend("Kerosinpreis in €","")
 
 
+hold off
 
 function [Fuel]=fuel_range(Range)
 

@@ -11,17 +11,27 @@ load Ergebnisse_Start_Landeanforderungen.mat
 load Zwischenergebnisse_PS5_Fluegelflaechen.mat
 load Ergebnisse_Widerstand_FE2.mat
 
+
+%% Feste Variablen
 phi_50 = atan(tan(Ergebnisse_Fluegel.phi_25_max)-(4/Ergebnisse_Fluegel.streckung_phi25_max)* (0.5-0.25) * (1-Ergebnisse_Fluegel.lambda)/(1-Ergebnisse_Fluegel.lambda));
+CA_H = Ergebnisse_Widerstand_FE2.c_A_H(1); % Aus Widerstand HLW CA  %%
+CAalpha_F = (pi * Ergebnisse_Fluegel.streckung_phi25_max) / (1+sqrt(1 + ((Ergebnisse_Fluegel.streckung_phi25_max/2)^2) * (tan(phi_50)^2 + (1-specs.Ma_CR^2))));
 
-%%%%%%%%%%%%%%%%%%%%%% Platzhalter-> Hier richtige Werte einfügen   von    PS4
-CA_F_CR = 0.5;  % JASPER HILFE!
-%CAalpha_F = Ergebnisse_Auftriebsverteilung.VWA.c_AF_anstieg;
+[~,a,~,~,~] = atmosisa(15.24);
+M = (landeanvorderung.v_50)/a;
 
-CAalpha_F = (pi * Ergebnisse_Fluegel.streckung_phi25_max) / (1+sqrt(1 + ((Ergebnisse_Fluegel.streckung_phi25_max/2)^2) * (tan(phi_50)^2 + (1-specs.Ma_CR^2))))
+% Jasper HILFE!
+CA_F_CR = 0.5; 
+
+F_H = HLW.F_aussen; % HLW Fläche % Richtig @Japser?
+
+F = Ergebnisse_Fluegel.F; % Flügelfläche
+
+CA = 0.0; % Auftrieb im Cruise 
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%
-
-
 
 %% 1. Winkel Bezugsflügel zur Nullauftriebsrichtung
 % CA_F_CR = Flügelauftriebsbeiwert Reiseflug aus Trimmbetrachtung
@@ -43,7 +53,7 @@ alpha_MAC_F_CR = alpha_MAC_F_CR_0 + alpha_MAC_0_F;
 alpha_MAC_F_CR_deg = rad2deg(alpha_MAC_F_CR);
 
 
-%% 4. Verwindungskorrektur zur Symmetriebene! ALSO MIT RUMPANTEIL?!
+%% 4. Verwindungskorrektur zur Symmetriebene! ALSO MIT RUMPfANTEIL?!
 % mittlere Verwindung % Aus diederich das Integral
 % Integral 
 %X = 0:.001:1;
@@ -82,14 +92,6 @@ psiRootDeg= rad2deg(psi_root);
 
 %% Nullanstellwinkel Des Flugzeugs
 
-F_H = HLW.F_aussen; % HLW Fläche % Richtig @Japser?
-
-F = Ergebnisse_Fluegel.F; % Flügelfläche
-
-CA = 0.0; % Auftrieb im Cruise 
-
-CA_H = Ergebnisse_Widerstand_FE2.c_A_H(1); % Aus Widerstand HLW CA  %%
-
 
 %CA_F_cruise = CA - CA_H * 0.85 * (F_H/F);      % CA Flügel alleine im Cruise
 
@@ -123,8 +125,7 @@ streckung = Ergebnisse_Fluegel.streckung_phi25_max; % -> Richtig?
 phi_50 = atan(tan(Ergebnisse_Fluegel.phi_25_max)-(4/streckung)* (0.5-0.25) * (1-Ergebnisse_Fluegel.lambda)/(1-Ergebnisse_Fluegel.lambda));
 phi_50_deg = rad2deg(phi_50);
 
-[~,a,~,~,~] = atmosisa(15.24);
-M = (landeanvorderung.v_50)/a;
+
 %M = 0.2;
 %CAalpha_F = Ergebnisse_Auftriebsverteilung.VWA.c_AF_anstieg;    %->Das
 %wäre für Cruise
@@ -140,7 +141,6 @@ CA_alpha_lowspeed =  (pi * Ergebnisse_Fluegel.streckung_phi25_max)/(1 + sqrt(1 +
 delta_alpha_CA_F_max = deg2rad(3.6);
 delta_alpha_CA_F_max_deg = 3.6;
 % CA F Max
-
 CA22DMax = 1.4;
 
 for i = 1: length(Ergebnisse_Fluegel.Fluegeltiefen_eta)

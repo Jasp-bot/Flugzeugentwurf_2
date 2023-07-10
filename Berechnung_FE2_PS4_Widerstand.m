@@ -1,5 +1,10 @@
 function Berechnung_FE2_PS4_Widerstand
 
+clc
+clear all
+close all
+
+
 %% PS4 detaillierte Widerstandsabschaetzung nach Diederich
 % Aufgeteilt in die Kapitel:
     % Fluegelwiderstand:    - Profilwiderstand
@@ -12,9 +17,7 @@ function Berechnung_FE2_PS4_Widerstand
     %                       - Zusatzwiderstand
     % Interferenzwiderstand
 
-% clc
-% clear all
-% close all
+
 
 
 
@@ -49,16 +52,13 @@ stuetzstellen = 200;
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     Annahmen.x_SP_MAC = 1.5; %%%%%% Ein random wert angenommen!!!!!!!!!!!
-    Annahmen.z_abstand = 3; % Abstand zwischen Profilsehnen angenommen vergleiche Torenbeek s480
-    
+    Annahmen.z_abstand = 2; % Abstand zwischen Profilsehnen angenommen vergleiche Torenbeek s480
+    Faktor = 1; %%%% Achtung ist ein korrekturfsktor weil ich nicht weiter weiß, earum mein Rumpf/ TW Widerstand so klein sind
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     
     
-    
-    
-    
-    
+
     
     
     Annahmen.phi_50 = Ergebnisse_Fluegel.phi_50; % tan((NP.versatz_HK + 0.5*DT.l_i_I - 0.5*DT.l_a)/(Ergebnisse_Fluegel.b/2 - specs.R_rumpf));          % Muss noch erfragen wie Annahmen.phi_50 brterchnet werden soll
@@ -72,14 +72,14 @@ Annahmen.x_u = Ergebnisse_Fluegel.Fluegeltiefen_eta_oR * Annahmen.xu_l;      % A
 Annahmen.Ma_unendlich = specs.Ma_CR;
 
     % Rumpfwiderstand
-Annahmen.S_G_Ru = Anteile_einzel_Massen_FE2.Airplane_Structure.Fuselage_group.Sg_12;
-Annahmen.c_A_alpha_F = GRA.c_a_anstieg;      % Annahme bitte ueberpruefen !!!!!!!!!!!!!!!!!!!!
+Annahmen.S_G_Ru = Anteile_einzel_Massen_FE2.Airplane_Structure.Fuselage_group.Sg_12 * Faktor;
+Annahmen.c_A_alpha_F = VWA.c_AF_anstieg;      % Annahme bitte ueberpruefen !!!!!!!!!!!!!!!!!!!!
 
 
 Annahmen.zaehlvariabele_itt = 1;
 
     % Triebwerke
-Annahmen.S_G_TW = Anteile_einzel_Massen_FE2.Airplane_Structure.Nacelle_group.Turbine_Area; % Umspuehlte TW oberflaeche
+Annahmen.S_G_TW = Anteile_einzel_Massen_FE2.Airplane_Structure.Nacelle_group.Turbine_Area * Faktor; % Umspuehlte TW oberflaeche
 Annahmen.l_TW = Anteile_einzel_Massen_FE2.Airplane_Structure.Nacelle_group.Turbine_length;
 Annahmen.d_TW = Anteile_einzel_Massen_FE2.Airplane_Structure.Nacelle_group.Turbine_Diameter;
 Annahmen.TW_Einbauwinkel = 0; % Kann gegen einen beliebigen Einbauwinkel ausgetauscht werden ACHTUNG!!! in [GRAD] !!!!!
@@ -145,6 +145,9 @@ FUN.c_f_tu_fun = @(Re) 0.455./(log(Re).^(2.58));
 % PS4 S.4, Formel 15
 FUN.tau_fun = @(Streckung, lambda) 1 - Streckung * (0.002 + 0.0084 * (lambda - 0.2)^2);
 
+% PS 9 Formel 25 FE1 Berechnung von Auftriebsbeiwertverteilung
+FUN.c_a_eta_fun = @(c_A_F) (GRA.gamma_a_eta .* c_A_F .* GRA.l_m) ./ (Ergebnisse_Fluegel.Fluegeltiefen_eta);
+
 
 save Getroffene_Annahmen_und_FUN.mat Annahmen FUN
 
@@ -154,7 +157,7 @@ c_A_F = linspace(0.01, 1, stuetzstellen);
 v_air = ones(stuetzstellen,1) .* specs.Ma_CR .* ISA.a(Annahmen.hoehe_CR);
 
 %-------------------- Off_D
-Ma_off_D = linspace(0.01, 1, stuetzstellen).';
+Ma_off_D = linspace(0.01, 2, stuetzstellen).';
 v_air_off_D = Ma_off_D .* ISA.a(Annahmen.hoehe_CR);
 
 c_A_F_off_D = (((2)./(Annahmen.kappa .* ISA.p(Annahmen.hoehe_CR) .* Ma_off_D.^2)) .* Ergebnisse_stat_Flaechenbelastung.Fleachenbelastung).'; 
@@ -186,14 +189,16 @@ c_w_int_fs_off_D = Interferenz_W(v_air_off_D).';
 % Rumpf
 % PS4 S.6 Formel 25 Abwindfaktor = delta_alpha_w/delta_alpha_oH 
 Abwindfaktor = 1.75 * ((Annahmen.c_A_alpha_F)/(pi * Ergebnisse_Fluegel.streckung_phi25_max *...
-    (Ergebnisse_Fluegel.lambda * (HLW.r/(Ergebnisse_Fluegel.b/2))^0.25 *...
+    (Ergebnisse_Fluegel.lambda * (HLW.r/(Ergebnisse_Fluegel.b/2))^(0.25) *...
     (1+ (abs(Annahmen.z_abstand))/((Ergebnisse_Fluegel.b/2))) )));
 
-[c_w_R_interm, alpha_Rumpf_grad_interm] = Rumpfwiderstand(specs.Ma_CR, Abwindfaktor, c_A_ges, v_air);
+[c_w_R_interm, alpha_Rumpf_grad_interm, c_A_alpha] = Rumpfwiderstand(specs.Ma_CR, Abwindfaktor, c_A_ges, v_air);
 c_w_R = diag(c_w_R_interm).';
 alpha_Rumpf_grad = diag(alpha_Rumpf_grad_interm).';
 
-[c_w_R_off_D_interm, alpha_Rumpf_grad_off_D_interm] = Rumpfwiderstand(Ma_off_D, Abwindfaktor, c_A_ges_off_D, v_air_off_D);
+
+
+[c_w_R_off_D_interm, alpha_Rumpf_grad_off_D_interm,c_A_alpha_off_D] = Rumpfwiderstand(Ma_off_D, Abwindfaktor, c_A_ges_off_D, v_air_off_D);
 c_w_R_off_D = diag(c_w_R_off_D_interm).';
 alpha_Rumpf_grad_off_D = diag(alpha_Rumpf_grad_off_D_interm).';
 
@@ -210,9 +215,10 @@ c_w_TW_off_D = Triebwerkswiderstand(v_air_off_D, alpha_Rumpf_grad_off_D).';
 
 % Profilwiderstand
 
-[c_w_p, c_w_p_min_Re] = Profilwiderstand(v_air);
-[c_w_p_off_D, c_w_p_min_Re_off_D] = Profilwiderstand(v_air_off_D);
-
+[c_w_p, c_w_p_min_Re] = Profilwiderstand(v_air,c_A_F);
+% c_w_p = c_w_p_interm; %trapz(c_w_p_interm.');
+[c_w_p_off_D, c_w_p_min_Re_off_D] = Profilwiderstand(v_air_off_D, c_A_F_off_D);
+% c_w_p_off_D = c_w_p_off_D_interm; %trapz(c_w_p_off_D_interm.');
 
 % Induzierter Widerstand
 
@@ -264,6 +270,8 @@ for n_vec_off_D = 1:numPlots
 end
 
 
+schnittpunkt_off_D_c_A_CR = InterX([x_vector_sum_off_D(numPlots,:); c_A_F_off_D], [[0, 1]; [Ergebnisse_stat_Flaechenbelastung.C_A_CR, Ergebnisse_stat_Flaechenbelastung.C_A_CR]]);
+gelitzahl = schnittpunkt_off_D_c_A_CR(1,1)./schnittpunkt_off_D_c_A_CR(2,1);
 
 
 Ergebnisse_Widerstand_FE2.c_A_F = c_A_F;
@@ -311,7 +319,8 @@ Ergebnisse_Widerstand_FE2.c_w_p_min_Re_off_D = c_w_p_min_Re_off_D; % Matrix mit 
 Ergebnisse_Widerstand_FE2.v_air = v_air;
 Ergebnisse_Widerstand_FE2.v_air_off_D = v_air_off_D;
 Ergebnisse_Widerstand_FE2.Ma_off_D = Ma_off_D;
-
+Ergebnisse_Widerstand_FE2.cW_cA_off_D = gelitzahl;
+Ergebnisse_Widerstand_FE2.Abwindfaktor = Abwindfaktor;
 
 save Ergebnisse_Widerstand_FE2.mat Ergebnisse_Widerstand_FE2;
 

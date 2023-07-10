@@ -9,6 +9,7 @@ clc
 load Ergebnisse_Massen_FE2.mat;
 load Projekt_specs.mat
 load Ergebnisse_ISA_DATA.mat
+load Ergebnisse_Start_Landeanforderungen.mat
 
 
 P_oe=1.235;      %Price per Kilogramm aus PS 09 [€/kg]
@@ -20,7 +21,7 @@ S_FA=50000;      %Average salery flight attendendent [€]
 S_FC=[190000,237000];   %Langstrecke oder Ultra lang strecke Formel 3 PS09
 n_crew=5;        %Anzahl an Crews und ersatz Crews
 P_F=0.7;         %Preis je kg Sprit [€/kg]
-P_LDG=0.001;     %landing gebühren [€/kg]
+P_LDG=0.01;     %landing gebühren [€/kg]
 P_H = 0.1;       % handling fees [€/kg]
 f_ATC=[1,0.7,0.6,0.5];  %Domestic Europe, transatlantic flights, far east flights, eu airport     costs of Range dependent ATC factort [€]
 BT_avg=1.83;     %avarage block time supplement [h]
@@ -40,9 +41,10 @@ R_STD=9000;
 
 Flughoehe_CR = specs.flight_level * 10^2 ;     % in ft
 hoehe_CR = round(unitsratio('m','ft')*Flughoehe_CR);
-v=specs.Ma_CR*ISA.a(hoehe_CR)       %Geschwindigkeit
-S_0=40;         %Standschub [t]
-v_h=v/3.6;
+v = specs.Ma_CR * ISA.a(hoehe_CR);       %Geschwindigkeit
+S_0 = startschub.S0 / 1000;
+%S_0 = 800; %Standschub [t]
+v_h= v * 3.6;
 
 
 %%Rechnung
@@ -50,41 +52,47 @@ alpha=f_ir*((1-f__RV*(1/(1+f_ir))^t_DEP)/((1-(1/(1+f_ir))^t_DEP)));
 
 C_cap=P_oe*Ergebnisse_Massen_FE2.M_OE*(alpha+f_I);        %Capital costs
 
-C_crew=n_crew*(S_FA*((specs.m_cargo+specs.m_pax)/5000)+S_FC(1)); %Kosten der Crew ca 3mio
+C_crew=n_crew*(S_FA*((Ergebnisse_Massen_FE2.M_TO-Ergebnisse_Massen_FE2.M_ZF)/5000)+S_FC(1)); %Kosten der Crew ca 3mio
 
-C1=C_cap+C_crew    %C1 ist Routen unabhängige kosten
+C1=C_cap+C_crew;    %C1 ist Routen unabhängige kosten
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+FC_pa=(6011./((R./v_h)+BT_avg));          %PS09 Formel 10
 
-FC_pa=(6011/((R_STD/v_h)+BT_avg))          %PS09 Formel 10
+FT_PA = 6011./(1+(v_h.*(BT_avg./R)));    %yearly flight time 
 
-FT_PA=6011/(1+(v_h*(BT_avg/R_STD)))    %yearly flight time 
+plot(R,FT_PA)   %Plot Flight Time per annum
 
-FT=FT_PA/FC_pa
+FT= FT_PA ./ FC_pa;
 
-C_MRO_AF_MAT=(Ergebnisse_Massen_FE2.M_OE/1000)*(0.2*FT+13.7)+57.5; %Airframe Material maintenance costs (repair and replacement)
-C_MRO_AF_PER=f_lr*(1+C_B)*((0.655+0.01*Ergebnisse_Massen_FE2.M_OE/1000))*FT+0.254+0.01*(Ergebnisse_Massen_FE2.M_OE/1000);   %Aiframe personal maintenance costs (inspection and repair)
-C_MRO_ENG=specs.n_TW*(1.5*(S_0/specs.n_TW)+(30.5*FT)+10.6);
+C_MRO_AF_MAT = (Ergebnisse_Massen_FE2.M_OE./1000).*(0.2.*FT +13.7)+57.5; %Airframe Material maintenance costs (repair and replacement)
 
-C_MRO=C_MRO_ENG+C_MRO_AF_PER+C_MRO_AF_MAT;
+C_MRO_AF_PER = f_lr .*(1+C_B).*((0.655+0.01.*Ergebnisse_Massen_FE2.M_OE./1000) .* FT + 0.254 + 0.01 .* (Ergebnisse_Massen_FE2.M_OE./1000));   %Aiframe personal maintenance costs (inspection and repair)
 
-Fuel=fuel_range(R)
+C_MRO_ENG = specs.n_TW .* (1.5 .* (S_0./specs.n_TW) + (30.5 .* FT) + 10.6);
 
-c2=FC_pa*(P_F*Fuel+((specs.m_cargo+specs.m_pax))*P_H+P_LDG*(Ergebnisse_Massen_FE2.M_TO/1000)+f_ATC(3)*R*sqrt((Ergebnisse_Massen_FE2.M_OE+Fuel)*1000)/50)+C_MRO; % PS09 Formel 4 Routen abhängige kosten
+C_MRO = C_MRO_ENG + C_MRO_AF_PER + C_MRO_AF_MAT;
 
-SKO=R*specs.n_pax
+Fuel = fuel_range(R);
 
-DOC=C1+c2           %Gesamten kosten 
+C2 = FC_pa.*(P_F.*Fuel+((specs.m_cargo+specs.m_pax)).*P_H + P_LDG.*(Ergebnisse_Massen_FE2.M_OE+Fuel) + f_ATC(3).*R.*sqrt(((Ergebnisse_Massen_FE2.M_OE+Fuel)./1000)./50) + C_MRO); % PS09 Formel 4 Routen abhängige kosten
+       
+% Hier keine 1000 -> Sieht dann aber schön aus :)
+SKO= R * 1000 .* specs.n_pax;
 
-SMC=DOC./SKO;
+DOC = C1 + C2 ;          %Gesamten kosten 
 
-I_CAR=I_FR*(specs.m_cargo);          %%MUSS NOCHMAL ANGESEHEN WERDEN!!!! KA WAS DIE BEI FORMEL 13 DAMIT MEINEN 
+SMC = DOC./SKO;
 
-n_PAX_CAR=I_CAR/I_PAX(1);
+I_CAR = I_FR * (Ergebnisse_Massen_FE2.M_TO - Ergebnisse_Massen_FE2.M_ZF - (311 * 80));          %%MUSS NOCHMAL ANGESEHEN WERDEN!!!! KA WAS DIE BEI FORMEL 13 DAMIT MEINEN 
 
-DOC_zuSKO_COR=(DOC./SKO)*(n_pax/(n_pax+n_PAX_CAR));
+n_PAX_CAR = I_CAR / I_PAX(1);
+
+DOC_zuSKO_COR = (DOC./SKO) * (n_pax / (n_pax + n_PAX_CAR));
 
 plot(R,SMC)
+grid on
 
 
 
@@ -238,7 +246,7 @@ Technologiefaktor_ALU_CFK = 0.5 * 0.4;
     
     M_take_off_initial.M_fuel = M_TO_initial * FF.Kappa_ges;
 
-    Fuel=M_take_off_initial.M_fuel
+    Fuel= (1-FF.mf4) * M_TO_initial;          %M_take_off_initial.M_fuel
 end
 
 

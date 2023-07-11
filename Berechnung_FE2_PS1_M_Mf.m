@@ -83,6 +83,7 @@ load Ergebnisse_Leitwerke.mat;
 load Data_PS1_High_lift_divice_Torenbeek.mat;   
 
 
+
 %% Anfangswerte festlegen
 
 M_TO_initial = Ergebnis_basis_m.m_To;
@@ -351,6 +352,30 @@ while abs(delta_M_to) > 0.0001
     
     area_HK_lift_div = ((area3 + area4) - (area5 + area6)) * (1-pauschaler_Wert_HK);
     
+    %%%%%%%%%%%%%%%%%%%
+    % Neue Berechnung 
+    load Ergebnisse_Hochauftrieb_2.mat
+    load Ergebnisse_Start_Landeanforderungen.mat
+    %NR_M_Fluegel.W_tef = 
+
+    kf1 = 1.3; % Double Slotted Fowler
+    kf2 = 1.25; % Double Slotted flaps with variable Geometry
+
+    k_f = kf1 * kf2;
+
+    
+    S_f = ;
+    %b_fs = ;
+    V_lf = landeanvorderung.v_50;
+    beta = 45;%° % Vorgegeben als Optimum PS 6
+    pfeilung = Ergebnisse_Fluegel.phi_25_max; 
+    t_c = specs.d_l;
+
+    formel = 0.105 * k_f * ((S_f * b_fs)^(3/16)) * ((V_lf/100)^2 * ((sin(beta) * cos(pfeilung))/(t_c)))^(3/4);
+
+    
+
+    %%%%%%%%%%%%%%%%%%%
     
     % % masse trailing edge flap und leading edge flap
     NR_M_Fluegel.S_f_tef = area_HK_lift_div;

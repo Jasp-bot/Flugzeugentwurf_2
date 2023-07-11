@@ -170,6 +170,10 @@ else
 in(i) = 0;
 end
 end
+title("Bestimmung der Reifen über LCG/LCN Methode")
+ylabel("ESWL in 1000lb")
+xlabel("Druck in PSI")
+xlim([50 260])
 %% Check ob Reifen im LCN Limit liegt -> Über Polygons
 big = 0;
 big_idx = 0;

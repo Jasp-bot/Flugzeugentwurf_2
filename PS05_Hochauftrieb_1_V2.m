@@ -167,7 +167,7 @@ for i=1:length(alphas)
 CA_s(i) = CA_alpha_lowspeed*(deg2rad(alphas(i)-alpha_MAC_0_deg));%*0.8309;
 end
 
-plot(alphas,CA_s)
+plot(alphas,CA_s,'blue','LineWidth',1.5)
 
 
 %P = polyfit(alphas,CA_s,1)
@@ -200,6 +200,20 @@ grid on
 
 save Ergebnisse_Hochauftrieb_1.mat psiRootDeg psi_sym_inst_deg alpha_CA_F_MAX_deg CA_F_max CA_alpha_lowspeed delta_alpha_CA_F_max alpha_MAC_0_F_deg CA_F alpha_MAC_0_F CA_alpha_lowspeed CA_s alphas alpha_0 alpha_MAC_0_deg delta_alpha_CA_F_max_deg;
 
+% Parameter der quadratischen Funktion
+a = 0.0058; % Koeffizient von x^2
+h = alpha_CA_F_MAX_deg; % x-Koordinate des Maximums
+k = CA_F_max; % y-Koordinate des Maximums
+
+% Bereich der x-Achse
+x = linspace(h-7, h+7, 10); % Hier können Sie den Bereich anpassen
+
+% Quadratische Funktion berechnen
+y = -a * (x - h).^2 + k;
+
+% Plot erstellen
+plot(x, y,"blue--",'LineWidth',1.5)
+plot(h, k, 'bx','LineWidth',1.5)
 
 
 

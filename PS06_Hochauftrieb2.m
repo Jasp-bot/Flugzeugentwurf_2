@@ -46,11 +46,11 @@ addpath('Unterfunktionen Widerstand');
 %Spannweite Klappenfläche
 spannweite_flaps = 0.6;
 %Länge Klappe ausgefahren
-flap_length_LDG = 2.5; % in meter
-flap_length_TO = 1.5;
+flap_length_LDG = 2.0; % in meter
+flap_length_TO = 1.0;
 
 %Tiefe Klappen
-Flaps_begin = 0.65; %Prozent
+Flaps_begin = 0.7; %Prozent
 %Faktoren Slat -> Lock der Slat Länge damit auf 70% eta -> Letzter Wert hir
 %ist eta
 faktoren_Slat = 0.94 * 0.9 * 0.7;
@@ -77,7 +77,7 @@ deltaXSP = 3;
 
 C_W_P_Min_RE = 0.01; %% JASPER WERT PLS!
 
-% Reifen
+% Reifen -> Aus PS Fahrwerk
 durchmesser = 2;
 breite = 0.5;
 
@@ -521,7 +521,7 @@ xlabel("Auftriebsbeiwert des Flügels C_{A} in [-]","FontWeight","bold")
 
 
 
-
+save Ergebnisse_Hochauftrieb_2.mat spannweite_flaps Flaps_begin flap_length_LDG
 
 
 

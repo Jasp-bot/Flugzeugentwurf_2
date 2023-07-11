@@ -56,6 +56,7 @@ C_crew=n_crew*(S_FA*((Ergebnisse_Massen_FE2.M_TO-Ergebnisse_Massen_FE2.M_ZF)/500
 
 C1=C_cap+C_crew;    %C1 ist Routen unabhängige kosten
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 FC_pa=(6011./((R./v_h)+BT_avg));          %PS09 Formel 10

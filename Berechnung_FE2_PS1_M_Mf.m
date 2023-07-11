@@ -1,4 +1,4 @@
-%% PS 1 FE2 Fuel Fraction und Erweiterte MAssenabschaetzung nach Toerenbeck
+%% PS 1 2 Fuel Fraction und Erweiterte MAssenabschaetzung nach Toerenbeck
 
 % function Berechnung_FE2_PS1_M_Mf;
 clc
@@ -258,8 +258,8 @@ while abs(delta_M_to) > 0.0001
     v_D_2_TAS = (specs.Ma_CR * ISA.a(hoehe_ALT) + convvel(60, 'kts','m/s')) ; 
     v_D_2_TAS_kts = convvel(v_D_2_TAS,'m/s', 'kts') ;
     v_D_1_TAS_kts = convvel(v_D_1_TAS,'m/s', 'kts') ;
-    M_Rumpf.v_D_EAS = v_D_1_TAS * sqrt(ISA.rho(hoehe_ALT)/ISA.rho_0) ;        %%%%%%%%%%%%%%%%%%%%%%%%% Nicht sicher !!!!!!!!!!!!!!!!!!!!!!!!!
-    M_Rumpf.v_D_TAS = v_D_1_TAS;
+    M_Rumpf.v_D_EAS = v_D_1_TAS * sqrt(ISA.rho(hoehe_ALT)/ISA.rho_0) ;       
+%     M_Rumpf.v_D_TAS = v_D_1_TAS;
     
     
     
@@ -835,6 +835,7 @@ Ergebnisse_Massen_FE2.M_F = M_TO_initial * FF.Kappa_ges;
 Anteile_einzel_Massen_FE2.Airplane_Structure.Wing_group = M_Airframe_Structur.Wing_Group;
 Anteile_einzel_Massen_FE2.Airplane_Structure.Tail_group = M_Airframe_Structur.Tail_Group;
 Anteile_einzel_Massen_FE2.Airplane_Structure.Fuselage_group.M = M_Airframe_Structur.Fuselage_Group;
+Anteile_einzel_Massen_FE2.Airplane_Structure.Fuselage_group.M_Rumpf = M_Rumpf; 
 Anteile_einzel_Massen_FE2.Airplane_Structure.Fuselage_group.Sg_12 = M_Rumpf.Sg_12;
 Anteile_einzel_Massen_FE2.Airplane_Structure.Undercarriage_group = M_Airframe_Structur.Undercarriage_Group;
 Anteile_einzel_Massen_FE2.Airplane_Structure.Surface_control_group = M_Airframe_Structur.Surface_Control_Group;

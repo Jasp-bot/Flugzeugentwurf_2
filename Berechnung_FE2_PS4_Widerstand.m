@@ -39,7 +39,7 @@ addpath('Unterfunktionen Widerstand');
 Annahmen.Flughoehe_CR = specs.flight_level * 10^2 ;     % in ft
 Annahmen.hoehe_CR = round(unitsratio('m','ft')*Annahmen.Flughoehe_CR);
 
-stuetzstellen = 200;
+stuetzstellen = 250;
 
 %% Getroffene Annahmen um Rechnungen vor berechnung der richtigen Werte durchfuehren zu können
         % es fehlen Werte als PS2 / PS3
@@ -53,7 +53,7 @@ stuetzstellen = 200;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     Annahmen.x_SP_MAC = 1.5; %%%%%% Ein random wert angenommen!!!!!!!!!!!
     Annahmen.z_abstand = 2; % Abstand zwischen Profilsehnen angenommen vergleiche Torenbeek s480
-    Faktor = 1; %%%% Achtung ist ein korrekturfsktor weil ich nicht weiter weiß, earum mein Rumpf/ TW Widerstand so klein sind
+    Faktor = 13; %%%% Achtung ist ein korrekturfsktor weil ich nicht weiter weiß, earum mein Rumpf/ TW Widerstand so klein sind
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     
@@ -64,7 +64,7 @@ stuetzstellen = 200;
     Annahmen.phi_50 = Ergebnisse_Fluegel.phi_50; % tan((NP.versatz_HK + 0.5*DT.l_i_I - 0.5*DT.l_a)/(Ergebnisse_Fluegel.b/2 - specs.R_rumpf));          % Muss noch erfragen wie Annahmen.phi_50 brterchnet werden soll
 
 Annahmen.xu_l = 0.035;    % Wert zwischen 0.02 und 0.05
-Annahmen.x_u = Ergebnisse_Fluegel.Fluegeltiefen_eta_oR * Annahmen.xu_l;      % Annahme, dass l die Fluegeltiefen an der jeweiligen Position auf dem Fluegel sind
+Annahmen.x_u = Ergebnisse_Fluegel.Fluegeltiefen_eta_oR .* Annahmen.xu_l;      % Annahme, dass l die Fluegeltiefen an der jeweiligen Position auf dem Fluegel sind
     % induzierter Widerstand des Flügels
 %c_A_F = linspace(0,1); % Ergebnisse_stat_Flaechenbelastung.C_A_CR;       % aus PS4 Formel 11
 
@@ -152,12 +152,12 @@ FUN.c_a_eta_fun = @(c_A_F) (GRA.gamma_a_eta .* c_A_F .* GRA.l_m) ./ (Ergebnisse_
 save Getroffene_Annahmen_und_FUN.mat Annahmen FUN
 
 
-c_A_F = linspace(0.01, 1, stuetzstellen);
+c_A_F = linspace(0.001, 5, stuetzstellen);
 
 v_air = ones(stuetzstellen,1) .* specs.Ma_CR .* ISA.a(Annahmen.hoehe_CR);
 
 %-------------------- Off_D
-Ma_off_D = linspace(0.01, 2, stuetzstellen).';
+Ma_off_D = linspace(0.001, 1, stuetzstellen).';
 v_air_off_D = Ma_off_D .* ISA.a(Annahmen.hoehe_CR);
 
 c_A_F_off_D = (((2)./(Annahmen.kappa .* ISA.p(Annahmen.hoehe_CR) .* Ma_off_D.^2)) .* Ergebnisse_stat_Flaechenbelastung.Fleachenbelastung).'; 
@@ -198,7 +198,7 @@ alpha_Rumpf_grad = diag(alpha_Rumpf_grad_interm).';
 
 
 
-[c_w_R_off_D_interm, alpha_Rumpf_grad_off_D_interm,c_A_alpha_off_D] = Rumpfwiderstand(Ma_off_D, Abwindfaktor, c_A_ges_off_D, v_air_off_D);
+[c_w_R_off_D_interm, alpha_Rumpf_grad_off_D_interm, c_A_alpha_off_D] = Rumpfwiderstand(Ma_off_D, Abwindfaktor, c_A_ges_off_D, v_air_off_D);
 c_w_R_off_D = diag(c_w_R_off_D_interm).';
 alpha_Rumpf_grad_off_D = diag(alpha_Rumpf_grad_off_D_interm).';
 

@@ -15,6 +15,7 @@ load Ergebnisse_stat_Flaechenbelastung_Fluegelflaeche.mat
 load Ergebnisse_Start_Landeanforderungen.mat
 load Ergebnisse_Fluegel_Tank_NP.mat;
 
+
 %% Bestimmung CWi
 
 % phi25_1 = phi_25_I;

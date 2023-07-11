@@ -97,7 +97,7 @@ k1 = 0.3064 + FF * (0.05185 - 0.0014 * FF);
 
 VWA.c_AF_anstieg = GRA.c_a_anstieg * k0 * cos(Ergebnisse_Fluegel.phi_25_max);
 
-VWA.epsilon = deg2rad(-3);% geometrische Verwindung des Fuegels
+VWA.epsilon = deg2rad(-5);% geometrische Verwindung des Fuegels
 VWA.epsilon_eta = (VWA.epsilon) .* eta;
 VWA.epsilon_eta_oR = VWA.epsilon_eta(1,Ergebnisse_Fluegel.zaehlvariabele_eta_Ru : length(VWA.epsilon_eta));
 VWA.epsilon_eta_Ru = VWA.epsilon_eta(1,1:Ergebnisse_Fluegel.zaehlvariabele_eta_Ru);

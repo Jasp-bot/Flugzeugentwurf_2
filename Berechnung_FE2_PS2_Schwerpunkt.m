@@ -367,6 +367,8 @@ Neutralpunkt=X_NP_durch_l_mue*Ergebnisse_Fluegel.l_mue+l_fn
 % NEUTRALPUNKTLAGE
 StatStab.CG_sigma_x = X_NP_durch_l_mue -0.05;
 
+Delta_CG_MAC_durch_lmue = abs(X_NP_OH_durch_l_mue - Wing_MAC.xSP_MAC_lmue);
+
 %% Plotten
 
 figure(1)
@@ -461,4 +463,4 @@ ylabel('y [m]');
 title('Schwerpunktlagen');
 
 
-save Schwerpunkt.mat r_H BFWL Betankung CG_Data CG_Data_Wing CG_Fracht CG_Fuel_X CG_Gesamt_x CG_Gesamt_z CG_Rumpf_X CG_Rumpf_Z CG_Wing_X CG_Wing_Z_RG CG_Wing_Z_FG Rumpf_MAC StatStab Wing_MAC Wing_Position1 Wing_Position2
+save Schwerpunkt.mat Delta_CG_MAC_durch_lmue r_H BFWL Betankung CG_Data CG_Data_Wing CG_Fracht CG_Fuel_X CG_Gesamt_x CG_Gesamt_z CG_Rumpf_X CG_Rumpf_Z CG_Wing_X CG_Wing_Z_RG CG_Wing_Z_FG Rumpf_MAC StatStab Wing_MAC Wing_Position1 Wing_Position2

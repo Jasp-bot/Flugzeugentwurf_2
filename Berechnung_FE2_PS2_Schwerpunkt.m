@@ -61,7 +61,7 @@ Rumpf_SP_Faktoren.zSP_ResFuel =-2.5;
 CG_Data.Rumpf = [Anteile_einzel_Massen_FE2.Airplane_Structure.Fuselage_group.M + Anteile_einzel_Massen_FE2.Airplane_Structure.Tail_group - M_HLW.W_HLW_basic - M_SLW.W_SLW_basic,0.42,0,0];
 CG_Data.HLW = [M_HLW.W_HLW_basic, 0.93, 0, 1];
 CG_Data.SLW = [M_SLW.W_SLW_basic, 0.95, 0, 5];
-CG_Data.Bugfahrwerk = [Anteile_einzel_Massen_FE2.Airplane_Structure.FrontGear, 0.06, 0, -4.5];
+CG_Data.Bugfahrwerk = [Anteile_einzel_Massen_FE2.Airplane_Structure.FrontGear, 0.09, 0, -4.5];
 CG_Data.APU = [specs.m_APU, 0.97, 0, 1];
 CG_Data.CockpitInstruments = [Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Intruments_Nav_Electr, 0.035,0,-1.5];
 CG_Data.HydraulicsElectricalWing = [Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Hydraulics_Electric*0.6,0.3, 0, -2];
@@ -129,7 +129,7 @@ CG_Wing_Z_RG=CG_Wing_Z_FG-2.19;
 
 %% Bestimmung von X_MAC
 
-Wing_MAC.xSP_MAC_lmue = 0.35; % siehe Übung: Wert zwischen 20% und 25%
+Wing_MAC.xSP_MAC_lmue = 0.19; % siehe Übung: Wert zwischen 20% und 25%
 
 Wing_MAC.xSP_MAC_FG = 0.5*NP.l_mue_ges -(CG_Data_Wing.Fluegel(2)-CG_Wing_X);
 
@@ -286,17 +286,29 @@ CG_Fracht.Masse_vorn_real = CG_Fracht.FrachtmasseTotal - CG_Fracht.Masse_hinten_
 CG_Fracht.CG_BeladenVorn1 = (CG_Fracht.CG_BeladenHinten1*CG_Fracht.Masse_BeladenHinten1 + CG_Fracht.FrachtVornMac*CG_Fracht.Masse_vorn_real)/(CG_Fracht.Masse_BeladenHinten1+CG_Fracht.Masse_vorn_real);
 CG_Fracht.Masse_BeladenVorn1 = CG_Fracht.Masse_BeladenHinten1+CG_Fracht.Masse_vorn_real;
 
+% VORDERSTE & HINTERSTE SCHWERPUNKTLAGE
+% Angabe im MAC Koordinaten (absolut)
+CG_mostForward = min([CG_Fracht.CG_BeladenVorn1*100/NP.l_mue_ges,CG_Fracht.CG_BeladenHinten1*100/NP.l_mue_ges,CG_Fracht.CG_BeladenHinten*100/NP.l_mue_ges,CG_Fracht.CG_BeladenVorn*100/NP.l_mue_ges,BackwardsCG_Startposition_Innen*100/NP.l_mue_ges,min(BackwardsCG_Shift_Inner)*100/NP.l_mue_ges,min(CG_Shift_Inner)*100/NP.l_mue_ges,min(BackwardsCG_Shift_Outer)*100/NP.l_mue_ges,min(CG_Shift_Outer)*100/NP.l_mue_ges,Betankung.P1(1)*100, Betankung.P2(1)*100,Betankung.P2(1)*100 Betankung.P3(1)*100])*NP.l_mue_ges/100;
+CG_mostBackward = max([CG_Fracht.CG_BeladenVorn1*100/NP.l_mue_ges,CG_Fracht.CG_BeladenHinten1*100/NP.l_mue_ges,CG_Fracht.CG_BeladenHinten*100/NP.l_mue_ges,CG_Fracht.CG_BeladenVorn*100/NP.l_mue_ges,BackwardsCG_Startposition_Innen*100/NP.l_mue_ges,max(BackwardsCG_Shift_Inner)*100/NP.l_mue_ges,max(CG_Shift_Inner)*100/NP.l_mue_ges,max(BackwardsCG_Shift_Outer)*100/NP.l_mue_ges,max(CG_Shift_Outer)*100/NP.l_mue_ges,Betankung.P1(1)*100, Betankung.P2(1)*100,Betankung.P2(1)*100 Betankung.P3(1)*100])*NP.l_mue_ges/100;
+
+
 %% Berechnung Grenzen
 % LÄNGSSTABILITÄT AM BODEN
 LS.x_MainGear_MAC = (0.5*NP.l_mue_ges -(CG_Data_Wing.Fluegel(2)-CG_Data_Wing.MainGear(2)))/NP.l_mue_ges; %[Prozent l_mue]
 LS.l_MainGear = 2.5;
 LS.delta = deg2rad(15); % Min 15deg
 % LS in Prozent
-LS.Laengsstabilitaet = LS.x_MainGear_MAC -(LS.l_MainGear+0.5*specs.D_rumpf-CG_Gesamt_z)*(tan(LS.delta)/NP.l_mue_ges);
+LS.Laengsstabilitaet = LS.x_MainGear_MAC -(LS.l_MainGear+0.5*specs.D_rumpf+CG_Gesamt_z)*(tan(LS.delta)/NP.l_mue_ges);
+LS.delta_z = LS.l_MainGear+0.5*specs.D_rumpf+CG_Gesamt_z;
 
 % MINIMALE BUGFAHRWERKSLAST
 BFWL.x_CG_BFW_Min_MAC = 0.06*(CG_Data.Bugfahrwerk(2)*specs.l_rumpf - Wing_MAC.XMAC + ((1/0.06)-1)*LS.x_MainGear_MAC*NP.l_mue_ges);
 BFWL.x_CG_BFW_Min_MAC_Prozent = BFWL.x_CG_BFW_Min_MAC/NP.l_mue_ges;
+
+BFWL.l_BFW_min = Wing_MAC.XMAC - (CG_Data.Bugfahrwerk(2)*specs.l_rumpf) + CG_mostForward;
+BFWL.l_BFW_max = Wing_MAC.XMAC - (CG_Data.Bugfahrwerk(2)*specs.l_rumpf) + CG_mostBackward;
+BFWL.l_BFW_HFW = Wing_MAC.XMAC + LS.x_MainGear_MAC*NP.l_mue_ges - (CG_Data.Bugfahrwerk(2)*specs.l_rumpf);
+BFWL.l_HFW_min = BFWL.l_BFW_HFW - BFWL.l_BFW_max;
 
 % MAXIMALE BUGFAHRWERKSLAST
 BFWL.m_to_max = Ergebnisse_Massen_FE2.M_TO;
@@ -374,8 +386,10 @@ Delta_CG_MAC_durch_lmue = abs(X_NP_OH_durch_l_mue - Wing_MAC.xSP_MAC_lmue);
 figure(1)
 hold on 
 grid on
-xlim([20 60])
+xlim([10 60])
 ylim([Ergebnisse_Massen_FE2.M_OE Ergebnisse_Massen_FE2.M_TO+10000])
+
+
 
 plot([Betankung.P1(1)*100 Betankung.P2(1)*100], [Betankung.P1(2) Betankung.P2(2)],"b-")
 plot([Betankung.P2(1)*100 Betankung.P3(1)*100], [Betankung.P2(2) Betankung.P3(2)],"bo-")

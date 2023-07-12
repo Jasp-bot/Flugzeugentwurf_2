@@ -27,7 +27,7 @@ F_H = HLW.F_aussen; % HLW Fläche % Richtig @Japser?
 
 F = Ergebnisse_Fluegel.F; % Flügelfläche
 
-CA = 0.0; % Auftrieb im Cruise 
+CA = 0.4; % Auftrieb im Cruise 
 
 
 

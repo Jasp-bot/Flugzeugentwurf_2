@@ -13,6 +13,7 @@ load Ergebnisse_Start_Landeanforderungen.mat
 load Zwischenergebnisse_PS5_Fluegelflaechen.mat
 load Ergebnisse_Hochauftrieb_1.mat
 load Ergebnisse_CG.mat
+load Schwerpunkt.mat
 load Ergebnisse_Widerstand_FE2.mat
 
 %% Aus FE 1 -> Für Widerstand
@@ -24,6 +25,7 @@ load Ergebnisse_stat_Flaechenbelastung_Fluegelflaeche.mat
 load Ergebnisse_Start_Landeanforderungen.mat
 load Ergebnisse_Fluegel_Tank_NP.mat;
 load Ergebnisse_Widerstand.mat
+
 
 %load Ergebnisse_Endwerte_Iteration_V1.mat
 %Endwerte_Iteration = Berechnungen_PS10_Widerstand;
@@ -46,7 +48,7 @@ Flaps_begin = 0.65; %Prozent
 %ist eta
 Slat_spannweite = 0.85;
 
-faktoren_Slat = 0.94 * 0.8 * Slat_spannweite;
+faktoren_Slat = 0.94 * 0.91 * Slat_spannweite;
 
 %Slats Tiefe
 Slats_pos = 0.1;
@@ -59,12 +61,13 @@ oswald = 0.8;
 lambda       = Ergebnisse_Fluegel.lambda;   %Zuspitzung des Flügels [-]      %% JASPER HILFE WELCHE WERTE RICHTIG?
 bf_s         = spannweite_flaps;    %prozentuale Spannweite der Hinterkantenklappen
 
-CM0 = -0.1;%FM.c_M_NP_F0;
+CM0 = -0.1;%
+FM.c_M_NP_F0;
 
-r_h = 10;   % Hier noch LEONS Wert!
+r_h = r_H;   % Das ist Leons Wert aus Schwerpunkt.mat
 l_mue = Ergebnisse_Fluegel.l_mue;
 
-deltaXSP_l_mue = 0.25; % LEON Wert !
+deltaXSP_l_mue = Delta_CG_MAC_durch_lmue; % LEONS Wert !
 
 [c_w_p, c_w_p_min_Re] = Profilwiderstand(landeanvorderung.v_50,0);
 % Über trapz summieren!
@@ -339,9 +342,9 @@ delta_Cm_HKK_TO  = - dCM_dCA_deltaCA * (c__TO/c_TO) - ((CA_REF_TO + delta_C_a_FK
 
 %  Formel 5 für Takeoff und Landing
                                                %*(CA_REF_LDG)                                                                                                                                    %SRichtig?
-delta_CM_HKK_LDG = dcMk_dcmK * delta_Cm_HKK_LDG + 0.7 * ((Ergebnisse_Fluegel.streckung_phi25_max)/(1+2/Ergebnisse_Fluegel.streckung_phi25_max)) * dcMk_dcAK * delta_CA_F_SF_phi + tan(Ergebnisse_Fluegel.phi_25_max);
+delta_CM_HKK_LDG = dcMk_dcmK * delta_Cm_HKK_LDG + spannweite_flaps * ((Ergebnisse_Fluegel.streckung_phi25_max)/(1+(2/Ergebnisse_Fluegel.streckung_phi25_max))) * dcMk_dcAK * delta_CA_F_SF_phi * tan(Ergebnisse_Fluegel.phi_25_max);
                                             %*(CA_REF_TO)
-delta_CM_HKK_TO = dcMk_dcmK * delta_Cm_HKK_TO + 0.7 * ((Ergebnisse_Fluegel.streckung_phi25_max)/(1+2/Ergebnisse_Fluegel.streckung_phi25_max)) * dcMk_dcAK * delta_CA_F_SF_phi_TO + tan(Ergebnisse_Fluegel.phi_25_max);
+delta_CM_HKK_TO = dcMk_dcmK * delta_Cm_HKK_TO + spannweite_flaps * ((Ergebnisse_Fluegel.streckung_phi25_max)/(1+(2/Ergebnisse_Fluegel.streckung_phi25_max))) * dcMk_dcAK * delta_CA_F_SF_phi_TO * tan(Ergebnisse_Fluegel.phi_25_max);
 
 
 % Formel 4 - Final
@@ -352,10 +355,10 @@ CA_MAX_LDG = ( CA_F_max_VFFK   + ( (CM0 + delta_CM_HKK_LDG)/( r_h/l_mue ) ) ) / 
 
 
 % check ob StartCA erreicht
-startschub.c_A_max_thrust_match < CA_MAX_TO;
+startschub.c_A_max_thrust_match < CA_MAX_TO
 
 % Check ob lande CA erreicht
-landeanvorderung.c_A_max_LDG < CA_MAX_LDG ;
+landeanvorderung.c_A_max_LDG < CA_MAX_LDG 
 
 
 %% Widerstandszuwachs durch Klappen
@@ -372,9 +375,6 @@ delta_C_W_P_TO = delta_C_W_P_phi_TO * (F_klappen/Ergebnisse_Fluegel.F) * cos(Erg
 
 delta_Ca_max_SF_phi_TO;
 delta_Ca_max_SF_phi;
-
-delta_Ca_max_SF_phi;
-
 
 % Klappenspannweite durch Spannweite 
 temp = 0.6;
@@ -541,6 +541,18 @@ F_FOWLER = 2 * ((Ergebnisse_Fluegel.b/2)*trapz(X_FOWLER,Fluegel_FOWLER));
 
 
 save Ergebnisse_Hochauftrieb_2.mat spannweite_flaps Flaps_begin flap_length_LDG F_FOWLER
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -782,18 +794,6 @@ save Ergebnisse_Hochauftrieb_2.mat spannweite_flaps Flaps_begin flap_length_LDG 
 %     'Reale Gleitzahl CR','Reale Gleitzahl TO','Reale Gleitzahl LDG','Ideale Gleitzahl CR','Ideale Gleitzahl TO','Ideale Gleitzahl LDG')
 % 
 % hold off
-
-
-
-
-
-
-
-
-
-
-
-
 
 %% Vergleichen mit Schubanforderung FE1
 %Wenn Gleitzahl nicht passt 

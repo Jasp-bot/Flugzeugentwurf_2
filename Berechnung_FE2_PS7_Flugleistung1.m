@@ -54,12 +54,12 @@ hoehe_CR = round(unitsratio('m','ft')*(specs.flight_level*10^2));
 
 schritte = 10;
 hoehe_plus = 100;
-hoehe = (round(linspace(1000, ((specs.flight_level + hoehe_plus)*10^2), schritte))); % 1000: 3000: specs.flight_level*10^2;
+hoehe = (round(linspace(5, ((specs.flight_level + hoehe_plus)*10^2), schritte))); % 1000: 3000: specs.flight_level*10^2;
 % hoehe = 1000: 1000: specs.flight_level*10^2;
 hoehe_m = round(unitsratio('m','ft')*hoehe);
-
+hoehe_m(1,length(hoehe_m)+1) = hoehe_CR;
 % Plot Luca
-Step_Plot= abs(hoehe_m(1,1)- hoehe_m(1,2) );
+% Step_Plot= abs(hoehe_m(1,1)- hoehe_m(1,2) );
 
 % if (Step_Plot ~= 0)
 %     figure()
@@ -69,7 +69,7 @@ Step_Plot= abs(hoehe_m(1,1)- hoehe_m(1,2) );
 %     ylim([0 0.4])
 %     Legend=cell(2*Step_Plot+2,1);%  two positions 
 % end
-k=0;
+% k=0;
 % ende code Luca
 
 %% Erstellungen der Vektoren
@@ -122,11 +122,11 @@ S_G_vorh_j_CL = S_S0_j_CL .* S0_GTO .* GTO_G_CL;
 S_G_vorh_j_DEC = S_S0_j_DEC .* S0_GTO .* GTO_G_DEC;
 
 % SFC
-[~, ~, sfc_1PERs_Horizontalflug] = SFC_vec(hoehe_m, Ma_j, specs.bypass);
-[~, ~, sfc_1PERs_Horizontalflug_CL] = SFC_vec(hoehe_m, Ma_j_CL, specs.bypass);
-[~, ~, sfc_1PERs_Horizontalflug_DEC] = SFC_vec(hoehe_m, Ma_j_DEC, specs.bypass);
+[sfc_daNh_CR, ~, sfc_1PERs_Horizontalflug] = SFC_vec(hoehe_m, Ma_j, specs.bypass);
+[sfc_daNh_CL, ~, sfc_1PERs_Horizontalflug_CL] = SFC_vec(hoehe_m, Ma_j_CL, specs.bypass);
+[sfc_daNh_DEC, ~, sfc_1PERs_Horizontalflug_DEC] = SFC_vec(hoehe_m, Ma_j_DEC, specs.bypass);
 
-for n_datensatz = 1:schritte
+for n_datensatz = 1:length(hoehe_m)
 
 
 % Transsonischer Widerstand mit Funktion aus PS4
@@ -181,6 +181,8 @@ TAS_SEP_H_vec(n_datensatz,:) = [v_TAS_j(n_datensatz, SEP_x(n_datensatz,1)), SEP_
 
 
 SEP_CL(n_datensatz, :) = v_TAS_j_CL(n_datensatz, :) .* (S_G_vorh_j_CL(n_datensatz, :) - eps_kompr_j_CL(n_datensatz, :));
+
+
 [SEP_CL_y(n_datensatz,:), SEP_CL_x(n_datensatz,:)] = max(SEP_CL(n_datensatz,:));
 TAS_SEP_H_CL_vec(n_datensatz,:) = [v_TAS_j_CL(n_datensatz, SEP_CL_x(n_datensatz,1)), SEP_CL_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
 
@@ -358,77 +360,120 @@ end
 % plot(TAS_SET_H_vec(:,1), TAS_SET_H_vec(:,3),'r');
 % 
 
-% %% Flugbereichsdiagramm
-% 
-% 
-% % Physikalische Grenzen
-% 
-% % Formel 27 S10
-% v_s_1g = sqrt((2./(rho .* c_A_max)) .* (G ./ Ergebnisse_Fluegel.F));
-% v_s_min = 0.94 .* v_s_1g;
-% 
-% m_BOP = 0.795;
-% M_BO = m_BOP/sqrt(cos(Ergebnisse_Fluegel.phi_25_max));
-% v_BO = M_BO .* a_H;
-% v_MO = specs.Ma_MO .* a_H;
-% 
-% 
-% % test v min
-% % intersection = InterX([v_EAS_j(1,:); S_G_erf_j(1,:)],[v_EAS_j(1,:); S_G_vorh_j(1,:)])
-% % intersection_2 = InterX([v_EAS_j; S_G_erf_j],[v_EAS_j; S_G_vorh_j])
+%% Flugbereichsdiagramm
+
+
+% Physikalische Grenzen
+
+% Formel 27 S10
+v_s_1g = sqrt((2./(rho .* c_A_max)) .* (G ./ Ergebnisse_Fluegel.F));
+v_s_min = 0.94 .* v_s_1g;
+
+m_BOP = 0.795;
+M_BO = m_BOP/sqrt(cos(Ergebnisse_Fluegel.phi_25_max));
+v_BO = M_BO .* a_H;
+v_MO = specs.Ma_MO .* a_H;
+
+
+% test v min
+% intersection = InterX([v_EAS_j(1,:); S_G_erf_j(1,:)],[v_EAS_j(1,:); S_G_vorh_j(1,:)])
+% intersection_2 = InterX([v_EAS_j; S_G_erf_j],[v_EAS_j; S_G_vorh_j])
 % v_min_HFD = v_TAS_HFD(:,1);
 % v_max_HFD = v_TAS_HFD(:,2);
-% 
-% 
-% 
-% figure(7)
-% hold on
-% grid on
-% 
-% pl(1) = plot(v_s_1g, hoehe_m, '--b');
-% pl(2) = plot(v_s_min, hoehe_m, 'k');
-% pl(3) = plot(v_BO, hoehe_m, 'r');
-% 
-% pl(4) = plot(TAS_SR_H_vec(:,1), TAS_SR_H_vec(:,3),'.-k');
-% pl(5) = plot(TAS_SEP_H_vec(:,1), TAS_SEP_H_vec(:,3),'.-b');
-% pl(6) = plot(TAS_SET_H_vec(:,1), TAS_SET_H_vec(:,3),'.-r');
-% pl(7) = plot(TAS_SE_H_vec(:,1), TAS_SE_H_vec(:,3),'.-m');
-% 
-% pl(8) = plot(v_MO, hoehe_m, 'g');
-% 
+
+
+
+figure(7)
+hold on
+grid on
+
+pl(1) = plot(v_s_1g, hoehe_m, '--b');
+pl(2) = plot(v_s_min, hoehe_m, 'k');
+pl(3) = plot(v_BO, hoehe_m, 'r');
+
+pl(4) = plot(TAS_SR_H_vec(:,1), TAS_SR_H_vec(:,3),'.-k');
+pl(5) = plot(TAS_SEP_H_vec(:,1), TAS_SEP_H_vec(:,3),'.-b');
+pl(6) = plot(TAS_SET_H_vec(:,1), TAS_SET_H_vec(:,3),'.-r');
+pl(7) = plot(TAS_SE_H_vec(:,1), TAS_SE_H_vec(:,3),'.-m');
+
+pl(8) = plot(v_MO, hoehe_m, 'g');
+
 % 
 % pl(9) = plot(v_min_HFD, hoehe_m.', '.-g');
 % pl(10) = plot(v_max_HFD, hoehe_m, '.-k');
+
+pl(11) = plot(specs.Ma_CR * ISA.a(hoehe_CR), hoehe_CR, '*r'); % Design point
+
+xlabel('v_{TAS} in m/s');
+ylabel('H in m');
+
 % 
-% pl(11) = plot(specs.Ma_CR * ISA.a(hoehe_CR), hoehe_CR, '*r'); % Design point
-% 
-% xlabel('v_{TAS} in m/s');
-% ylabel('H in m');
-% 
-% 
 % 
 
 
 
 
 
+Ergebnisse_Flugleistung_1.hoehe_m = hoehe_m;
+Ergebnisse_Flugleistung_1.c_A_j = c_A_j;
+Ergebnisse_Flugleistung_1.c_A_F_j = c_A_F_j;
+Ergebnisse_Flugleistung_1.c_W_inkomp_j = c_W_inkomp_j;
+Ergebnisse_Flugleistung_1.j = j;
+Ergebnisse_Flugleistung_1.v_EAS_j = v_EAS_j;
+Ergebnisse_Flugleistung_1.v_EAS_j_CL = v_EAS_j_CL;
+Ergebnisse_Flugleistung_1.v_EAS_j_DEC = v_EAS_j_DEC;
+Ergebnisse_Flugleistung_1.Ma_j = Ma_j;
+Ergebnisse_Flugleistung_1.Ma_j_CL = Ma_j_CL;
+Ergebnisse_Flugleistung_1.Ma_J_DEC = Ma_j_DEC;
+Ergebnisse_Flugleistung_1.S_S0_KF_j_CR = S_S0_KF_j_CR;
+Ergebnisse_Flugleistung_1.S_S0_KF_j_CL = S_S0_KF_j_CL;
+Ergebnisse_Flugleistung_1.S_S0_KF_j_DEC = S_S0_KF_j_DEC;
+Ergebnisse_Flugleistung_1.S_S0_E = S_S0_E;
+Ergebnisse_Flugleistung_1.S_S0_j_CR = S_S0_j;
+Ergebnisse_Flugleistung_1.S_S0_j_CL = S_S0_j_CL;
+Ergebnisse_Flugleistung_1.S_S0_j_DEC = S_S0_j_DEC;
+Ergebnisse_Flugleistung_1.S_G_vorh_j = S_G_vorh_j;
+Ergebnisse_Flugleistung_1.S_G_vorh_j_CL = S_G_vorh_j_CL;
+Ergebnisse_Flugleistung_1.S_G_vorh_j_DEC = S_G_vorh_j_DEC;
+Ergebnisse_Flugleistung_1.sfc_1PERs_Horizontalflug = sfc_1PERs_Horizontalflug;
+Ergebnisse_Flugleistung_1.sfc_1PERs_Horizontalflug_CL = sfc_1PERs_Horizontalflug_CL;
+Ergebnisse_Flugleistung_1.sfc_1PERs_Horizontalflug_DEC = sfc_1PERs_Horizontalflug_DEC;
+Ergebnisse_Flugleistung_1.sfc_daNh_CR = sfc_daNh_CR;
+Ergebnisse_Flugleistung_1.sfc_daNh_CL = sfc_daNh_CL;
+Ergebnisse_Flugleistung_1.sfc_daNh_DEC = sfc_daNh_DEC;
+Ergebnisse_Flugleistung_1.c_W_j = c_W_j;
+Ergebnisse_Flugleistung_1.c_W_j_CL = c_W_j_CL;
+Ergebnisse_Flugleistung_1.c_W_j_DEC = c_W_j_DEC;
+Ergebnisse_Flugleistung_1.S_G_erf_j = S_G_erf_j; 
+Ergebnisse_Flugleistung_1.S_G_erf_j_CL = S_G_erf_j_CL;
+Ergebnisse_Flugleistung_1.S_G_erf_j_DEC = S_G_erf_j_DEC;
+Ergebnisse_Flugleistung_1.SET = SET;
+Ergebnisse_Flugleistung_1.TAS_SET_H_vec = TAS_SET_H_vec;
+Ergebnisse_Flugleistung_1.SET_CL = SET_CL;
+Ergebnisse_Flugleistung_1.TAS_SET_H_CL_vec = TAS_SE_H_CL_vec;
+Ergebnisse_Flugleistung_1.SET_DEC = SET_DEC;
+Ergebnisse_Flugleistung_1.TAS_SET_H_DEC_vec = TAS_SEP_H_DEC_vec;
+Ergebnisse_Flugleistung_1.SEP = SEP;
+Ergebnisse_Flugleistung_1.TAS_SEP_H_vec = TAS_SEP_H_vec;
+Ergebnisse_Flugleistung_1.SEP_CL = SEP_CL;
+Ergebnisse_Flugleistung_1.TAS_SEP_H_CL_vec = TAS_SEP_H_CL_vec;
+Ergebnisse_Flugleistung_1.SEP_DEC = SEP_DEC;
+Ergebnisse_Flugleistung_1.TAS_SEP_H_DEC_vec = TAS_SEP_H_DEC_vec;
+Ergebnisse_Flugleistung_1.SR = SR;
+Ergebnisse_Flugleistung_1.TAS_SR_H_vec = TAS_SR_H_vec;
+Ergebnisse_Flugleistung_1.SR_CL = SR_CL;
+Ergebnisse_Flugleistung_1.TAS_SR_H_CL_vec = TAS_SR_H_CL_vec;
+Ergebnisse_Flugleistung_1.SR_DEC = SR_DEC;
+Ergebnisse_Flugleistung_1.TAS_SR_H_DEC_vec = TAS_SR_H_DEC_vec;
+Ergebnisse_Flugleistung_1.SE = SE;
+Ergebnisse_Flugleistung_1.TAS_SE_H_vec = TAS_SE_H_vec;
+Ergebnisse_Flugleistung_1.SE_CL = SE_CL; 
+Ergebnisse_Flugleistung_1.TAS_SE_H_CL_vec = TAS_SE_H_CL_vec;
+Ergebnisse_Flugleistung_1.SE_DEC = SE_DEC;
+Ergebnisse_Flugleistung_1.TAS_SE_H_DEC_vec = TAS_SE_H_DEC_vec;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+save Ergebnisse_FLugleistung_1.mat Ergebnisse_Flugleistung_1
 
 
 

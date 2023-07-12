@@ -29,6 +29,7 @@ load Ergebnisse_Auftrieb_Momente.mat;
 load Ergebnisse_Leitwerke.mat;
 load Ergebnisse_ISA_DATA.mat;
 load Ergebnisse_stat_Flaechenbelastung_Fluegelflaeche.mat;
+load Schwerpunkt.mat;
 
 % Bereitstellen der Funktionen zur Widerstandsberechnung aus Unterordner 
 addpath('Unterfunktionen Widerstand');
@@ -51,9 +52,11 @@ stuetzstellen = 250;
     
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    Annahmen.x_SP_MAC = 1.5; %%%%%% Ein random wert angenommen!!!!!!!!!!!
-    Annahmen.z_abstand = 2; % Abstand zwischen Profilsehnen angenommen vergleiche Torenbeek s480
-    Faktor = 13; %%%% Achtung ist ein korrekturfsktor weil ich nicht weiter weiß, earum mein Rumpf/ TW Widerstand so klein sind
+%     Annahmen.x_SP_MAC = 1.5; %%%%%% Ein random wert angenommen!!!!!!!!!!!
+%     Annahmen.x_NP_MAC_oH = 0.5;
+    Annahmen.dx_SP_lmue = Delta_CG_MAC_durch_lmue;
+    Annahmen.z_abstand = StatStab.z_abstand; % Abstand zwischen Profilsehnen angenommen vergleiche Torenbeek s480
+    Faktor = 10; %%%% Achtung ist ein korrekturfsktor weil ich nicht weiter weiß, earum mein Rumpf/ TW Widerstand so klein sind
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     
@@ -97,7 +100,6 @@ Annahmen.x_u_SLW = SLW.Fluegeltiefen_eta_oR * Annahmen.xu_l_SLW;
 
         % Trimmwiderstand
 Annahmen.l_mue = Ergebnisse_Fluegel.l_mue;  
-
 Annahmen.c_M_0_F = FM.c_M_NP_F0;%* 0.1;
 Annahmen.qH_q = 0.85; % hat Kristof gesagt urspruenglich mit 0.95 angenommen
 

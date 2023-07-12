@@ -364,8 +364,8 @@ while abs(delta_M_to) > 0.0001
     k_f = kf1 * kf2;
 
     
-    S_f = ;
-    %b_fs = ;
+    S_f = ;  % Fläche K
+    b_fs = ; % Spannweite Klappen
     V_lf = landeanvorderung.v_50;
     beta = 45;%° % Vorgegeben als Optimum PS 6
     pfeilung = Ergebnisse_Fluegel.phi_25_max; 

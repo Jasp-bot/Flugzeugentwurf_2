@@ -29,22 +29,13 @@ load Ergebnisse_Widerstand.mat
 %Endwerte_Iteration = Berechnungen_PS10_Widerstand;
 
 %% Laden der Dateien
-
-load Projekt_specs.mat;
-load Ergebnisse_ISA_DATA.mat;
-load Ergebnisse_Basis_stat_m.mat;
-load Ergebnisse_stat_Flaechenbelastung_Fluegelflaeche.mat;
-load Ergebnisse_Start_Landeanforderungen.mat;
-load Ergebnisse_Fluegel_Tank_NP.mat;
-
-
 addpath('Unterfunktionen Widerstand');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Steuervariablen/ Iteriervariablen?
 
 %Spannweite Klappenfläche
-spannweite_flaps = 0.6;
+spannweite_flaps = 0.55;
 %Länge Klappe ausgefahren
 flap_length_LDG = 2.0; % in meter
 flap_length_TO = 1.0;
@@ -53,7 +44,9 @@ flap_length_TO = 1.0;
 Flaps_begin = 0.7; %Prozent
 %Faktoren Slat -> Lock der Slat Länge damit auf 70% eta -> Letzter Wert hir
 %ist eta
-faktoren_Slat = 0.94 * 0.9 * 0.7;
+Slat_spannweite = 0.7;
+
+faktoren_Slat = 0.94 * 0.9 * Slat_spannweite;
 
 %Slats Tiefe
 Slats_pos = 0.03;
@@ -63,16 +56,17 @@ oswald = 0.8;
 
 %% Andere Variablen die Werte aus anderen PS brauchen!!!
 %MOMENT
-lambda       = 1;   %Zuspitzung des Flügels [-]      %% JASPER HILFE WELCHE WERTE RICHTIG?
+lambda       = Ergebnisse_Fluegel.lambda;   %Zuspitzung des Flügels [-]      %% JASPER HILFE WELCHE WERTE RICHTIG?
 bf_s         = spannweite_flaps;    %prozentuale Spannweite der Hinterkantenklappen
 
-CM0 = -1;
+CM0 = FM.c_M_NP_F0;
 
-r_h = 10;
+r_h = 10;   % Hier noch LEONS Wert!
 l_mue = Ergebnisse_Fluegel.l_mue;
-deltaXSP = 3;
 
-%[c_w_p, c_w_p_min_Re] = Profilwiderstand(landeanvorderung.v_50,0);
+deltaXSP_l_mue = 0.25; % LEON Wert !
+
+[c_w_p, c_w_p_min_Re] = Profilwiderstand(landeanvorderung.v_50,0);
 % Über trapz summieren!
 
 C_W_P_Min_RE = 0.01; %% JASPER WERT PLS!
@@ -88,9 +82,11 @@ b_k_a = Ergebnisse_Fluegel.b * spannweite_flaps; % Auswaählen bis welches ETA!
 b_k_i = specs.D_rumpf + 0.03 * (Ergebnisse_Fluegel.b/2); %  3% Abstand zum Rump über Halbspannweite
 
 % Fläche Berechnen Ganzer Flügel für klappen mit Rumpf
-X = linspace(0,0.7,spannweite_flaps*1000);
+X = linspace(0,spannweite_flaps,spannweite_flaps*1000);
 Fluegel = Ergebnisse_Fluegel.Fluegeltiefen_eta(1,1:(spannweite_flaps*1000));
 F_k = 2 * (Ergebnisse_Fluegel.b/2)*trapz(X,Fluegel); % MIT RUMPF!
+
+
 
 % Rumpf + extra stücke 3%
 Fluegel2 = Ergebnisse_Fluegel.Fluegeltiefen_eta_oR(1,1:30);
@@ -99,7 +95,7 @@ F_rumpf_rechteck = Ergebnisse_Fluegel.Fluegeltiefen_eta_Ru(1) * specs.D_rumpf;
 
 F_rumpf_Ecken = 2 * ((Ergebnisse_Fluegel.b)/2)*trapz(X2,Fluegel2);  % Rumpf Ecken   
 
-F_rumpf_dreieck = Flaeche_im_Rumpf_oberes_dreieck;              % Dreieick im Rumpf aus CG von Ole
+F_rumpf_dreieck = Flaeche_im_Rumpf_oberes_dreieck;              % Dreieck im Rumpf aus CG von Ole
 
 F_rumpf = F_rumpf_dreieck + F_rumpf_Ecken + F_rumpf_rechteck;   % Stück im Rumpf
 
@@ -347,8 +343,8 @@ delta_CM_HKK_TO = dcMk_dcmK * delta_Cm_HKK_TO + 0.7 * ((Ergebnisse_Fluegel.strec
 
 % Formel 4 - Final
 
-CA_MAX_TO = ( CA_F_max_VFFK_TO + ( (CM0 + delta_CM_HKK_TO)/( r_h/l_mue ) ) ) / (1 - ( deltaXSP/l_mue )/( r_h/l_mue ));
-CA_MAX_LDG = ( CA_F_max_VFFK   + ( (CM0 + delta_CM_HKK_LDG)/( r_h/l_mue ) ) ) / (1 - ( deltaXSP/l_mue )/( r_h/l_mue ));
+CA_MAX_TO = ( CA_F_max_VFFK_TO + ( (CM0 + delta_CM_HKK_TO)/( r_h/l_mue ) ) ) / (1 - ( deltaXSP_l_mue )/( r_h/l_mue ));
+CA_MAX_LDG = ( CA_F_max_VFFK   + ( (CM0 + delta_CM_HKK_LDG)/( r_h/l_mue ) ) ) / (1 - ( deltaXSP_l_mue )/( r_h/l_mue ));
 
 
 
@@ -385,7 +381,7 @@ w = 0.0073;
 
 delta_CM_K = 0.5; % Wie kommt man auf den Wert ?
 CA = 0.5;
-CA_F = CA * (1- ((deltaXSP/Ergebnisse_Fluegel.l_mue)/(r_h/Ergebnisse_Fluegel.l_mue))) - ((CM0+delta_CM_K)/(r_h/Ergebnisse_Fluegel.l_mue))/(r_h/Ergebnisse_Fluegel.l_mue);
+CA_F = CA * (1- ((deltaXSP_l_mue)/(r_h/Ergebnisse_Fluegel.l_mue))) - ((CM0+delta_CM_K)/(r_h/Ergebnisse_Fluegel.l_mue))/(r_h/Ergebnisse_Fluegel.l_mue);
 
 
 delta_C_W_Ind = CA_F * delta_C_a_FK * v + delta_Ca_max_SF_phi^2 *w;

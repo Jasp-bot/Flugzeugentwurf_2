@@ -86,13 +86,13 @@ c_A_alpha = c_A_alpha_F * (1+ ((c_A_alpha_H)/(c_A_alpha_F)) *...
 
 
 
-d_F1_X_NP_durch_l_mue=(1.8/c_A_alpha_F)*(specs.D_rumpf^2 *l_fn)/(Ergebnisse_Fluegel.F*Ergebnisse_Fluegel.l_mue)    %%Einfluss des rumpfes vor und hinter dem Fluegel Formel 28
+d_F1_X_NP_durch_l_mue = (1.8/c_A_alpha_F)*(specs.D_rumpf^2 *l_fn)/(Ergebnisse_Fluegel.F*Ergebnisse_Fluegel.l_mue)    %%Einfluss des rumpfes vor und hinter dem Fluegel Formel 28
 
-d_F2_X_NP_durch_l_mue=(0.273*specs.D_rumpf^2*Ergebnisse_Fluegel.l_m*(Ergebnisse_Fluegel.b+specs.D_rumpf))/((1+Ergebnisse_Fluegel.lambda)*Ergebnisse_Fluegel.l_mue^2*(Ergebnisse_Fluegel.b+2.15*specs.D_rumpf))*tan(Ergebnisse_Fluegel.phi_25_max) %Einfluss des Rumpf Fl�gel �berganges auf den NP FORMEL 29 PS02
+d_F2_X_NP_durch_l_mue = (0.273*specs.D_rumpf^2*Ergebnisse_Fluegel.l_m*(Ergebnisse_Fluegel.b+specs.D_rumpf))/((1+Ergebnisse_Fluegel.lambda)*Ergebnisse_Fluegel.l_mue^2*(Ergebnisse_Fluegel.b+2.15*specs.D_rumpf))*tan(Ergebnisse_Fluegel.phi_25_max) %Einfluss des Rumpf Fl�gel �berganges auf den NP FORMEL 29 PS02
 
-d_TW_X_NP_durch_l_mue=(specs.Dn_TW^2 *specs.l_TW)/(Ergebnisse_Fluegel.F*Ergebnisse_Fluegel.l_mue*c_A_alpha_F) %Einfluss Triebwerk auf NP Formel 30 PS02
+d_TW_X_NP_durch_l_mue = (specs.Dn_TW^2 *specs.l_TW)/(Ergebnisse_Fluegel.F*Ergebnisse_Fluegel.l_mue*c_A_alpha_F) %Einfluss Triebwerk auf NP Formel 30 PS02
 
-l_i_Mitte= DT.l_i_I+(tan(Ergebnisse_Fluegel.phi_VK_max)*Durchmesser_Flugzeug_wo_Fluegel_durchgeht*0.5)    %Ausrechnen von tiefe des Fluges imagin�r IM rumpf     
+l_i_Mitte = DT.l_i_I+(tan(Ergebnisse_Fluegel.phi_VK_max)*Durchmesser_Flugzeug_wo_Fluegel_durchgeht*0.5)    %Ausrechnen von tiefe des Fluges imagin�r IM rumpf     
 
 Flaeche_im_Rumpf_oberes_dreieck=(l_i_Mitte-DT.l_i_I)*Durchmesser_Flugzeug_wo_Fluegel_durchgeht*0.5;
 

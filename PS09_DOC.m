@@ -63,6 +63,7 @@ FC_pa=(6011./((R./v_h)+BT_avg));          %PS09 Formel 10
 
 FT_PA = 6011./(1+(v_h.*(BT_avg./R)));    %yearly flight time 
 
+figure(3)
 plot(R,FT_PA)   %Plot Flight Time per annum
 
 FT= FT_PA ./ FC_pa;
@@ -90,8 +91,15 @@ I_CAR = I_FR * (Ergebnisse_Massen_FE2.M_TO - Ergebnisse_Massen_FE2.M_ZF - (311 *
 
 n_PAX_CAR = I_CAR / I_PAX(1);
 
-DOC_zuSKO_COR = (DOC./SKO) * (n_pax / (n_pax + n_PAX_CAR));
+%%%% 
+% C1 Plotten als Pie-Chart
+figure(1)
+pie([C_cap C_crew C_MRO_AF_MAT(20) C_MRO_AF_PER(20) C_MRO_ENG(20)])
 
+%%%%
+
+DOC_zuSKO_COR = (DOC./SKO) * (n_pax / (n_pax + n_PAX_CAR));
+figure(2)
 plot(R,SMC)
 grid on
 % Noch zweite Funktion plotten !

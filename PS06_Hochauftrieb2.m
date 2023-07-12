@@ -35,7 +35,7 @@ addpath('Unterfunktionen Widerstand');
 %% Steuervariablen/ Iteriervariablen?
 
 %Spannweite Klappenfläche
-spannweite_flaps = 0.55;
+spannweite_flaps = 0.6;
 %Länge Klappe ausgefahren
 flap_length_LDG = 2.0; % in meter
 flap_length_TO = 1.0;
@@ -44,12 +44,12 @@ flap_length_TO = 1.0;
 Flaps_begin = 0.7; %Prozent
 %Faktoren Slat -> Lock der Slat Länge damit auf 70% eta -> Letzter Wert hir
 %ist eta
-Slat_spannweite = 0.7;
+Slat_spannweite = 0.85;
 
 faktoren_Slat = 0.94 * 0.9 * Slat_spannweite;
 
 %Slats Tiefe
-Slats_pos = 0.03;
+Slats_pos = 0.1;
 
 %Oswald Zahl
 oswald = 0.8;
@@ -78,7 +78,7 @@ breite = 0.5;
 %% Klappenfläche
 % Berechnung F_K
 % Tiefdecker -> Länge Klappen und Abstände
-b_k_a = Ergebnisse_Fluegel.b * spannweite_flaps; % Auswaählen bis welches ETA!
+b_k_a = 2 * ((Ergebnisse_Fluegel.b/2) * spannweite_flaps); % Auswaählen bis welches ETA!
 b_k_i = specs.D_rumpf + 0.03 * (Ergebnisse_Fluegel.b/2); %  3% Abstand zum Rump über Halbspannweite
 
 % Fläche Berechnen Ganzer Flügel für klappen mit Rumpf
@@ -330,8 +330,8 @@ dCM_dCA_deltaCA = 0.5 * (1 - (ck_1/c)) * ((sin(theta)) / (pi - (theta - sin(thet
                                                             %Variable bei
                                                             %Polaren
                                                             %festgelegt
-delta_Cm_HKK_LDG = -dCM_dCA_deltaCA * (c_/c) - ((CA_REF_LDG + delta_C_a_FK * (1-(F_klappen/Ergebnisse_Fluegel.F))) / (8)) * (c_/c) * ((c_/c)-1);
-delta_Cm_HKK_TO = -dCM_dCA_deltaCA * (c_/c) - ((CA_REF_TO + delta_C_a_FK_TO * (1-(F_klappen/Ergebnisse_Fluegel.F))) / (8)) * (c_/c) * ((c_/c)-1);
+delta_Cm_HKK_LDG = - dCM_dCA_deltaCA * (c_/c) - ((CA_REF_LDG + delta_C_a_FK * (1-(F_klappen/Ergebnisse_Fluegel.F))) / (8)) * (c_/c) * ((c_/c)-1);
+delta_Cm_HKK_TO  = - dCM_dCA_deltaCA * (c_/c) - ((CA_REF_TO + delta_C_a_FK_TO * (1-(F_klappen/Ergebnisse_Fluegel.F))) / (8)) * (c_/c) * ((c_/c)-1);
 
 
 %  Formel 5 für Takeoff und Landing
@@ -400,13 +400,24 @@ delta_C_W_Inf_TO = (1/3) * delta_C_W_P_TO;
 %Fläche Vorflügel ist von Holm vorne bis Vorderkante    % Über mittlere
 %Flügeltiefe ok?
 
-tiefe_Slats = Ergebnisse_Fluegel.Fluegeltiefen_eta(1) * Slats_pos;
-laenge_Slats = 24; % m
-laenge_Fluegel = Ergebnisse_Fluegel.b/2 - 3.15; %Ohne Rumpf?
+%tiefe_Slats = Ergebnisse_Fluegel.Fluegeltiefen_eta(1) * Slats_pos;
+
+% Länge Slats
+laenge_Slats = 2 * (Slat_spannweite * (Ergebnisse_Fluegel.b/2)); % m
+
+X_VF = linspace(0,Slat_spannweite,Slat_spannweite*1000);
+% Slat tiefen!
+Fluegel_VF = Slats_pos .* Ergebnisse_Fluegel.Fluegeltiefen_eta(1,1:(Slat_spannweite*1000));
+% Fläche Slats
+F_VF = (Ergebnisse_Fluegel.b/2)*trapz(X_VF,Fluegel_VF);
+
+
+laenge_Fluegel = Ergebnisse_Fluegel.b; %Ohne Rumpf?
 
 % A*b ansatz ? Genau genug
-F_VF = tiefe_Slats * laenge_Slats * 0.9;        % Berechnug über mittlere Flügeltiefe nicht sehr genau -> Flcähe etwas größer als Echt -> Faktor 0.9
-F_VF = 1.93+5.26;
+%F_VF = tiefe_Slats * laenge_Slats * 0.9;        % Berechnug über mittlere Flügeltiefe nicht sehr genau -> Flcähe etwas größer als Echt -> Faktor 0.9
+%F_VF = 1.93+5.26;
+
 
 delta_CW_VF = C_W_P_Min_RE * (F_VF/Ergebnisse_Fluegel.F) * (laenge_Slats/laenge_Fluegel) *cos(Ergebnisse_Fluegel.phi_25_max);
 
@@ -516,8 +527,17 @@ ylabel("Gleitzahl E = C_{A}/C_W in [-]","FontWeight","bold")
 xlabel("Auftriebsbeiwert des Flügels C_{A} in [-]","FontWeight","bold")
 
 
+%% Für Massenberechnung tatsächliche Fowler klappen Fläche
 
-save Ergebnisse_Hochauftrieb_2.mat spannweite_flaps Flaps_begin flap_length_LDG
+
+X_FOWLER = linspace(0.03,spannweite_flaps,spannweite_flaps*1000);
+% Slat tiefen!
+Fluegel_FOWLER = (1-Flaps_begin) .* Ergebnisse_Fluegel.Fluegeltiefen_eta(1,1:(spannweite_flaps*1000));
+% Fläche Slats
+F_FOWLER = 2 * ((Ergebnisse_Fluegel.b/2)*trapz(X_FOWLER,Fluegel_FOWLER));
+
+
+save Ergebnisse_Hochauftrieb_2.mat spannweite_flaps Flaps_begin flap_length_LDG F_FOWLER
 
 
 

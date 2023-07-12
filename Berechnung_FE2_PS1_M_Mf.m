@@ -364,14 +364,14 @@ while abs(delta_M_to) > 0.0001
     k_f = kf1 * kf2;
 
     
-    S_f = ;  % Fläche K
-    b_fs = ; % Spannweite Klappen
+    S_f = F_FOWLER;%(spannweite_flaps * (Ergebnisse_Fluegel.b/2)) * Ergebnisse_Fluegel.l_m;  % Fläche Klappen über mittlere Flügeltiefe
+    b_fs = spannweite_flaps * (Ergebnisse_Fluegel.b); % Spannweite Klappen
     V_lf = landeanvorderung.v_50;
     beta = 45;%° % Vorgegeben als Optimum PS 6
-    pfeilung = Ergebnisse_Fluegel.phi_25_max; 
+    pfeilung = rad2deg(Ergebnisse_Fluegel.phi_25_max); 
     t_c = specs.d_l;
-
-    formel = 0.105 * k_f * ((S_f * b_fs)^(3/16)) * ((V_lf/100)^2 * ((sin(beta) * cos(pfeilung))/(t_c)))^(3/4);
+    %rad oder degree?
+    formel = 2.706 * k_f * ((S_f * b_fs)^(3/16)) * ((V_lf/100)^2 * ((sin(beta) * cos(pfeilung))/(t_c)))^(3/4) * S_f;
 
     
 

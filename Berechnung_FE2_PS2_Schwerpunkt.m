@@ -61,7 +61,7 @@ Rumpf_SP_Faktoren.zSP_ResFuel =-2.5;
 CG_Data.Rumpf = [Anteile_einzel_Massen_FE2.Airplane_Structure.Fuselage_group.M + Anteile_einzel_Massen_FE2.Airplane_Structure.Tail_group - M_HLW.W_HLW_basic - M_SLW.W_SLW_basic,0.42,0,0];
 CG_Data.HLW = [M_HLW.W_HLW_basic, 0.93, 0, 1];
 CG_Data.SLW = [M_SLW.W_SLW_basic, 0.95, 0, 5];
-CG_Data.Bugfahrwerk = [Anteile_einzel_Massen_FE2.Airplane_Structure.FrontGear, 0.13, 0, -4.5];
+CG_Data.Bugfahrwerk = [Anteile_einzel_Massen_FE2.Airplane_Structure.FrontGear, 0.06, 0, -4.5];
 CG_Data.APU = [specs.m_APU, 0.97, 0, 1];
 CG_Data.CockpitInstruments = [Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Intruments_Nav_Electr, 0.035,0,-1.5];
 CG_Data.HydraulicsElectricalWing = [Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Hydraulics_Electric*0.6,0.3, 0, -2];
@@ -129,7 +129,7 @@ CG_Wing_Z_RG=CG_Wing_Z_FG-2.19;
 
 %% Bestimmung von X_MAC
 
-Wing_MAC.xSP_MAC_lmue = 0.23; % siehe Übung: Wert zwischen 20% und 25%
+Wing_MAC.xSP_MAC_lmue = 0.35; % siehe Übung: Wert zwischen 20% und 25%
 
 Wing_MAC.xSP_MAC_FG = 0.5*NP.l_mue_ges -(CG_Data_Wing.Fluegel(2)-CG_Wing_X);
 

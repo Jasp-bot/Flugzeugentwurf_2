@@ -179,7 +179,7 @@ xlabel("Anstellwinkel \alpha_{F} in °","FontWeight","bold")
 P1 = [0 0];
 P2 = [-1 2];
 plot(P1,P2,'black')
-P3 = [-10 20];
+P3 = [-10 25];
 P4 = [0 0];
 plot(P3,P4,'black')
 
@@ -198,7 +198,21 @@ plot([alpha_CA_F_MAX_deg  alpha_CA_F_MAX_deg-delta_alpha_CA_F_max_deg],[CA_F_max
 
 grid on
 
-save Ergebnisse_Hochauftrieb_1.mat psiRootDeg psi_sym_inst_deg alpha_CA_F_MAX_deg CA_F_max CA_alpha_lowspeed delta_alpha_CA_F_max alpha_MAC_0_F_deg CA_F alpha_MAC_0_F CA_alpha_lowspeed CA_s alphas alpha_0 alpha_MAC_0_deg delta_alpha_CA_F_max_deg;
+
+%%Finde CA bei 6 ° für Hochauftrieb 2 @ Chatgpt
+target = alpha_MAC_0_F_deg + 6;
+
+% Find the index of the value closest to the target
+[~, index] = min(abs(alphas - target));
+
+% Get the closest value
+closestValue = alphas(index);
+
+
+CA_BEI_6_grad = CA_s(index);
+
+
+save Ergebnisse_Hochauftrieb_1.mat psiRootDeg psi_sym_inst_deg alpha_CA_F_MAX_deg CA_F_max CA_alpha_lowspeed delta_alpha_CA_F_max alpha_MAC_0_F_deg CA_F alpha_MAC_0_F CA_alpha_lowspeed CA_s alphas alpha_0 alpha_MAC_0_deg delta_alpha_CA_F_max_deg CA_BEI_6_grad;
 
 % Parameter der quadratischen Funktion
 a = 0.0058; % Koeffizient von x^2

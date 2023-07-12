@@ -41,12 +41,12 @@ flap_length_LDG = 2.0; % in meter
 flap_length_TO = 1.0;
 
 %Tiefe Klappen
-Flaps_begin = 0.7; %Prozent
+Flaps_begin = 0.65; %Prozent
 %Faktoren Slat -> Lock der Slat Länge damit auf 70% eta -> Letzter Wert hir
 %ist eta
 Slat_spannweite = 0.85;
 
-faktoren_Slat = 0.94 * 0.9 * Slat_spannweite;
+faktoren_Slat = 0.94 * 0.8 * Slat_spannweite;
 
 %Slats Tiefe
 Slats_pos = 0.1;
@@ -59,7 +59,7 @@ oswald = 0.8;
 lambda       = Ergebnisse_Fluegel.lambda;   %Zuspitzung des Flügels [-]      %% JASPER HILFE WELCHE WERTE RICHTIG?
 bf_s         = spannweite_flaps;    %prozentuale Spannweite der Hinterkantenklappen
 
-CM0 = FM.c_M_NP_F0;
+CM0 = -0.1;%FM.c_M_NP_F0;
 
 r_h = 10;   % Hier noch LEONS Wert!
 l_mue = Ergebnisse_Fluegel.l_mue;
@@ -130,6 +130,9 @@ c = Ergebnisse_Fluegel.l_m; % Mittlere Flügeltiefe benutzen
 c_ = flap_length_LDG + Ergebnisse_Fluegel.l_m; % Quelle GPT und ACAMP
 
 
+%phi_50 = atan(tan(Ergebnisse_Fluegel.phi_25_max)-(4/Ergebnisse_Fluegel.streckung_phi25_max)* (0.5-0.25) * (1-Ergebnisse_Fluegel.lambda)/(1-Ergebnisse_Fluegel.lambda));
+%CAalpha_F = (pi * Ergebnisse_Fluegel.streckung_phi25_max) / (1+sqrt(1 + ((Ergebnisse_Fluegel.streckung_phi25_max/2)^2) * (tan(phi_50)^2 + (1-specs.Ma_CR^2))));
+                        
 CA_alpha_F_FK_phi = CA_alpha_lowspeed * (((c_/c)-1) * (F_klappen/Ergebnisse_Fluegel.F)+1);
 
 
@@ -143,7 +146,7 @@ delta_CA_F_SF_phi = (F_klappen / Ergebnisse_Fluegel.F) * (cos(Ergebnisse_Fluegel
 % Große Formel VFFK -> Gobbinsche Version
                                                     %In Übungfolien ist
                                                     %hier ein +                                                                             %+
-alpha_F_max_VFFK = (CA_F_max_VFFK / CA_alpha_F_FK_phi) - (((CA_F * (alpha_MAC_0_F + deg2rad(6)) + delta_CA_F_SF_phi)) / CA_alpha_F_FK_phi) + deg2rad(6) + delta_alpha_CA_F_max + alpha_MAC_0_F;
+alpha_F_max_VFFK = (CA_F_max_VFFK / CA_alpha_F_FK_phi) - (((CA_BEI_6_grad + delta_CA_F_SF_phi)) / CA_alpha_F_FK_phi) + deg2rad(6) + delta_alpha_CA_F_max + alpha_MAC_0_F;
 
 alpha_F_max_VFFK_deg = rad2deg(alpha_F_max_VFFK);
 
@@ -159,7 +162,7 @@ xlabel("Anstellwinkel \alpha_{F} in °","FontWeight","bold")
 
 %Landing Polare
 alphas = -15:0.01:alpha_F_max_VFFK_deg-delta_alpha_CA_F_max_deg; % normal Plotten bis alphamax - delta alpha
-CA_sl = CA_alpha_lowspeed.*(deg2rad(alphas-alpha_MAC_0_deg)) + delta_CA_F_max_SF_phi;
+CA_sl = CA_alpha_F_FK_phi.*(deg2rad(alphas-alpha_MAC_0_deg)) + delta_CA_F_max_SF_phi;
 plot(alphas,CA_sl,'green','LineWidth',1.5)
 
 %% TAKEOFF
@@ -197,22 +200,22 @@ delta_CA_F_SF_phi_TO = (F_klappen / Ergebnisse_Fluegel.F) * cos(Ergebnisse_Flueg
 % Große Formel VFFK - >Gobbin Version
                                                         %IN ÜBUNG IST HIER
                                                         %+                                                                                           %+ 
-alpha_F_max_VFFK_TO = (CA_F_max_VFFK_TO/CA_alpha_F_FK_phi_TO) - (((CA_F * (alpha_MAC_0_F + deg2rad(6)) + delta_CA_F_SF_phi_TO))/CA_alpha_F_FK_phi_TO) + deg2rad(6) + delta_alpha_CA_F_max + alpha_MAC_0_F;
+alpha_F_max_VFFK_TO = (CA_F_max_VFFK_TO/CA_alpha_F_FK_phi_TO) - (((CA_BEI_6_grad + delta_CA_F_SF_phi_TO))/CA_alpha_F_FK_phi_TO) + deg2rad(6) + delta_alpha_CA_F_max + alpha_MAC_0_F;
 
 alpha_F_max_VFFK_deg_TO = rad2deg(alpha_F_max_VFFK_TO);
 
 
 %% Polotting 
 
-alphas = -12:0.01:alpha_F_max_VFFK_deg_TO-delta_alpha_CA_F_max_deg; % normal Plotten bis alphamax - delta alpha
-CA_st = CA_alpha_lowspeed.*(deg2rad(alphas-alpha_MAC_0_deg)) + delta_CA_F_max_SF_phi_TO;
+alphas = -12:0.01:(alpha_F_max_VFFK_deg_TO-delta_alpha_CA_F_max_deg); % normal Plotten bis alphamax - delta alpha
+CA_st = CA_alpha_F_FK_phi_TO.*(deg2rad(alphas-alpha_MAC_0_deg)) + delta_CA_F_max_SF_phi_TO;
 plot(alphas,CA_st,'red','LineWidth',1.5)
 
 % Kritische Punkte -> CA_Max stimmt nicht perfekt mit ende der geraden
 % überein ?!
 grid on
-plot([alpha_F_max_VFFK_deg_TO-delta_alpha_CA_F_max_deg],[0],'redx','LineWidth',1.5)
-plot([alpha_F_max_VFFK_deg-delta_alpha_CA_F_max_deg],[0],'greenx','LineWidth',1.5)
+plot([alpha_F_max_VFFK_deg_TO - delta_alpha_CA_F_max_deg],[0],'redx','LineWidth',1.5)
+plot([alpha_F_max_VFFK_deg - delta_alpha_CA_F_max_deg],[0],'greenx','LineWidth',1.5)
 
 plot([0],[CA_F_max_VFFK_TO],'redx','LineWidth',1.5)
 plot([0],[CA_F_max_VFFK],'greenx','LineWidth',1.5)
@@ -225,7 +228,7 @@ plot(0, CA_F_max,"xblue",'LineWidth',1.5)
 %% Abfall der Polaren Plotten
 
 % Parameter der quadratischen Funktion
-a = 0.0057; % Koeffizient von x^2
+a = 0.008; % Koeffizient von x^2
 h = alpha_F_max_VFFK_deg; % x-Koordinate des Maximums
 k = CA_F_max_VFFK; % y-Koordinate des Maximums
 
@@ -241,7 +244,7 @@ plot(h, k, 'gx','LineWidth',1.5)
 
 
 % Parameter der quadratischen Funktion
-a = 0.0052; % Koeffizient von x^2
+a = 0.0072; % Koeffizient von x^2
 h = alpha_F_max_VFFK_deg_TO; % x-Koordinate des Maximums
 k = CA_F_max_VFFK_TO; % y-Koordinate des Maximums
 
@@ -331,7 +334,7 @@ dCM_dCA_deltaCA = 0.5 * (1 - (ck_1/c)) * ((sin(theta)) / (pi - (theta - sin(thet
                                                             %Polaren
                                                             %festgelegt
 delta_Cm_HKK_LDG = - dCM_dCA_deltaCA * (c_/c) - ((CA_REF_LDG + delta_C_a_FK * (1-(F_klappen/Ergebnisse_Fluegel.F))) / (8)) * (c_/c) * ((c_/c)-1);
-delta_Cm_HKK_TO  = - dCM_dCA_deltaCA * (c_/c) - ((CA_REF_TO + delta_C_a_FK_TO * (1-(F_klappen/Ergebnisse_Fluegel.F))) / (8)) * (c_/c) * ((c_/c)-1);
+delta_Cm_HKK_TO  = - dCM_dCA_deltaCA * (c__TO/c_TO) - ((CA_REF_TO + delta_C_a_FK_TO * (1-(F_klappen/Ergebnisse_Fluegel.F))) / (8)) * (c__TO/c_TO) * ((c__TO/c_TO)-1);
 
 
 %  Formel 5 für Takeoff und Landing

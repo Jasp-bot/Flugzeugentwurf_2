@@ -15,6 +15,7 @@ load Ergebnisse_stat_Flaechenbelastung_Fluegelflaeche.mat
 load Ergebnisse_Fluegel_Tank_NP.mat;
 load SLW_data.mat;
 load HLW_data.mat;
+load Schwerpunkt.mat;
 
 %%%%%%%%%%%%%%%%%%%%% Leitwerke %%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -37,7 +38,7 @@ load HLW_data.mat;
 HLW.c = 0.95; % wert aus Datenblatt abgeschätzt
 
 % betimmung der Hoehenleitwerksflaeche
-HLW.r = specs.l_rumpf * 0.5;        %(0.5:0.01:0.55);
+HLW.r = r_H;        %(0.5:0.01:0.55);
 
 HLW.F = (HLW.c .* Ergebnisse_stat_Flaechenbelastung.F .* NP.l_mue_ges)./ HLW.r;
 

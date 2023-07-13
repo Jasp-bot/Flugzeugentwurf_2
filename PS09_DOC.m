@@ -69,9 +69,15 @@ plot(R,FT_PA)   %Plot Flight Time per annum
 
 FT= FT_PA ./ FC_pa;
 
+<<<<<<< Updated upstream
 C_MRO_AF_MAT = (Ergebnisse_Massen_FE2.M_OE./1000)*(0.2.*FT +13.7)+57.5; %Airframe Material maintenance costs (repair and replacement)
 
 C_MRO_AF_PER = f_lr .*(1+C_B).*((0.655+0.01*Ergebnisse_Massen_FE2.M_OE/1000) * FT + 0.254 + 0.01 .* (Ergebnisse_Massen_FE2.M_OE./1000));   %Aiframe personal maintenance costs (inspection and repair)
+=======
+C_MRO_AF_MAT = (Ergebnisse_Massen_FE2.M_OE./1000).* (0.2.* FT + 13.7) + 57.5; %Airframe Material maintenance costs (repair and replacement)
+
+C_MRO_AF_PER = f_lr .*(1+C_B).* ((0.655 + 0.01.*Ergebnisse_Massen_FE2.M_OE./1000) .* FT + 0.254 + 0.01 .* (Ergebnisse_Massen_FE2.M_OE./1000));   %Aiframe personal maintenance costs (inspection and repair)
+>>>>>>> Stashed changes
 
 C_MRO_ENG = specs.n_TW .* (1.5 .* (S_0./specs.n_TW) + (30.5 .* FT) + 10.6);
 

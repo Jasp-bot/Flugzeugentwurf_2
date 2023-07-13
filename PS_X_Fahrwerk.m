@@ -13,15 +13,16 @@ load Ergebnisse_Leitwerke.mat
 load Ergebnisse_Start_Landeanforderungen.mat
 load Zwischenergebnisse_PS5_Fluegelflaechen.mat
 load Ergebnisse_Widerstand_FE2.mat
+load Ergebnisse_Massen_FE2.mat
 
 % Reifendatenbank
 tires = readtable('Reifendaten_angepasst_Flaeche.xlsx');
 
-G_to = 258000;%2.6258e+06;
+G_to = Ergebnisse_Massen_FE2.M_TO;%2.6258e+06;
 %G_to = 568793 * 9.81
 
-delta_z = LS.delta_z; %7.3
-l_BFW_max = 36.495;
+delta_z = 7.3;
+l_BFW_max = 32.495;
 l_BFW_min = 33;
 %d_reifen = 17;
 l_HFW_min = 5;
@@ -47,7 +48,7 @@ else
     v_reifen_krit = v_reifen_max_TO;
 end
 
-v_reifen_krit = 200;%v_reifen_krit * 2.237;
+v_reifen_krit = 206;%v_reifen_krit * 2.237;
 
 %% 1. Hauptfahrwerk Belastung ermitteln
 S_Reserve = 25;
@@ -60,7 +61,8 @@ F_HFW_max = (G_to *((l_BFW + l_HFW) - l_HFW_min)) / (n_FWB * (l_BFW + l_HFW));
 %F_HFW_max = convforce(F_HFW_max,"N","lbf");
 
 F_reifen_HFW_max = (F_HFW_max/n_reifen_HFW) * S_FW;
-F_reifen_HFW_max = convforce(F_reifen_HFW_max,"N","lbf");
+F_reifen_HFW_max = convmass(F_reifen_HFW_max,'kg','lbm')
+%F_reifen_HFW_max = convforce(F_reifen_HFW_max,"N","lbf");
 
 
 idx = ((tires.RatedLoad_Lbs_ >= F_reifen_HFW_max) & (tires.RatedInflation_PSI_<=240) & (tires.RatedSpeed_MPH_ >= v_reifen_krit) );
@@ -80,7 +82,7 @@ n_rad = 6; % Sechs Räder pro Undercarriage ASSEMBLY
 T1 = readmatrix('ReductionFactors1.csv');
 
 for zz =1: length(tires_edit_HFW.A_inch_2_)
-S_b = 1.5 * tires_edit_HFW.OutsideDiameterMin(zz); %Wheel Base von 1. bis 3. Rad 
+S_b = 2.0 * tires_edit_HFW.OutsideDiameterMin(zz); %Wheel Base von 1. bis 3. Rad 
 S_t = 1.0 * tires_edit_HFW.OutsideDiameterMin(zz); % Spurbreite / Track width        -> Variabel für Iteration
       % Faktoren aus PS
 
@@ -123,12 +125,13 @@ T2 = readmatrix('reductionfactors2.csv');
 T2(:,(1:46)) = 0;
 T3 = readmatrix("LCN_new.csv");
 
+
 figure(3);
  for ii=1:2:19
  loglog(T3(:,ii),T3(:,ii+1));
  hold on
  end
- legend("25","30","35","40","50","60","70","80","90","100")
+ legend("25","30","35","40","50","60","70","80","90","100",'AutoUpdate','off')
 
 
 for i=1:length(tires_edit_HFW.A_inch_2_)
@@ -182,9 +185,9 @@ else
 in(i) = 0;
 end
 end
-title("Bestimmung der Reifen über LCG/LCN Methode")
-ylabel("ESWL in 1000lb")
-xlabel("Druck in PSI")
+title("Bestimmung der Reifen über LCG/LCN Methode","FontWeight","bold")
+ylabel("Equivalent Single Wheel Load (ESWL) in 1000lb","FontWeight","bold")
+xlabel("Druck in PSI","FontWeight","bold")
 xlim([50 260])
 %% Check ob Reifen im LCN Limit liegt -> Über Polygons
 big = 0;
@@ -203,11 +206,12 @@ tires_edit_HFW.PartNumber(big_idx)
 F_BFW_min = (G_to * ((l_BFW+l_HFW)-l_BFW_max))/(l_BFW + l_HFW);
 
 %Max stat. Belastung -> Vordere Lage
-F_BFW_max = (G_to * ((l_BFW + l_HFW)-l_BFW_min))/(l_BFW + l_HFW);
+F_BFW_max = (G_to * ((l_BFW + l_HFW)-l_BFW_min))/(l_BFW + l_HFW)
+%F_BFW_max = convmass(F_BFW_max,'kg','lbm')
 
 %Max dyn. Bremslast -> Abhängig von durchmesser Reifen
 %Outisde Diameter MIN verwenden!
-d_reifen = tires_edit_HFW.OutsideDiameterMin(big_idx);
+d_reifen = convlength(52,'in','m');%tires_edit_HFW.OutsideDiameterMin(big_idx);
 F_BFW_dyn = F_BFW_max + ((10*(delta_z + 0.5 * d_reifen)*G_to) / (32.2 * (l_BFW + l_HFW)));
 F_BFW_Dyn_transf = F_BFW_dyn/1.5;
 
@@ -226,7 +230,7 @@ if ((F_BFW_min >= 0.06*G_to) && (F_BFW_max <= 0.20*G_to) && (F_BFW_min <= 0.20*G
 else
     disp("Außerhalb Limits 1");
 end                                 %& tires.RatedLoad_Lbs_ >= F_BFW_Dyn_transf
-idz  = (tires.RatedInflation_PSI_>=200  & tires.RatedLoad_Lbs_ >= F_BFW_max & tires.RatedSpeed_MPH_ >= v_reifen_krit);
+idz  = (tires.RatedInflation_PSI_>=200  & (tires.RatedLoad_Lbs_ >= F_BFW_max) & tires.RatedSpeed_MPH_ >= v_reifen_krit);
 tires_bugfahrwerk = tires(idz,:)
 
 %% Reifendruck 

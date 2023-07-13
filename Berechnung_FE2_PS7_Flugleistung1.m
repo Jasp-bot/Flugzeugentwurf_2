@@ -126,6 +126,29 @@ S_G_vorh_j_DEC = S_S0_j_DEC .* S0_GTO .* GTO_G_DEC;
 [sfc_daNh_CL, ~, sfc_1PERs_Horizontalflug_CL] = SFC_vec(hoehe_m, Ma_j_CL, specs.bypass);
 [sfc_daNh_DEC, ~, sfc_1PERs_Horizontalflug_DEC] = SFC_vec(hoehe_m, Ma_j_DEC, specs.bypass);
 
+
+
+
+
+% Anzahl der Plots
+numPlots = length(hoehe_m);
+
+% Farbverlauf definieren
+colorStart = [1, 0.2, 0];   % Startfarbe (RGB)
+colorEnd = [0, 0, 1];     % Endfarbe (RGB)
+
+% Farbwerte für jeden Plot berechnen
+colors_1 = zeros(numPlots, 3);
+colors_2 = zeros(numPlots, 3);
+for i = 1:numPlots
+    colors_1(i, :) = colorStart + (i-1) * (colorEnd - colorStart) / (numPlots-1);
+    colors_2(i, :) = colorStart + (i-1) * (colorEnd - colorStart) / (numPlots-1);
+end
+
+
+
+
+
 for n_datensatz = 1:length(hoehe_m)
 
 
@@ -237,19 +260,30 @@ TAS_SE_H_DEC_vec(n_datensatz,:) = [v_TAS_j_DEC(n_datensatz, SE_DEC_x(n_datensatz
 
 
 %% PLOTS
-figure(1) % Horiontalflugdiagramm
-hold on
-grid on
 
-ylabel('S/G');
-xlabel('v_{EAS}');
-xlim([0 300]);
-ylim([0 1]);
 
-plot(v_EAS_j, S_G_vorh_j(n_datensatz, :), 'r');
-plot(v_EAS_j, S_G_erf_j(n_datensatz, :), 'b');
-% plot(v_EAS_j(n_datensatz, :), eps_inkomp_j(n_datensatz, :), '--b');
-hold off
+
+
+
+
+
+% figure(1) % Horiontalflugdiagramm
+% hold on
+% grid on
+% title('Horizontalflugdiagramm G_{ICA}', 'FontSize',25);
+% ylabel('S/G', 'FontSize',20);
+% xlabel('v_{EAS}', 'FontSize',20);
+% xlim([0 300]);
+% ylim([0 1]);
+% 
+% p1_1(n_datensatz) = plot(v_EAS_j, S_G_vorh_j(n_datensatz, :), 'Color',colors_1(n_datensatz,:), 'LineStyle','--');
+% p1_2(n_datensatz) = plot(v_EAS_j, S_G_erf_j(n_datensatz, :),  'Color',colors_2(n_datensatz,:), 'LineStyle','-');
+% Legend{2*n_datensatz-1} =  '(S/G)_{erf} Hoehe ' + sprintf("%d",hoehe_m(n_datensatz)) + 'm' ;
+% Legend{2*n_datensatz} =  '(S/G)_{vorh} Hoehe ' + sprintf("%d",hoehe_m(n_datensatz)) + 'm';
+% legend(Legend(1:n_datensatz*2),Location='eastoutside', FontSize=15);
+% 
+% % plot(v_EAS_j(n_datensatz, :), eps_inkomp_j(n_datensatz, :), '--b');
+% hold off
 
 %% Plot Luca
 %  P = InterX([v_EAS_j(n_datensatz, :);S_G_erf_j(n_datensatz, :)],[v_EAS_j(n_datensatz, :);S_G_vorh_j(n_datensatz, :)]);
@@ -293,72 +327,94 @@ hold off
 % figure(2) % SET
 % hold on 
 % grid on
-% ylabel('SET');
-% xlabel('v_{TAS}');
+% title('Spezifischer Schubüberschuss G_{ICA}', 'FontSize',25)
+% ylabel('SET','FontSize',20);
+% xlabel('v_{TAS}','FontSize',20);
 % xlim([0 350]);
-% ylim([0 1]);
+% ylim([0 0.7]);
 % 
-% plot(v_TAS_j(n_datensatz, :), SET(n_datensatz, :), 'r');
-% plot(v_TAS_j(n_datensatz, SET_x(n_datensatz,1)), SET_y(n_datensatz,1), '*b');
+% p2_1(n_datensatz) = plot(v_TAS_j(n_datensatz, :), SET(n_datensatz, :), 'Color',colors_2(n_datensatz,:), 'LineStyle','-');
+% p2_2(n_datensatz) = plot(v_TAS_j(n_datensatz, SET_x(n_datensatz,1)), SET_y(n_datensatz,1), '*k');
+% Legend2{n_datensatz*2-1} = 'SET in [rad] Hoehe ' + sprintf("%d",hoehe_m(n_datensatz)) + 'm';
+% Legend2{n_datensatz*2} = '';
+% legend(Legend2(1:n_datensatz*2), Location='eastoutside', FontSize=16)
+% 
 % hold off
 
 % 
 % figure(3) % SEP
 % hold on 
 % grid on
-% ylabel('SEP');
-% xlabel('v_{TAS}');
+% title('Spezifischer Leistungsüberschuss G_{ICA}','FontSize',25)
+% ylabel('SEP in m/s','FontSize',20);
+% xlabel('v_{TAS} in m/s','FontSize',20);
 % xlim([0 350]);
 % ylim([0 100]);
 % 
-% plot(v_TAS_j(n_datensatz, :), SEP(n_datensatz, :), 'r');
-% plot(v_TAS_j(n_datensatz, SEP_x(n_datensatz,1)), SEP_y(n_datensatz,1), '*b');
+% p3_1(n_datensatz) = plot(v_TAS_j(n_datensatz, :), SEP(n_datensatz, :), 'Color',colors_2(n_datensatz,:), 'LineStyle','-');
+% p3_2(n_datensatz) = plot(v_TAS_j(n_datensatz, SEP_x(n_datensatz,1)), SEP_y(n_datensatz,1), '*b');
+% Legend3{n_datensatz*2-1} = 'SEP in m/s Hoehe ' + sprintf("%d",hoehe_m(n_datensatz)) + 'm' ;
+% Legend3{n_datensatz*2} = '';
+% legend(Legend3(1:n_datensatz*2), Location='eastoutside', FontSize=16)
+% 
 % hold off
 
 
-% figure(4) % SEP
+% figure(4) % SR
 % hold on 
 % grid on
-% ylabel('SR');
-% xlabel('v_{TAS}');
-% xlim([0 350]);
-% ylim([0 300]);
+% title('Spezifische Reichweite G_{ICA}','FontSize',25)
+% ylabel('SR in m/kg','FontSize',20);
+% xlabel('v_{TAS} in m/s','FontSize',20);
+% xlim([0 300]);
+% ylim([0 20]);
 % 
-% plot(v_TAS_j(n_datensatz, :), SR(n_datensatz, :), 'r');
-% plot(v_TAS_j(n_datensatz, SR_x(n_datensatz,1)), SR_y(n_datensatz,1), '*b');
+% p4_1(n_datensatz) = plot(v_TAS_j(n_datensatz, :), SR(n_datensatz, :), 'Color',colors_2(n_datensatz,:), 'LineStyle','-');
+% p4_2(n_datensatz) = plot(v_TAS_j(n_datensatz, SR_x(n_datensatz,1)), SR_y(n_datensatz,1), '*k');
+% Legend4{n_datensatz*2-1} = 'SEP in m/kg Hoehe ' + sprintf("%d",hoehe_m(n_datensatz)) + 'm' ;
+% Legend4{n_datensatz*2} = '';
+% legend(Legend4(1:n_datensatz*2), Location='eastoutside', FontSize=16)
 % hold off
-
-
-
-
-% Spezifische Flugdauer
+% 
+% 
+% 
+% 
+% % Spezifische Flugdauer
 % figure(6) 
 % 
 % hold on 
 % grid on 
-% 
-% ylabel('SE in s/kg');
-% xlabel('v_{TAS} in m/s');
+% title('Spezifische Flugdauer G_{ICA}','FontSize',25)
+% ylabel('SE in s/kg','FontSize',20);
+% xlabel('v_{TAS} in m/s','FontSize',20);
 % xlim([0 350]);
 % 
 % 
-% plot(v_TAS_j(n_datensatz, :) , SE(n_datensatz,:), 'k');
-
+% p5_1(n_datensatz) = plot(v_TAS_j(n_datensatz, :) , SE(n_datensatz,:), 'Color',colors_2(n_datensatz,:), 'LineStyle','-' );
+% p5_2(n_datensatz) = plot(v_TAS_j(n_datensatz, SE_x(n_datensatz,1)), SE_y(n_datensatz,1), '*k');
+% Legend5{n_datensatz*2-1} = ' in s/kg Hoehe ' + sprintf("%d",hoehe_m(n_datensatz)) + 'm' ;
+% Legend5{n_datensatz*2} = '';
+% legend(Legend5(1:n_datensatz*2), Location='eastoutside', FontSize=16)
+% hold off
 
 
 end
-% figure(5)
-% hold on 
-% grid on 
-% 
-% ylabel('H in m');
-% xlabel('v_{TAS} in m/s');
-% xlim([0 350]);
-% 
-% plot(TAS_SR_H_vec(:,1), TAS_SR_H_vec(:,3),'k');
-% plot(TAS_SEP_H_vec(:,1), TAS_SEP_H_vec(:,3),'b');
-% plot(TAS_SET_H_vec(:,1), TAS_SET_H_vec(:,3),'r');
-% 
+figure(5)
+hold on 
+grid on 
+
+title('Optimalgeschwindigkeiten bei G_{LDG}','FontSize',25)
+
+ylabel('H in m','FontSize',20);
+xlabel('v_{TAS} in m/s','FontSize',20);
+xlim([0 350]);
+
+plot(TAS_SR_H_DEC_vec(1:10,1), TAS_SR_H_DEC_vec(1:10,3),'k');
+plot(TAS_SEP_H_DEC_vec(1:10,1), TAS_SEP_H_DEC_vec(1:10,3),'b');
+plot(TAS_SET_H_DEC_vec(1:10,1), TAS_SET_H_DEC_vec(1:10,3),'r');
+legend('SR', 'SEP', 'SET', 'FontSize',15)
+
+
 
 %% Flugbereichsdiagramm
 
@@ -387,6 +443,10 @@ figure(7)
 hold on
 grid on
 
+title('Flugbereichsdiagramm', FontSize=25)
+xlabel('v_{TAS} in m/s', FontSize=20);
+ylabel('H in m', FontSize=20);
+
 pl(1) = plot(v_s_1g, hoehe_m, '--b');
 pl(2) = plot(v_s_min, hoehe_m, 'k');
 pl(3) = plot(v_BO, hoehe_m, 'r');
@@ -404,8 +464,7 @@ pl(8) = plot(v_MO, hoehe_m, 'g');
 
 pl(11) = plot(specs.Ma_CR * ISA.a(hoehe_CR), hoehe_CR, '*r'); % Design point
 
-xlabel('v_{TAS} in m/s');
-ylabel('H in m');
+legend('v_s_{1g}', 'v_s_{min}', 'Ma_{BO}', 'SR_{max}', 'SEP_{max}', 'SET_{max}', 'SE_{max}', 'v_{MO}', 'DP', 'FontSize',15 ,Location='eastoutside');
 
 % 
 % 

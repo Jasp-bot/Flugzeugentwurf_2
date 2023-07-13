@@ -212,9 +212,12 @@ while abs(delta_M_to) > 0.0001
     FF.Mff = prod(FF.mfi(3:11)); % Faktorprodukt  
     FF.mf_oC = (1-FF.Mff) * M_TO_initial; %%%%%%%%%%%%%%%%%%%%% Muss verändert werden für iteration
     
+
+
     FF.Mff_2_10 = prod(FF.mfi(3:11)); % Gesamtanteil Mff ab TO
     FF.Mff_2_5 = prod(FF.mfi(3:6)); % Nur Reisefluganteil ohne DIV
-    
+    FF.Mff_6_10 = prod(FF.mfi(7:11));
+
     % Kraftstoffmassenfaktor neu
     FF.Kappa_ges = 1- FF.Mff_2_10 + 0.05 * (1 - FF.Mff_2_5); 
     
@@ -875,7 +878,7 @@ Anteile_einzel_Massen_FE2.Fuel_fractions.Kappa = FF.Kappa_ges;
 Anteile_einzel_Massen_FE2.Fuel_fractions.M_Fuel = Ergebnisse_Massen_FE2.M_F;
 Anteile_einzel_Massen_FE2.Fuel_fractions.FF = FF;
 
-save Ergebnisse_Massen_FE2.mat Ergebnisse_Massen_FE2 Anteile_einzel_Massen_FE2 M_HLW M_SLW
+save Ergebnisse_Massen_FE2.mat Ergebnisse_Massen_FE2 Anteile_einzel_Massen_FE2 M_HLW M_SLW FF
 
 
 

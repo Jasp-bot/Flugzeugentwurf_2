@@ -12,9 +12,9 @@ load Ergebnisse_ISA_DATA.mat
 load Ergebnisse_Start_Landeanforderungen.mat
 
 
-P_oe=1.235;      %Price per Kilogramm aus PS 09 [€/kg]
+P_oe=1.245;      %Price per Kilogramm aus PS 09 [€/kg]
 f_ir=0.05;       %interest rate [%]  
-t_DEP=12;        %Depreciation Period [years]
+t_DEP=1/12;        %Depreciation Period [years]
 f__RV=0.15;      %Residual fuel factor [%]
 f_I=0.005;       %Insurance rate [%]
 S_FA=50000;      %Average salery flight attendendent [€]
@@ -38,6 +38,7 @@ R= linspace(500, specs.max_range_basis_km, 20);     %Reichweite
 
 %Annahmen
 R_STD=9000;
+P_GES=1;
 
 Flughoehe_CR = specs.flight_level * 10^2 ;     % in ft
 hoehe_CR = round(unitsratio('m','ft')*Flughoehe_CR);
@@ -48,11 +49,11 @@ v_h= v * 3.6;
 
 
 %%Rechnung
-alpha=f_ir*((1-f__RV*(1/(1+f_ir))^t_DEP)/((1-(1/(1+f_ir))^t_DEP)));
+alpha=f_ir*P_GES*((1-f__RV*(1/(1+f_ir))^t_DEP)/((1-(1/(1+f_ir))^t_DEP)));
 
 C_cap=P_oe*Ergebnisse_Massen_FE2.M_OE*(alpha+f_I);        %Capital costs
 
-C_crew=n_crew*(S_FA*((Ergebnisse_Massen_FE2.M_TO-Ergebnisse_Massen_FE2.M_ZF)/5000)+S_FC(1)); %Kosten der Crew ca 3mio
+C_crew=n_crew*(S_FA*((Ergebnisse_Massen_FE2.M_ZF-Ergebnisse_Massen_FE2.M_OE)/5000)+S_FC(1)); %Kosten der Crew ca 3mio
 
 C1=C_cap+C_crew;    %C1 ist Routen unabhängige kosten
 
@@ -68,9 +69,9 @@ plot(R,FT_PA)   %Plot Flight Time per annum
 
 FT= FT_PA ./ FC_pa;
 
-C_MRO_AF_MAT = (Ergebnisse_Massen_FE2.M_OE./1000).*(0.2.*FT +13.7)+57.5; %Airframe Material maintenance costs (repair and replacement)
+C_MRO_AF_MAT = (Ergebnisse_Massen_FE2.M_OE./1000)*(0.2.*FT +13.7)+57.5; %Airframe Material maintenance costs (repair and replacement)
 
-C_MRO_AF_PER = f_lr .*(1+C_B).*((0.655+0.01.*Ergebnisse_Massen_FE2.M_OE./1000) .* FT + 0.254 + 0.01 .* (Ergebnisse_Massen_FE2.M_OE./1000));   %Aiframe personal maintenance costs (inspection and repair)
+C_MRO_AF_PER = f_lr .*(1+C_B).*((0.655+0.01*Ergebnisse_Massen_FE2.M_OE/1000) * FT + 0.254 + 0.01 .* (Ergebnisse_Massen_FE2.M_OE./1000));   %Aiframe personal maintenance costs (inspection and repair)
 
 C_MRO_ENG = specs.n_TW .* (1.5 .* (S_0./specs.n_TW) + (30.5 .* FT) + 10.6);
 
@@ -79,7 +80,13 @@ C_MRO = C_MRO_ENG + C_MRO_AF_PER + C_MRO_AF_MAT;
 Fuel = fuel_range(R);
 
 C2 = FC_pa.*(P_F.*Fuel+((specs.m_cargo+specs.m_pax)).*P_H + P_LDG.*(Ergebnisse_Massen_FE2.M_OE+Fuel) + f_ATC(3).*R.*sqrt(((Ergebnisse_Massen_FE2.M_OE+Fuel)./1000)./50) + C_MRO); % PS09 Formel 4 Routen abhängige kosten
-       
+%Komponnenten zum Plotten       
+ko_1=P_F*Fuel(1,end);
+ko_2=((specs.m_cargo+specs.m_pax))*P_H;
+ko_3=P_LDG*(Ergebnisse_Massen_FE2.M_OE+Fuel(1,end));
+ko_4=f_ATC(3)*(R(1,end))*sqrt(((Ergebnisse_Massen_FE2.M_OE+Fuel(1,end))/1000)/50);
+ko_5=C_MRO(1,end);
+
 % Hier keine 1000 -> Sieht dann aber schön aus :)
 SKO= R * 1000 .* specs.n_pax;
 
@@ -94,9 +101,25 @@ n_PAX_CAR = I_CAR / I_PAX(1);
 %%%% 
 % C1 Plotten als Pie-Chart
 figure(1)
-pie([C_cap C_crew C_MRO_AF_MAT(20) C_MRO_AF_PER(20) C_MRO_ENG(20)])
 
-%%%%
+pie([C_cap C_crew])
+labels = {'C_cap' , 'C_crew'}
+legend(labels)
+title('Routenunabhängige Kosten')
+
+figure(5)
+pie([C2(1,end) C1])
+labels = {'C_2' , 'C_1'}
+legend(labels)
+title('Routenabhängige zu Routenunabhängige Kosten')
+
+figure (4)
+pie([ko_1 ko_2 ko_3 ko_4 ko_5])
+labels = {'Fuel costs' , 'Handling fees' , 'Landing fees' , 'ATC costs' , 'Engine costs'}
+legend(labels)
+title('Routenabhängige Kosten')
+
+
 
 DOC_zuSKO_COR = (DOC./SKO) * (n_pax / (n_pax + n_PAX_CAR));
 figure(2)
@@ -123,10 +146,13 @@ y = x .* vektor.^2 + b;
 
 plot(vektor, y)
 
-legend("Kerosinpreis in €","")
-
+legend("Kerosinpreis in €","Trend")
+xlabel('Monate')
+ylabel('Preis pro kg in €')
 
 hold off
+
+%%%%
 
 function [Fuel]=fuel_range(Range)
 
@@ -263,9 +289,7 @@ Technologiefaktor_ALU_CFK = 0.5 * 0.4;
     %%%%%%%%%%%%%%%%%%%%%%%%  bis 10 nicht von 2 bis 10. Muss eventuell nochmal
     %%%%%%%%%%%%%%%%%%%%%%%%  angepasst werden
     % Matrix für Produkt auf mf0 bis mf10
-    FF.mfi = [FF.mf0, FF.mf1, FF.mf2, FF.mf3,...
-        FF.mf4, FF.mf5, FF.mf6, FF.mf7,...
-        FF.mf8, FF.mf9, FF.mf10]; 
+    FF.mfi = [FF.mf0, FF.mf1, FF.mf2, FF.mf3,FF.mf4, FF.mf5, FF.mf6, FF.mf7,FF.mf8, FF.mf9, FF.mf10]; 
     
     FF.Mff = prod(FF.mfi(3:11)); % Faktorprodukt  
     FF.mf_oC = (1-FF.Mff) * M_TO_initial; %%%%%%%%%%%%%%%%%%%%% Muss verändert werden für iteration

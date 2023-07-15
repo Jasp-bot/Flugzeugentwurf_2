@@ -14,7 +14,7 @@ load Ergebnisse_Start_Landeanforderungen.mat
 
 P_oe=1.245;      %Price per Kilogramm aus PS 09 [€/kg]
 f_ir=0.05;       %interest rate [%]  
-t_DEP=1/12;        %Depreciation Period [years]
+t_DEP=1/12;      %Depreciation Period [years]
 f__RV=0.15;      %Residual fuel factor [%]
 f_I=0.005;       %Insurance rate [%]
 S_FA=50000;      %Average salery flight attendendent [€]
@@ -32,7 +32,7 @@ I_PAX=[550,400]; %income per seat long haul [3 KLassen, all eco]
 n_pax=specs.n_pax;
 
 %Variabeln
-R= linspace(500, specs.max_range_basis_km, 20);     %Reichweite
+R= linspace(500, specs.max_range_basis_km , 20);     %Reichweite
 %R=5000;
 
 
@@ -64,8 +64,7 @@ FC_pa=(6011./((R./v_h)+BT_avg));          %PS09 Formel 10
 
 FT_PA = 6011./(1+(v_h.*(BT_avg./R)));    %yearly flight time 
 
-figure(3)
-plot(R,FT_PA)   %Plot Flight Time per annum
+
 
 FT= FT_PA ./ FC_pa;
 
@@ -84,8 +83,10 @@ C_MRO_ENG = specs.n_TW .* (1.5 .* (S_0./specs.n_TW) + (30.5 .* FT) + 10.6);
 C_MRO = C_MRO_ENG + C_MRO_AF_PER + C_MRO_AF_MAT;
 
 Fuel = fuel_range(R);
+MAX_Fuel=fuel_range(specs.max_range_basis_km);
 
 C2 = FC_pa.*(P_F.*Fuel+((specs.m_cargo+specs.m_pax)).*P_H + P_LDG.*(Ergebnisse_Massen_FE2.M_OE+Fuel) + f_ATC(3).*R.*sqrt(((Ergebnisse_Massen_FE2.M_OE+Fuel)./1000)./50) + C_MRO); % PS09 Formel 4 Routen abhängige kosten
+
 %Komponnenten zum Plotten       
 ko_1=P_F*Fuel(1,end);
 ko_2=((specs.m_cargo+specs.m_pax))*P_H;
@@ -93,8 +94,22 @@ ko_3=P_LDG*(Ergebnisse_Massen_FE2.M_OE+Fuel(1,end));
 ko_4=f_ATC(3)*(R(1,end))*sqrt(((Ergebnisse_Massen_FE2.M_OE+Fuel(1,end))/1000)/50);
 ko_5=C_MRO(1,end);
 
-% Hier keine 1000 -> Sieht dann aber schön aus :)
-SKO= R * 1000 .* specs.n_pax;
+
+
+
+    for ZWW=1:length(R)
+        if R(1,ZWW) < specs.max_range_basis_km
+        % Hier keine 1000 -> Sieht dann aber schön aus :)
+            SKO(1,ZWW)= R(1,ZWW) * 1000 * specs.n_pax;
+        elseif R(1,ZWW)>= specs.max_range_basis_km
+            GEWICHT_VON_ZU_VIEL_FUEL=MAX_Fuel-fuel_range(R(1,ZWW))
+
+            SKO(1,ZWW)=R(1,ZWW) * 1000 * (specs.n_pax + GEWICHT_VON_ZU_VIEL_FUEL);
+    
+        end
+    end
+
+
 
 DOC = C1 + C2 ;          %Gesamten kosten 
 
@@ -103,6 +118,16 @@ SMC = DOC./SKO;
 I_CAR = I_FR * (Ergebnisse_Massen_FE2.M_TO - Ergebnisse_Massen_FE2.M_ZF - (311 * 80));          %%MUSS NOCHMAL ANGESEHEN WERDEN!!!! KA WAS DIE BEI FORMEL 13 DAMIT MEINEN 
 
 n_PAX_CAR = I_CAR / I_PAX(1);
+
+%Polution Pro Max langem Flug
+Fuel_P=fuel_range(specs.max_range_basis_km);
+C02=3.15*Fuel_P
+Water=1.24*Fuel_P
+Nitrogen_oxides=0.01*Fuel_P
+Carbon_monoxide=0.001*Fuel_P
+unburned_hydrocarbons=0.00005*Fuel_P
+soog=0.00002*Fuel_P
+
 
 %%%% 
 % C1 Plotten als Pie-Chart
@@ -125,18 +150,22 @@ labels = {'Fuel costs' , 'Handling fees' , 'Landing fees' , 'ATC costs' , 'Engin
 legend(labels)
 title('Routenabhängige Kosten')
 
+figure(3)
+plot(R,FT_PA)   %Plot Flight Time per annum
+title('Kosten pro Kilometer')
 
 
 DOC_zuSKO_COR = (DOC./SKO) * (n_pax / (n_pax + n_PAX_CAR));
 figure(2)
 plot(R,SMC)
+xlim([0,12000])
 grid on
 % Noch zweite Funktion plotten !
 
 kerosin_data = readtable("kerosin2.xlsx");
 %kerosin_data_2 = table2array(kerosin_data(5,:))
 kerosin_preis = kerosin_data.x_ProKg;
-
+figure(6)
 vektor = linspace(1,length(kerosin_preis),length(kerosin_preis));
 plot(vektor,kerosin_preis)
 hold on

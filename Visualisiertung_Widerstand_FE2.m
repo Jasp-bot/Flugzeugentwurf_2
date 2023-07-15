@@ -39,7 +39,7 @@ colors = vertcat(colors, colors);
 
 
 % Linienarten definieren
-lineStyles = {'--', ':', '-.', '-', '--', ':', '-.', '-', '--', ':', '-.', '-' }; % Gestrichelt, Gepunktet
+lineStyles = {'--', '-', '-.', '-', '--', '-', '-.', '-', '--', '-', '-.', '-' }; % Gestrichelt, Gepunktet
 
 
 % Plots erstellen
@@ -66,11 +66,11 @@ autoplot(numPlots+3, 1) = plot(schnittpunkt_off_D_c_A_CR(1,1), schnittpunkt_off_
 % schoen machen des Plots 
 
 legend(autoplot([1:n_plot+3]),{'+ SLW', '+ HLW', '+ Interferenz', '+ Rumpf', '+ Triebwerk', '+ Trimmung', '+ Abwind', '+ Profil', '+ ind. Widerstand', '+ Wellenwiderstand', '+Off-Design', 'Schnittpunkt von Design / Off-Design', 'C_{A,CR}'},...
-    'Location','southeast','FontSize',10);
+    'Location','southeast','FontSize',15);
 
-title('Kumulative Widerstandspolare')
-xlabel('c_W');
-ylabel('c_A');
+title('Kumulative Widerstandspolare','FontSize',25)
+xlabel('c_W','FontSize',20);
+ylabel('c_A','FontSize',20);
 
 hold off;
 
@@ -113,8 +113,8 @@ hold off;
 % colorEnd = [0, 0, 0];     % Endfarbe (RGB)
 % 
 % % Farbwerte für jeden Plot berechnen
-% %colors = zeros(numPlots/2, 3);
-% for n_color = 1:(numPlots/2)
+% %colors = zeros(numPlots, 3);
+% for n_color = 1:(numPlots)
 %     colors(n_color, :) = colorStart + (n_color-1) * (colorEnd - colorStart) / ((numPlots/2)-1);
 % end
 % 

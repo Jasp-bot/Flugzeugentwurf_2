@@ -97,7 +97,7 @@ for C=1:length(CG_DataMatrix)       %%Der Schwerpunkt wird ausgrechnet mit der S
     CG_MZ=CG_MZ+CG_DataMatrix(C,1);
 end
 
-CG_Rumpf_Z=CG_Moment_Z/CG_MZ; 
+CG_Rumpf_Z=CG_Moment_Z/CG_MZ;
 
 
 %% Berechnung Flügelschwerpunkt
@@ -295,7 +295,7 @@ CG_mostBackward = max([CG_Fracht.CG_BeladenVorn1*100/NP.l_mue_ges,CG_Fracht.CG_B
 %% Berechnung Grenzen
 % LÄNGSSTABILITÄT AM BODEN
 LS.x_MainGear_MAC = (0.5*NP.l_mue_ges -(CG_Data_Wing.Fluegel(2)-CG_Data_Wing.MainGear(2)))/NP.l_mue_ges; %[Prozent l_mue]
-LS.l_MainGear = 2.5;
+LS.l_MainGear = 4;
 LS.delta = deg2rad(15); % Min 15deg
 % LS in Prozent
 LS.Laengsstabilitaet = LS.x_MainGear_MAC -(LS.l_MainGear+0.5*specs.D_rumpf+CG_Gesamt_z)*(tan(LS.delta)/NP.l_mue_ges);
@@ -386,32 +386,34 @@ Delta_CG_MAC_durch_lmue = abs(X_NP_OH_durch_l_mue - Wing_MAC.xSP_MAC_lmue);
 figure(1)
 hold on 
 grid on
-xlim([10 60])
-ylim([Ergebnisse_Massen_FE2.M_OE Ergebnisse_Massen_FE2.M_TO+10000])
+xlim([-40 80])
+ylim([Ergebnisse_Massen_FE2.M_OE-10000 Ergebnisse_Massen_FE2.M_TO+10000])
 
 
 
-plot([Betankung.P1(1)*100 Betankung.P2(1)*100], [Betankung.P1(2) Betankung.P2(2)],"b-")
-plot([Betankung.P2(1)*100 Betankung.P3(1)*100], [Betankung.P2(2) Betankung.P3(2)],"bo-")
-plot(CG_Shift_Outer*100/NP.l_mue_ges, NewMassCounter,"rx-")
-plot(BackwardsCG_Shift_Outer*100/NP.l_mue_ges, BackwardsNewMassCounter,"mx-")
-plot(CG_Shift_Inner*100/NP.l_mue_ges, InnerMassCounter,"rx-")
-plot(BackwardsCG_Shift_Inner*100/NP.l_mue_ges, BackwardsInnerMassCounter,"mx-")
-plot([BackwardsCG_Startposition_Innen*100/NP.l_mue_ges, CG_Fracht.CG_BeladenVorn*100/NP.l_mue_ges],[BackwardsMass_Shift_Inner, CG_Fracht.Masse_BeladenVorn],"g-")
-plot([CG_Fracht.CG_BeladenVorn*100/NP.l_mue_ges, CG_Fracht.CG_BeladenHinten*100/NP.l_mue_ges],[CG_Fracht.Masse_BeladenVorn, CG_Fracht.Masse_BeladenHinten],"go-")
-plot([BackwardsCG_Startposition_Innen*100/NP.l_mue_ges, CG_Fracht.CG_BeladenHinten1*100/NP.l_mue_ges],[BackwardsMass_Shift_Inner, CG_Fracht.Masse_BeladenHinten1],"g--")
-plot([CG_Fracht.CG_BeladenHinten1*100/NP.l_mue_ges, CG_Fracht.CG_BeladenVorn1*100/NP.l_mue_ges],[CG_Fracht.Masse_BeladenHinten1, CG_Fracht.Masse_BeladenVorn1],"go--")
+plot([Betankung.P1(1)*100 Betankung.P2(1)*100], [Betankung.P1(2) Betankung.P2(2)],"b-",'LineWidth', 2)
+plot([Betankung.P2(1)*100 Betankung.P3(1)*100], [Betankung.P2(2) Betankung.P3(2)],"bo-",'LineWidth', 2)
+plot(CG_Shift_Outer*100/NP.l_mue_ges, NewMassCounter,"rx-",'LineWidth', 2)
+plot(BackwardsCG_Shift_Outer*100/NP.l_mue_ges, BackwardsNewMassCounter,"mx-",'LineWidth', 2)
+plot(CG_Shift_Inner*100/NP.l_mue_ges, InnerMassCounter,"rx-",'LineWidth', 2)
+plot(BackwardsCG_Shift_Inner*100/NP.l_mue_ges, BackwardsInnerMassCounter,"mx-",'LineWidth', 2)
+plot([BackwardsCG_Startposition_Innen*100/NP.l_mue_ges, CG_Fracht.CG_BeladenVorn*100/NP.l_mue_ges],[BackwardsMass_Shift_Inner, CG_Fracht.Masse_BeladenVorn],"g-",'LineWidth', 2)
+plot([CG_Fracht.CG_BeladenVorn*100/NP.l_mue_ges, CG_Fracht.CG_BeladenHinten*100/NP.l_mue_ges],[CG_Fracht.Masse_BeladenVorn, CG_Fracht.Masse_BeladenHinten],"go-",'LineWidth', 2)
+plot([BackwardsCG_Startposition_Innen*100/NP.l_mue_ges, CG_Fracht.CG_BeladenHinten1*100/NP.l_mue_ges],[BackwardsMass_Shift_Inner, CG_Fracht.Masse_BeladenHinten1],"g--",'LineWidth', 2)
+plot([CG_Fracht.CG_BeladenHinten1*100/NP.l_mue_ges, CG_Fracht.CG_BeladenVorn1*100/NP.l_mue_ges],[CG_Fracht.Masse_BeladenHinten1, CG_Fracht.Masse_BeladenVorn1],"go--",'LineWidth', 2)
 
 %Grenzen
-plot([BFWL.x_CG_BFW_Min_MAC_Prozent*100,BFWL.x_CG_BFW_Min_MAC_Prozent*100],[Ergebnisse_Massen_FE2.M_OE Ergebnisse_Massen_FE2.M_TO+10000],"-k")
-plot(BFWL.x_CG_BFW_Max_MAC_Prozent*100,BFWL.MomentanMasse,"--k")
-plot([LS.Laengsstabilitaet*100,LS.Laengsstabilitaet*100],[Ergebnisse_Massen_FE2.M_OE Ergebnisse_Massen_FE2.M_TO+10000],"-b")
-plot([StatStab.CG_sigma_x*100,StatStab.CG_sigma_x*100],[Ergebnisse_Massen_FE2.M_OE Ergebnisse_Massen_FE2.M_TO+10000],":b")
+plot([BFWL.x_CG_BFW_Min_MAC_Prozent*100,BFWL.x_CG_BFW_Min_MAC_Prozent*100],[Ergebnisse_Massen_FE2.M_OE Ergebnisse_Massen_FE2.M_TO+10000],"-k",'LineWidth', 1.5)
+plot(BFWL.x_CG_BFW_Max_MAC_Prozent*100,BFWL.MomentanMasse,"--k",'LineWidth', 1.5)
+plot([LS.Laengsstabilitaet*100,LS.Laengsstabilitaet*100],[Ergebnisse_Massen_FE2.M_OE Ergebnisse_Massen_FE2.M_TO+10000],"--b",'LineWidth', 1.5)
+plot([StatStab.CG_sigma_x*100,StatStab.CG_sigma_x*100],[Ergebnisse_Massen_FE2.M_OE Ergebnisse_Massen_FE2.M_TO+10000],":b",'LineWidth', 1.5)
+plot([-100,100],[Ergebnisse_Massen_FE2.M_OE,Ergebnisse_Massen_FE2.M_OE],'Color','#607B8B','LineWidth', 1.5)
+plot([-100,100],[Ergebnisse_Massen_FE2.M_TO,Ergebnisse_Massen_FE2.M_TO],'Color',"#104E8B",'LineWidth', 1.5)
 
 title('Beladung 3-Klassenbestuhlung','FontSize',20);
-xlabel('X^{MAC}_{SP}/l_{\mu}','FontSize',16)
-ylabel('kg','FontSize',16)
-legend('','','','','','','','','','','Minimale BFWL','Maximale BFWL','Längsstabilität','NP -5%')
+xlabel('X^{MAC}_{SP}/l_{\mu} [%]','FontSize',16)
+ylabel('Masse [kg]','FontSize',16)
+legend('Betankung Innentank','Betankung Außentank','Außenreihen von vorn','Außenreihen von hinten','Innenreihen von vorn','Innenreihen von hinten','Fracht vorn voll','Fracht hinten auffüllen','Fracht hinten voll','Fracht vorn auffüllen','Minimale BFWL','Maximale BFWL','Längsstabilität','NP -5%','M_{OE}','M_{TO}')
 
 hold off
 
@@ -420,6 +422,8 @@ hold off
 figure(2)
 hold on
 grid on
+xlim([30 50])
+
 % RUMPF
 % Mittelpunkt der Ellipse
 center_x = specs.l_rumpf/2;
@@ -438,19 +442,19 @@ y2 = 24;
 
 % PLOTTEN
 % Rumpf
-plot(x, y, 'r', 'LineWidth', 2);
+plot(x, y, 'k', 'LineWidth', 1.5);
 % Ersatzflügel
-rectangle('Position', [x1, y1, x2-x1, y2-y1], 'EdgeColor', 'red', 'LineWidth', 0.5);
+rectangle('Position', [x1, y1, x2-x1, y2-y1], 'EdgeColor', 'r', 'LineWidth', 1);
 % Flügel
-plot([Wing_Position1, Wing_Position1 + (DT.s_A+DT.s_I+DT.s_R)*tan(DT.phi_VK_max)], [0, (DT.s_A+DT.s_I+DT.s_R)], 'r', 'LineWidth', 2);
-plot([Wing_Position1, Wing_Position1 + (DT.s_A+DT.s_I+DT.s_R)*tan(DT.phi_VK_max)], [0, -(DT.s_A+DT.s_I+DT.s_R)], 'r', 'LineWidth', 2);
-plot([Wing_Position1+(DT.s_R+DT.s_I)*tan(DT.phi_VK_max), Wing_Position1+DT.l_i_A+(DT.s_R+DT.s_I)*tan(DT.phi_VK_max)],[DT.s_R+DT.s_I, DT.s_R+DT.s_I], 'r', 'LineWidth', 2);
-plot([Wing_Position1+(DT.s_R+DT.s_I)*tan(DT.phi_VK_max), Wing_Position1+DT.l_i_A+(DT.s_R+DT.s_I)*tan(DT.phi_VK_max)],[-(DT.s_R+DT.s_I), -(DT.s_R+DT.s_I)], 'r', 'LineWidth', 2);
-plot([Wing_Position1+(DT.s_R+DT.s_I+DT.s_A)*tan(DT.phi_VK_max),DT.l_a+Wing_Position1+(DT.s_R+DT.s_I+DT.s_A)*tan(DT.phi_VK_max)],[-(DT.s_R+DT.s_I+DT.s_A),-(DT.s_R+DT.s_I+DT.s_A)], 'r', 'LineWidth', 2);
-plot([Wing_Position1+(DT.s_R+DT.s_I+DT.s_A)*tan(DT.phi_VK_max),DT.l_a+Wing_Position1+(DT.s_R+DT.s_I+DT.s_A)*tan(DT.phi_VK_max)],[DT.s_R+DT.s_I+DT.s_A,DT.s_R+DT.s_I+DT.s_A], 'r', 'LineWidth', 2);
-plot([Wing_Position1+DT.l_i_A+(DT.s_R+DT.s_I)*tan(DT.phi_VK_max),DT.l_a+Wing_Position1+(DT.s_R+DT.s_I+DT.s_A)*tan(DT.phi_VK_max)],[-(DT.s_R+DT.s_I),-(DT.s_R+DT.s_I+DT.s_A)], 'r', 'LineWidth', 2);
-plot([Wing_Position1+DT.l_i_A+(DT.s_R+DT.s_I)*tan(DT.phi_VK_max),DT.l_a+Wing_Position1+(DT.s_R+DT.s_I+DT.s_A)*tan(DT.phi_VK_max)],[DT.s_R+DT.s_I,DT.s_R+DT.s_I+DT.s_A], 'r', 'LineWidth', 2);
-plot([Wing_Position1+DT.l_i_A+(DT.s_R+DT.s_I)*tan(DT.phi_VK_max),Wing_Position1+DT.l_i_A+(DT.s_R+DT.s_I)*tan(DT.phi_VK_max)],[DT.s_R+DT.s_I,-(DT.s_R+DT.s_I)], 'r', 'LineWidth', 2);
+plot([Wing_Position1, Wing_Position1 + (DT.s_A+DT.s_I+DT.s_R)*tan(DT.phi_VK_max)], [0, (DT.s_A+DT.s_I+DT.s_R)], 'k', 'LineWidth', 1.5);
+plot([Wing_Position1, Wing_Position1 + (DT.s_A+DT.s_I+DT.s_R)*tan(DT.phi_VK_max)], [0, -(DT.s_A+DT.s_I+DT.s_R)], 'k', 'LineWidth', 1.5);
+plot([Wing_Position1+(DT.s_R+DT.s_I)*tan(DT.phi_VK_max), Wing_Position1+DT.l_i_A+(DT.s_R+DT.s_I)*tan(DT.phi_VK_max)],[DT.s_R+DT.s_I, DT.s_R+DT.s_I], 'k', 'LineWidth', 1.5);
+plot([Wing_Position1+(DT.s_R+DT.s_I)*tan(DT.phi_VK_max), Wing_Position1+DT.l_i_A+(DT.s_R+DT.s_I)*tan(DT.phi_VK_max)],[-(DT.s_R+DT.s_I), -(DT.s_R+DT.s_I)], 'k', 'LineWidth', 1.5);
+plot([Wing_Position1+(DT.s_R+DT.s_I+DT.s_A)*tan(DT.phi_VK_max),DT.l_a+Wing_Position1+(DT.s_R+DT.s_I+DT.s_A)*tan(DT.phi_VK_max)],[-(DT.s_R+DT.s_I+DT.s_A),-(DT.s_R+DT.s_I+DT.s_A)], 'k', 'LineWidth', 1.5);
+plot([Wing_Position1+(DT.s_R+DT.s_I+DT.s_A)*tan(DT.phi_VK_max),DT.l_a+Wing_Position1+(DT.s_R+DT.s_I+DT.s_A)*tan(DT.phi_VK_max)],[DT.s_R+DT.s_I+DT.s_A,DT.s_R+DT.s_I+DT.s_A], 'k', 'LineWidth', 1.5);
+plot([Wing_Position1+DT.l_i_A+(DT.s_R+DT.s_I)*tan(DT.phi_VK_max),DT.l_a+Wing_Position1+(DT.s_R+DT.s_I+DT.s_A)*tan(DT.phi_VK_max)],[-(DT.s_R+DT.s_I),-(DT.s_R+DT.s_I+DT.s_A)], 'k', 'LineWidth', 1.5);
+plot([Wing_Position1+DT.l_i_A+(DT.s_R+DT.s_I)*tan(DT.phi_VK_max),DT.l_a+Wing_Position1+(DT.s_R+DT.s_I+DT.s_A)*tan(DT.phi_VK_max)],[DT.s_R+DT.s_I,DT.s_R+DT.s_I+DT.s_A], 'k', 'LineWidth', 1.5);
+plot([Wing_Position1+DT.l_i_A+(DT.s_R+DT.s_I)*tan(DT.phi_VK_max),Wing_Position1+DT.l_i_A+(DT.s_R+DT.s_I)*tan(DT.phi_VK_max)],[DT.s_R+DT.s_I,-(DT.s_R+DT.s_I)], 'k', 'LineWidth', 1.5);
 % Schwerpunkte Tank
 % plot([CG_Fuel_X.Aussentrapez+(DT.s_I*tan(DT.phi_VK_max))+Wing_Position1+DT.s_R*tan(DT.phi_VK_max)+(0.15*DT.l_i_R),CG_Fuel_X.Aussentrapez+(DT.s_I*tan(DT.phi_VK_max))+Wing_Position1+DT.s_R*tan(DT.phi_VK_max)+(0.15*DT.l_i_R)],[-30,30], '-b');
 %plot([Wing_MAC.XMAC+CG_Fuel_X.CG_Tank_MAC,Wing_MAC.XMAC+CG_Fuel_X.CG_Tank_MAC],[-30,30], '--m');
@@ -460,21 +464,21 @@ plot([Wing_Position1+DT.l_i_A+(DT.s_R+DT.s_I)*tan(DT.phi_VK_max),Wing_Position1+
 %plot([Wing_Position1+CG_Data_Wing.MainGear(2),Wing_Position1+CG_Data_Wing.MainGear(2)],[-30,30], ':g');
 
 % CGs
-plot(CG_Rumpf_X,0,'xb');
-plot(Wing_Position1+CG_Wing_X,0,'ob');
-plot(LS.x_MainGear_MAC*NP.l_mue_ges +Wing_MAC.XMAC, 0, 'xk');
-plot(CG_Data.Bugfahrwerk(2)*specs.l_rumpf,0,'*k');
+plot(CG_Rumpf_X,0,'xb','LineWidth', 2);
+plot(Wing_Position1+CG_Wing_X,0,'ob','LineWidth', 2);
+plot(LS.x_MainGear_MAC*NP.l_mue_ges +Wing_MAC.XMAC, 0, 'xr','LineWidth', 2);
+%plot(CG_Data.Bugfahrwerk(2)*specs.l_rumpf,0,'*k','LineWidth', 2);
 plot(CG_Gesamt_x + Wing_MAC.XMAC,0,'og','LineWidth', 3)
-plot([Wing_Position1+CG_Data_Wing.Fluegel(2),Wing_Position1+CG_Data_Wing.Fluegel(2)],[-30,30],'-k')
-plot([Wing_MAC.XMAC+(X_NP_durch_l_mue*NP.l_mue_ges),Wing_MAC.XMAC+(X_NP_durch_l_mue*NP.l_mue_ges)],[-30,30],'--g');
+plot([Wing_Position1+CG_Data_Wing.Fluegel(2),Wing_Position1+CG_Data_Wing.Fluegel(2)],[-30,30],'--r')
+plot(Wing_MAC.XMAC+(X_NP_durch_l_mue*NP.l_mue_ges),0,'dm','LineWidth', 2);
 
 axis equal;
-legend('','','','','','','','','','','CG Rumpf','CG Flügelgruppe','CG HFW', 'CG BFW', 'CG Gesamt')
+legend('','','','','','','','','','','CG Rumpf','CG Flügelgruppe','CG HFW', 'CG Gesamt','','Gesamtneutralpunkt')
 
 % Achsenbeschriftungen und Titel
 xlabel('x [m]');
 ylabel('y [m]');
 title('Schwerpunktlagen');
-
+hold off
 
 save Schwerpunkt.mat Delta_CG_MAC_durch_lmue r_H BFWL Betankung CG_Data CG_Data_Wing CG_Fracht CG_Fuel_X CG_Gesamt_x CG_Gesamt_z CG_Rumpf_X CG_Rumpf_Z CG_Wing_X CG_Wing_Z_RG CG_Wing_Z_FG Rumpf_MAC StatStab Wing_MAC Wing_Position1 Wing_Position2

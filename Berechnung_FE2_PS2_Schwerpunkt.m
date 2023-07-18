@@ -379,7 +379,8 @@ Neutralpunkt=X_NP_durch_l_mue*Ergebnisse_Fluegel.l_mue+l_fn
 % NEUTRALPUNKTLAGE
 StatStab.CG_sigma_x = X_NP_durch_l_mue -0.05;
 
-Delta_CG_MAC_durch_lmue = abs(X_NP_OH_durch_l_mue - Wing_MAC.xSP_MAC_lmue);
+Delta_CG_MAC_durch_lmue = Wing_MAC.xSP_MAC_lmue - X_NP_OH_durch_l_mue;
+
 
 %% Plotten
 
@@ -471,9 +472,10 @@ plot(LS.x_MainGear_MAC*NP.l_mue_ges +Wing_MAC.XMAC, 0, 'xr','LineWidth', 2);
 plot(CG_Gesamt_x + Wing_MAC.XMAC,0,'og','LineWidth', 3)
 plot([Wing_Position1+CG_Data_Wing.Fluegel(2),Wing_Position1+CG_Data_Wing.Fluegel(2)],[-30,30],'--r')
 plot(Wing_MAC.XMAC+(X_NP_durch_l_mue*NP.l_mue_ges),0,'dm','LineWidth', 2);
+plot(Wing_MAC.XMAC+(X_NP_OH_durch_l_mue*NP.l_mue_ges),0,'*m','LineWidth', 2);
 
 axis equal;
-legend('','','','','','','','','','','CG Rumpf','CG Flügelgruppe','CG HFW', 'CG Gesamt','','Gesamtneutralpunkt')
+legend('','','','','','','','','','','CG Rumpf','CG Flügelgruppe','CG HFW', 'CG Gesamt','','Gesamtneutralpunkt','NP oH')
 
 % Achsenbeschriftungen und Titel
 xlabel('x [m]');

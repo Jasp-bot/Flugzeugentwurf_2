@@ -291,7 +291,7 @@ SLW.phi_HK_et = atan( tan(SLW.phi_25) - (4/SLW.streckung_phi25)*(1-0.25) * ((1-S
 
 l_i_SLW_high = 100;
 l_i_SLW_low = 1;
-SLW.s_R = 2;
+SLW.s_R = 2.6;
 dF_SLW = 1;
 SLW.phi_HK_lokal = SLW.phi_HK_et;
 SLW.s_A = SLW.b - SLW.s_R;

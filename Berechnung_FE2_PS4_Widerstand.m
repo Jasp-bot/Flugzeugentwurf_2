@@ -1,4 +1,4 @@
-function Berechnung_FE2_PS4_Widerstand
+%function Berechnung_FE2_PS4_Widerstand
 
 clc
 clear all
@@ -94,9 +94,11 @@ Annahmen.d_l_SLW = specs.HLW_d2l;
 
 Annahmen.xu_l_HLW = 0.035;
 Annahmen.xu_l_SLW = 0.035;
+Annahmen.xu_l_Py = 0.035;
 
 Annahmen.x_u_HLW = HLW.Fluegeltiefen_eta_oR * Annahmen.xu_l_HLW;
 Annahmen.x_u_SLW = SLW.Fluegeltiefen_eta_oR * Annahmen.xu_l_SLW;
+Annahmen.x_u_Py = specs.lh_TW * Annahmen.xu_l_Py;
 
         % Trimmwiderstand
 Annahmen.l_mue = Ergebnisse_Fluegel.l_mue;  
@@ -194,6 +196,7 @@ Abwindfaktor = 1.75 * ((Annahmen.c_A_alpha_F)/(pi * Ergebnisse_Fluegel.streckung
     (Ergebnisse_Fluegel.lambda * (HLW.r/(Ergebnisse_Fluegel.b/2))^(0.25) *...
     (1+ (abs(Annahmen.z_abstand))/((Ergebnisse_Fluegel.b/2))) )));
 
+
 [c_w_R_interm, alpha_Rumpf_grad_interm, c_A_alpha] = Rumpfwiderstand(specs.Ma_CR, Abwindfaktor, c_A_ges, v_air);
 c_w_R = diag(c_w_R_interm).';
 alpha_Rumpf_grad = diag(alpha_Rumpf_grad_interm).';
@@ -206,8 +209,7 @@ alpha_Rumpf_grad_off_D = diag(alpha_Rumpf_grad_off_D_interm).';
 
 
 % Triebwerke
-
-c_w_TW = Triebwerkswiderstand(v_air, alpha_Rumpf_grad).';
+c_w_TW = Triebwerkswiderstand(v_air, alpha_Rumpf_grad);
 c_w_TW_off_D = Triebwerkswiderstand(v_air_off_D, alpha_Rumpf_grad_off_D).';
 
 % Zusatzwiderstand

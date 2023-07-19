@@ -2,7 +2,7 @@ clc
 clear all
 close all
 
-Berechnung_FE2_PS4_Widerstand;
+% Berechnung_FE2_PS4_Widerstand;
 
 
 load Ergebnisse_stat_Flaechenbelastung_Fluegelflaeche.mat
@@ -65,8 +65,8 @@ autoplot(numPlots+3, 1) = plot(schnittpunkt_off_D_c_A_CR(1,1), schnittpunkt_off_
 
 % schoen machen des Plots 
 
-legend(autoplot([1:n_plot+3]),{'+ SLW', '+ HLW', '+ Interferenz', '+ Rumpf', '+ Triebwerk', '+ Trimmung', '+ Abwind', '+ Profil', '+ ind. Widerstand', '+ Wellenwiderstand', '+Off-Design', 'Schnittpunkt von Design / Off-Design', 'C_{A,CR}'},...
-    'Location','southeast','FontSize',15);
+legend(autoplot([1:n_plot+3]),{'SLW', '+ HLW', '+ Interferenz', '+ Rumpf', '+ Triebwerk', '+ Trimmung', '+ Abwind', '+ Profil', '+ ind. Widerstand', '+ Wellenwiderstand', '+Off-Design', 'Schnittpunkt von Design / Off-Design', 'C_{A,CR}'},...
+    'Location','southeast','FontSize',10)%15);
 
 title('Kumulative Widerstandspolare','FontSize',25)
 xlabel('c_W','FontSize',20);

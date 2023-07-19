@@ -69,4 +69,5 @@ c_w_R_zu_c_w_Rmin = 0.000208 .* (abs(alpha_Rumpf_grad)).^3 + 0.00125 * (abs(alph
 
 c_w_R = (c_w_R_zu_c_w_Rmin .* c_w_Ru_min); %.*5;
 
+
 end

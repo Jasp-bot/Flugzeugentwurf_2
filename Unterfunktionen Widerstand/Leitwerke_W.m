@@ -9,7 +9,7 @@ load Ergebnisse_Leitwerke.mat;
 load Getroffene_Annahmen_und_FUN.mat;
 
 % Profilwiderstand Leitwerk
-
+%v_air = Ergebnisse_Widerstand_FE2.v_air;
 
 % PS4 S.3 Formel 7 angewendet auf Leitwerke
 Re_u_HLW = FUN.Re_CR_fun(Annahmen.x_u_HLW, v_air);  %Annahmen.x_u_HLW * v_air / ISA.kin_visk(Annahmen.hoehe_CR);

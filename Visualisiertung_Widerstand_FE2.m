@@ -2,7 +2,7 @@ clc
 clear all
 close all
 
-% Berechnung_FE2_PS4_Widerstand;
+Berechnung_FE2_PS4_Widerstand;
 
 
 load Ergebnisse_stat_Flaechenbelastung_Fluegelflaeche.mat

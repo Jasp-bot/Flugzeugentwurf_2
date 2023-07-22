@@ -1,4 +1,4 @@
-% function Berechnung_FE2_PS4_Widerstand
+function Berechnung_FE2_PS4_Widerstand
 
 clc
 clear all
@@ -40,7 +40,7 @@ addpath('Unterfunktionen Widerstand');
 Annahmen.Flughoehe_CR = specs.flight_level * 10^2 ;     % in ft
 Annahmen.hoehe_CR = round(unitsratio('m','ft')*Annahmen.Flughoehe_CR);
 
-stuetzstellen = 100;
+stuetzstellen = 500;
 
 %% Getroffene Annahmen um Rechnungen vor berechnung der richtigen Werte durchfuehren zu können
         % es fehlen Werte als PS2 / PS3
@@ -146,7 +146,7 @@ FUN.Re_CR_fun = @(l_Re,v_Re) (l_Re .* v_Re) ./ ISA.kin_visk(Annahmen.hoehe_CR);
 
 % PS4 S.2, Formel 6
 FUN.c_f_la_fun = @(Re) 1.328./(sqrt(Re));
-FUN.c_f_tu_fun = @(Re) 0.455./(log(Re).^(2.58));
+FUN.c_f_tu_fun = @(Re) 0.455./(log10(Re).^(2.58));
 
 % PS4 S.4, Formel 15
 FUN.tau_fun = @(Streckung, lambda) 1 - Streckung * (0.002 + 0.0084 * (lambda - 0.2)^2);
@@ -174,13 +174,13 @@ c_A_F_off_D = (((2)./(Annahmen.kappa .* ISA.p(Annahmen.hoehe_CR) .* Ma_off_D.^2)
 % Leitwerke
 [c_w_HLW_min, c_w_SLW_min] = Leitwerke_W(v_air);
 
-c_W_HLW = trapz(c_w_HLW_min.').*10.^(-2);
-c_W_SLW = trapz(c_w_SLW_min.').*10.^(-2);
+c_W_HLW = trapz(c_w_HLW_min.').*10.^(-3);
+c_W_SLW = trapz(c_w_SLW_min.').*10.^(-3);
 
 [c_w_HLW_min_off_D, c_w_SLW_min_off_D] = Leitwerke_W(v_air_off_D);
 
-c_W_HLW_off_D = trapz(c_w_HLW_min_off_D.').*10.^(-2);
-c_W_SLW_off_D = trapz(c_w_SLW_min_off_D.').*10.^(-2);
+c_W_HLW_off_D = trapz(c_w_HLW_min_off_D.').*10.^(-3);
+c_W_SLW_off_D = trapz(c_w_SLW_min_off_D.').*10.^(-3);
 
 % Interferenz
 
@@ -204,7 +204,7 @@ Abwindfaktor = 1.75 * (Annahmen.c_A_alpha_F/(pi * Ergebnisse_Fluegel.streckung_p
 
 [c_w_R_interm, alpha_Rumpf_grad_interm, c_A_alpha] = Rumpfwiderstand(specs.Ma_CR, Abwindfaktor, c_A_ges, v_air);
 c_w_R = diag(c_w_R_interm).';
-alpha_Rumpf_grad = diag(alpha_Rumpf_grad_interm).';
+alpha_Rumpf_grad = alpha_Rumpf_grad_interm;
 
 
 
@@ -215,7 +215,7 @@ alpha_Rumpf_grad_off_D = diag(alpha_Rumpf_grad_off_D_interm).';
 
 % Triebwerke
 c_w_TW = Triebwerkswiderstand(v_air, alpha_Rumpf_grad);
-c_w_TW_off_D = Triebwerkswiderstand(v_air_off_D, alpha_Rumpf_grad_off_D).';
+c_w_TW_off_D = Triebwerkswiderstand(v_air_off_D, alpha_Rumpf_grad_off_D);
 
 % Zusatzwiderstand
 

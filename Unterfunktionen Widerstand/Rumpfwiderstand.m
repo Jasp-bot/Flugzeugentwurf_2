@@ -7,6 +7,7 @@ function [c_w_R, alpha_Rumpf_grad, c_A_alpha] = Rumpfwiderstand(Machzahl, Abwind
 % clear all
 
 
+
 load Projekt_specs.mat;
 load Ergebnisse_stat_Flaechenbelastung_Fluegelflaeche.mat;
 load Ergebnisse_Fluegel_Tank_NP.mat;
@@ -62,11 +63,11 @@ c_A_alpha = Annahmen.c_A_alpha_F * (1+ ((c_A_alpha_H)/(Annahmen.c_A_alpha_F)) *.
 %     c_A_ges(1, n_iteration) = c_A_ges(1, n_iteration - 1);
 %     c_A_ges(1,1) = c_A_ges(1, n_iteration)
 % end    
-alpha_Rumpf_grad = (((c_A_ges - Ergebnisse_stat_Flaechenbelastung.C_A_CR)./(c_A_alpha)) .* ...
-    (180 ./ pi));
+alpha_Rumpf_grad = (((c_A_ges - Ergebnisse_stat_Flaechenbelastung.C_A_CR)./(c_A_alpha)) .* (180 ./ pi));
 % PS4 S.5 Formel 22
 c_w_R_zu_c_w_Rmin = 0.000208 .* (abs(alpha_Rumpf_grad)).^3 + 0.00125 * (abs(alpha_Rumpf_grad)).^2 + 0.029 .* (abs(alpha_Rumpf_grad)) + 1;
 
 c_w_R = (c_w_R_zu_c_w_Rmin .* c_w_Ru_min); %.*5;
+
 
 end

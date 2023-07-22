@@ -15,7 +15,7 @@ Startwerte_Iteration = Berechnungen_PS10_Widerstand;
 %% Beginn der Iteration
 
 dX = 1;
-zaehlvariabele_test = 1; 
+%zaehlvariabele_test = 0; 
 
 while abs(dX) > 0.0001
     Berechnung_PS6_Startschub_Landeanforderung(Startwerte_Iteration);
@@ -31,7 +31,7 @@ while abs(dX) > 0.0001
     dX_LDG = Endwerte_Iteration.CA_CW_LDG - (1/landeanvorderung.Eta_LDG);
 
     dX = dX_CR + dX_TO + dX_LDG;
-    zaehlvariabele_test = zaehlvariabele_test +1;
+   % zaehlvariabele_test = zaehlvariabele_test +1;
 
 
 end

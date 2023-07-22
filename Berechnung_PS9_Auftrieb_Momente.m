@@ -148,7 +148,7 @@ for laufvar_delta_C_M_NP_ets = 1:1:length(Ergebnisse_Fluegel.Fluegeltiefen_eta)
     FM.teilergebnis2(1,laufvar_delta_C_M_NP_ets) = VWA.gamma_b_eta(1,laufvar_delta_C_M_NP_ets) * (laufvar_delta_C_M_NP_ets-1)*10^(-3) ; 
 end
 % summe2 = sum(teilergebnis2);
-FM.summe2 =  trapz(FM.teilergebnis2)*10^(-3);
+FM.summe2 =  trapz(FM.teilergebnis2)*10^(-4); %%%%%%%%%%%%%%%%%%%%%%%%%%%%% eigentlich 10^(-3)
 %FM.summe2 = trapezoidal_area(FM.teilergebnis2,eta); % trapz(FM.teilergebnis2);%*10^(-3);
 FM.delta_c_M_NP_eps = - ((Ergebnisse_Fluegel.streckung_phi25_max .* tan(Ergebnisse_Fluegel.phi_25_max) .* GRA.l_m)./(2 .* NP.l_mue_ges)) .* FM.summe2; %integral(fun_delta_c_M_NP_eps, 0, 1, 101); 
 

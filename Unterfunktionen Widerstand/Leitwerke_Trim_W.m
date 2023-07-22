@@ -31,9 +31,10 @@ Annahmen.zaehlvariabele_itt = Annahmen.zaehlvariabele_itt + 1;
 tau_H = FUN.tau_fun(HLW.streckung_phi25, HLW.lambda); %1 - HLW.streckung_phi25 * (0.002 + 0.0084 * (HLW.lambda - 0.2)^2);
 
 % PS4 S.7 Formel 30
-c_w_trim = ((c_A_H.^2) ./ (pi * HLW.streckung_phi25)) .* ...
-    ((1 + (5*10^(-6)) .* (abs(rad2deg(HLW.phi_25))).^3)./(tau_H)) .*...
-    ((HLW.F)./(Ergebnisse_Fluegel.F));
+% c_w_trim = ((c_A_H.^2) ./ (pi * HLW.streckung_phi25)) .* ...
+%     ((1 + (5*10^(-6)) .* (abs(rad2deg(HLW.phi_25))).^3)./(tau_H)) .*...
+%     ((HLW.F)./(Ergebnisse_Fluegel.F));
 
+c_w_trim = ((c_A_H.^2)/(pi * HLW.streckung_phi25)) .* ((1 + 5*10^(-6) * (abs(rad2deg(HLW.phi_25))^3))./(tau_H)) .* (HLW.F/Ergebnisse_Fluegel.F); 
 
 end

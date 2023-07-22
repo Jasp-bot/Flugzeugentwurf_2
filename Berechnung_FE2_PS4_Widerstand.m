@@ -1,4 +1,4 @@
-%function Berechnung_FE2_PS4_Widerstand
+function Berechnung_FE2_PS4_Widerstand
 
 clc
 clear all
@@ -40,7 +40,7 @@ addpath('Unterfunktionen Widerstand');
 Annahmen.Flughoehe_CR = specs.flight_level * 10^2 ;     % in ft
 Annahmen.hoehe_CR = round(unitsratio('m','ft')*Annahmen.Flughoehe_CR);
 
-stuetzstellen = 250;
+stuetzstellen = 500;
 
 %% Getroffene Annahmen um Rechnungen vor berechnung der richtigen Werte durchfuehren zu können
         % es fehlen Werte als PS2 / PS3
@@ -54,9 +54,11 @@ stuetzstellen = 250;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %     Annahmen.x_SP_MAC = 1.5; %%%%%% Ein random wert angenommen!!!!!!!!!!!
 %     Annahmen.x_NP_MAC_oH = 0.5;
-    Annahmen.dx_SP_lmue = Delta_CG_MAC_durch_lmue;
+    Annahmen.dx_SP_lmue =  Delta_CG_MAC_durch_lmue; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     Annahmen.z_abstand = StatStab.z_abstand; % Abstand zwischen Profilsehnen angenommen vergleiche Torenbeek s480
-    Faktor = 10; %%%% Achtung ist ein korrekturfsktor weil ich nicht weiter weiß, earum mein Rumpf/ TW Widerstand so klein sind
+    Faktor = 1; %%%% Achtung ist ein korrekturfsktor weil ich nicht weiter weiß, earum mein Rumpf/ TW Widerstand so klein sind
+    Annahmen.c_M_0_F = FM.c_M_NP_F0; %-0.1; % %* 0.1; % Wert aus FE1 ist zu klein 
+    
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     
@@ -102,7 +104,7 @@ Annahmen.x_u_Py = specs.lh_TW * Annahmen.xu_l_Py;
 
         % Trimmwiderstand
 Annahmen.l_mue = Ergebnisse_Fluegel.l_mue;  
-Annahmen.c_M_0_F = FM.c_M_NP_F0;%* 0.1;
+
 Annahmen.qH_q = 0.85; % hat Kristof gesagt urspruenglich mit 0.95 angenommen
 
     % Zusatzwidertsand
@@ -144,7 +146,7 @@ FUN.Re_CR_fun = @(l_Re,v_Re) (l_Re .* v_Re) ./ ISA.kin_visk(Annahmen.hoehe_CR);
 
 % PS4 S.2, Formel 6
 FUN.c_f_la_fun = @(Re) 1.328./(sqrt(Re));
-FUN.c_f_tu_fun = @(Re) 0.455./(log(Re).^(2.58));
+FUN.c_f_tu_fun = @(Re) 0.455./(log10(Re).^(2.58));
 
 % PS4 S.4, Formel 15
 FUN.tau_fun = @(Streckung, lambda) 1 - Streckung * (0.002 + 0.0084 * (lambda - 0.2)^2);
@@ -156,7 +158,7 @@ FUN.c_a_eta_fun = @(c_A_F) (GRA.gamma_a_eta .* c_A_F .* GRA.l_m) ./ (Ergebnisse_
 save Getroffene_Annahmen_und_FUN.mat Annahmen FUN
 
 
-c_A_F = linspace(0.001, 5, stuetzstellen);
+c_A_F = linspace(0.001, 1, stuetzstellen);
 
 v_air = ones(stuetzstellen,1) .* specs.Ma_CR .* ISA.a(Annahmen.hoehe_CR);
 
@@ -172,13 +174,13 @@ c_A_F_off_D = (((2)./(Annahmen.kappa .* ISA.p(Annahmen.hoehe_CR) .* Ma_off_D.^2)
 % Leitwerke
 [c_w_HLW_min, c_w_SLW_min] = Leitwerke_W(v_air);
 
-c_W_HLW = trapz(c_w_HLW_min.').*10.^(-2);
-c_W_SLW = trapz(c_w_SLW_min.').*10.^(-2);
+c_W_HLW = trapz(c_w_HLW_min.').*10.^(-3);
+c_W_SLW = trapz(c_w_SLW_min.').*10.^(-3);
 
 [c_w_HLW_min_off_D, c_w_SLW_min_off_D] = Leitwerke_W(v_air_off_D);
 
-c_W_HLW_off_D = trapz(c_w_HLW_min_off_D.').*10.^(-2);
-c_W_SLW_off_D = trapz(c_w_SLW_min_off_D.').*10.^(-2);
+c_W_HLW_off_D = trapz(c_w_HLW_min_off_D.').*10.^(-3);
+c_W_SLW_off_D = trapz(c_w_SLW_min_off_D.').*10.^(-3);
 
 % Interferenz
 
@@ -192,14 +194,17 @@ c_w_int_fs_off_D = Interferenz_W(v_air_off_D).';
 
 % Rumpf
 % PS4 S.6 Formel 25 Abwindfaktor = delta_alpha_w/delta_alpha_oH 
-Abwindfaktor = 1.75 * ((Annahmen.c_A_alpha_F)/(pi * Ergebnisse_Fluegel.streckung_phi25_max *...
-    (Ergebnisse_Fluegel.lambda * (HLW.r/(Ergebnisse_Fluegel.b/2))^(0.25) *...
-    (1+ (abs(Annahmen.z_abstand))/((Ergebnisse_Fluegel.b/2))) )));
+% Abwindfaktor = 1.75 * ((Annahmen.c_A_alpha_F)/(pi * Ergebnisse_Fluegel.streckung_phi25_max *...
+%     (Ergebnisse_Fluegel.lambda * (HLW.r/(Ergebnisse_Fluegel.b/2))^(0.25) *...
+%     (1+ (abs(Annahmen.z_abstand))/((Ergebnisse_Fluegel.b/2))) )));
+Abwindfaktor = 1.75 * (Annahmen.c_A_alpha_F/(pi * Ergebnisse_Fluegel.streckung_phi25_max *...
+    (Ergebnisse_Fluegel.lambda * (HLW.r/(Ergebnisse_Fluegel.b/2)))^0.25 *...
+    (1+ (abs(Annahmen.z_abstand/(Ergebnisse_Fluegel.b/2))))));
 
 
 [c_w_R_interm, alpha_Rumpf_grad_interm, c_A_alpha] = Rumpfwiderstand(specs.Ma_CR, Abwindfaktor, c_A_ges, v_air);
 c_w_R = diag(c_w_R_interm).';
-alpha_Rumpf_grad = diag(alpha_Rumpf_grad_interm).';
+alpha_Rumpf_grad = alpha_Rumpf_grad_interm;
 
 
 
@@ -210,7 +215,7 @@ alpha_Rumpf_grad_off_D = diag(alpha_Rumpf_grad_off_D_interm).';
 
 % Triebwerke
 c_w_TW = Triebwerkswiderstand(v_air, alpha_Rumpf_grad);
-c_w_TW_off_D = Triebwerkswiderstand(v_air_off_D, alpha_Rumpf_grad_off_D).';
+c_w_TW_off_D = Triebwerkswiderstand(v_air_off_D, alpha_Rumpf_grad_off_D);
 
 % Zusatzwiderstand
 
@@ -325,6 +330,8 @@ Ergebnisse_Widerstand_FE2.v_air_off_D = v_air_off_D;
 Ergebnisse_Widerstand_FE2.Ma_off_D = Ma_off_D;
 Ergebnisse_Widerstand_FE2.cW_cA_off_D = gelitzahl;
 Ergebnisse_Widerstand_FE2.Abwindfaktor = Abwindfaktor;
+Ergebnisse_Widerstand_FE2.c_A_alpha = c_A_alpha;
+
 
 save Ergebnisse_Widerstand_FE2.mat Ergebnisse_Widerstand_FE2;
 

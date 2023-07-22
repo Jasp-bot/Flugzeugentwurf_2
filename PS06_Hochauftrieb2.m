@@ -37,7 +37,7 @@ addpath('Unterfunktionen Widerstand');
 %% Steuervariablen/ Iteriervariablen?
 
 %Spannweite Klappenfläche
-spannweite_flaps = 0.6;
+spannweite_flaps = 0.85;
 %Länge Klappe ausgefahren
 flap_length_LDG = 2.0; % in meter
 flap_length_TO = 1.0;
@@ -55,6 +55,35 @@ Slats_pos = 0.1;
 
 %Oswald Zahl
 oswald = 0.8;
+
+
+%% Neue Klappenberechnung
+spannweite_klappen_eta = 0.65;
+
+spannweite_rumpf = specs.D_rumpf + 2 * (0.03 * (Ergebnisse_Fluegel.b / 2));
+
+
+% Fläche Rumpfstück
+
+F_rumpf_dreieck = Flaeche_im_Rumpf_oberes_dreieck;
+
+F_rumpf_quader = specs.D_rumpf * Ergebnisse_Fluegel.Fluegeltiefen_eta_oR(1);
+
+F_Rumpf_ecken = polyarea([0 0 ((Ergebnisse_Fluegel.b / 2) * 0.03) ((Ergebnisse_Fluegel.b / 2) * 0.03) 0],[0 Ergebnisse_Fluegel.Fluegeltiefen_eta_oR(1) Ergebnisse_Fluegel.Fluegeltiefen_eta_oR(30) 0 0])
+
+%plot([0 0 ((Ergebnisse_Fluegel.b / 2) * 0.03) ((Ergebnisse_Fluegel.b / 2) * 0.03) 0],[0 Ergebnisse_Fluegel.Fluegeltiefen_eta_oR(1) Ergebnisse_Fluegel.Fluegeltiefen_eta_oR(30) 0 0])
+
+
+% Fläche Flügel
+
+X = linspace(1,spannweite_flaps,spannweite_flaps * 1000);
+X = X(1:end);
+Fluegel = Ergebnisse_Fluegel.Fluegeltiefen_eta(1,1:(spannweite_flaps * 1000));
+F_k = 2 * (Ergebnisse_Fluegel.b/2) * trapz(X,Fluegel); % MIT RUMPF!
+
+Ergebnisse_Fluegel.F
+
+
 
 %% Andere Variablen die Werte aus anderen PS brauchen!!!
 %MOMENT

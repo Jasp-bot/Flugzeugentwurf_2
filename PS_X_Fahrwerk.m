@@ -304,6 +304,8 @@ Gear.Reifen_HFW = tires_edit_HFW.Size(49);
 
 Gear.Reifen_BFW = tires_bugfahrwerk.Size(1);
 
+save Fahrwerk.mat Gear
+
 %% Reifendruck 
 % Bugfahrwerk High Pressure ab 160PSI/ Aber auch 220PSI
 % Hauptfahrwerk Low-Pressure

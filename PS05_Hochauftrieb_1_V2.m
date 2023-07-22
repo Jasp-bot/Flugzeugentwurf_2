@@ -13,23 +13,36 @@ load Ergebnisse_Widerstand_FE2.mat
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Feste Variablen
-phi_50 = atan(tan(Ergebnisse_Fluegel.phi_25_max)-(4/Ergebnisse_Fluegel.streckung_phi25_max)* (0.5-0.25) * (1-Ergebnisse_Fluegel.lambda)/(1-Ergebnisse_Fluegel.lambda));
+%phi_50 = atan(tan(Ergebnisse_Fluegel.phi_25_max)-(4/Ergebnisse_Fluegel.streckung_phi25_max)* (0.5-0.25) * (1-Ergebnisse_Fluegel.lambda)/(1-Ergebnisse_Fluegel.lambda));
 
-CA_H = Ergebnisse_Widerstand_FE2.c_A_H(1); 
+%CA_H = Ergebnisse_Widerstand_FE2.c_A_H(1); 
+                                                                                                                              %Ergebnisse_Fluegel.phi_50                                          
+CAalpha_F = (pi * Ergebnisse_Fluegel.streckung_phi25_max) / (1+sqrt(1 + ((Ergebnisse_Fluegel.streckung_phi25_max/2)^2) * (tan(0.2)^2 + (1-specs.Ma_CR^2))));
 
-CAalpha_F = (pi * Ergebnisse_Fluegel.streckung_phi25_max) / (1+sqrt(1 + ((Ergebnisse_Fluegel.streckung_phi25_max/2)^2) * (tan(phi_50)^2 + (1-specs.Ma_CR^2))));
+CAalpha_F = Ergebnisse_Auftriebsverteilung.VWA.c_AF_anstieg;
 
-[~,a,~,~,~] = atmosisa(15.24);
-M = (landeanvorderung.v_50)/a;
+[~,a,~,~,~] = atmosisa(50);
+M = (landeanvorderung.v_50) / a;
 
 % Jasper HILFE!
 % CA F CR UND CA_H bestimmen über Machzahl
 
+CA_ind = round(Ergebnisse_Widerstand_FE2.stuetzstellen * specs.Ma_CR);
+
+CA_CR_ges = Ergebnisse_Widerstand_FE2.c_A_ges(CA_ind);
+
+CA_CR_ges_offD = Ergebnisse_Widerstand_FE2.c_A_ges_off_D(CA_ind);
+%%%
+
+CA_CR_H = Ergebnisse_Widerstand_FE2.c_A_H(CA_ind);
+
+CA_CR_H_offD = Ergebnisse_Widerstand_FE2.c_A_H(CA_ind);
 
 
-CA_F_CR = 0.5; 
+CA_F_CR = CA_CR_ges - CA_CR_H * 0.85 * (HLW.F / Ergebnisse_Fluegel.F);
 
-F_H = HLW.F_aussen; % HLW Fläche % Richtig @Japser?
+
+F_H = HLW.F; % HLW Fläche % Richtig @Japser?
 
 F = Ergebnisse_Fluegel.F; % Flügelfläche
 
@@ -103,9 +116,9 @@ psiRootDeg= rad2deg(psi_root);
 % Braucht CA Flügel bei CAgesamt = 0
 % Also Formel von oben mit CA= 0???????
 
-CA_F = CA - CA_H * 0.85 * (F_H/F);
+CA_F_0 = CA - CA_CR_H_offD * 0.85 * (F_H/F);
 
-alpha_MAC_0 = alpha_MAC_0_F + (CA_F/CAalpha_F);
+alpha_MAC_0 = alpha_MAC_0_F + (CA_F_0/CAalpha_F);
 
 alpha_MAC_0_deg = rad2deg(alpha_MAC_0);
 
@@ -139,7 +152,7 @@ phi_50_deg = rad2deg(phi_50);
 % Alpha 0,F -> Oben bekannt aus Profilkatalog
 alpha_0;
 % CAAlpha bei MA 0.269 -> Berechnet
-CA_alpha_lowspeed =  (pi * Ergebnisse_Fluegel.streckung_phi25_max)/(1 + sqrt(1 + ((Ergebnisse_Fluegel.streckung_phi25_max/2)^2) * (tan(Ergebnisse_Fluegel.phi_50)^2 + (1 - (M^2))))); %->muss kleiner sein als bei Highspeed
+CA_alpha_lowspeed =  (pi * Ergebnisse_Fluegel.streckung_phi25_max)/(1 + sqrt(1 + ((Ergebnisse_Fluegel.streckung_phi25_max/2)^2) * (tan(0.2)^2 + (1 - (M^2))))); %->muss kleiner sein als bei Highspeed
 
 % Alpha CA F Max -> Ablesen
 delta_alpha_CA_F_max = deg2rad(3.6);
@@ -168,7 +181,7 @@ alpha_CA_F_MAX_deg = rad2deg(alpha_CA_F_MAX);
 
 alphas = -6:0.001:alpha_CA_F_MAX_deg-delta_alpha_CA_F_max_deg; % normal Plotten bis alphamax - delta alpha
 for i=1:length(alphas)
-CA_s(i) = CA_alpha_lowspeed*(deg2rad(alphas(i)-alpha_MAC_0_deg));%*0.8309;
+CA_s(i) = CA_alpha_lowspeed * (deg2rad(alphas(i)-alpha_MAC_0_deg));%*0.8309;
 end
 
 % plot(alphas,CA_s,'blue','LineWidth',1.5)

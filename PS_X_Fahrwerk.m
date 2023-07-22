@@ -304,6 +304,10 @@ Gear.Reifen_HFW = tires_edit_HFW.Size(49);
 
 Gear.Reifen_BFW = tires_bugfahrwerk.Size(1);
 
+Gear.durchmesser = tires_edit_HFW.OutsideDiameterMax(49);
+
+Gear.breite = tires_edit_HFW.SectionWidthMax(49);
+
 save Fahrwerk.mat Gear
 
 %% Reifendruck 

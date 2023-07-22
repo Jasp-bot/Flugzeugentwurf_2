@@ -154,7 +154,7 @@ for n_datensatz = 1:length(hoehe_m)
 
 % Transsonischer Widerstand mit Funktion aus PS4
 for zv = 1:j
-delta_c_WM(n_datensatz,zv) = Transsonischer_W(Ma_j(n_datensatz,zv), c_A_F_j(1,zv));
+delta_c_WM(n_datensatz,zv)= Transsonischer_W(Ma_j(n_datensatz,zv), c_A_F_j(1,zv));
 delta_c_WM_CL(n_datensatz,zv) = Transsonischer_W(Ma_j_CL(n_datensatz,zv), c_A_F_j(1,zv));
 delta_c_WM_DEC(n_datensatz,zv) = Transsonischer_W(Ma_j_DEC(n_datensatz,zv), c_A_F_j(1,zv));
 end
@@ -181,17 +181,17 @@ S_G_erf_j_DEC(n_datensatz, :) = c_W_j_DEC(n_datensatz, :) ./ c_A_j;
 %% Spez Schubueberschuss SET
 
 SET(n_datensatz, :) = S_G_vorh_j(n_datensatz, :) - eps_kompr_j(n_datensatz, :);
-[SET_y(n_datensatz,:), SET_x(n_datensatz,:)] = max(SET(n_datensatz,:));
-TAS_SET_H_vec(n_datensatz,:) = [v_TAS_j(n_datensatz, SET_x(n_datensatz,1)), SET_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
+[Hochpunkte.SET_y(n_datensatz,:), Hochpunkte.SET_x(n_datensatz,:)] = max(SET(n_datensatz,:));
+TAS_SET_H_vec(n_datensatz,:) = [v_TAS_j(n_datensatz, Hochpunkte.SET_x(n_datensatz,1)), Hochpunkte.SET_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
 
 
 SET_CL(n_datensatz, :) = S_G_vorh_j_CL(n_datensatz, :) - eps_kompr_j_CL(n_datensatz, :);
-[SET_CL_y(n_datensatz,:), SET_CL_x(n_datensatz,:)] = max(SET_CL(n_datensatz,:));
-TAS_SET_H_CL_vec(n_datensatz,:) = [v_TAS_j_CL(n_datensatz, SET_CL_x(n_datensatz,1)), SET_CL_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
+[Hochpunkte.SET_CL_y(n_datensatz,:), Hochpunkte.SET_CL_x(n_datensatz,:)] = max(SET_CL(n_datensatz,:));
+TAS_SET_H_CL_vec(n_datensatz,:) = [v_TAS_j_CL(n_datensatz, Hochpunkte.SET_CL_x(n_datensatz,1)), Hochpunkte.SET_CL_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
 
 SET_DEC(n_datensatz, :) = S_G_vorh_j_DEC(n_datensatz, :) - eps_kompr_j_DEC(n_datensatz, :);
-[SET_DEC_y(n_datensatz,:), SET_DEC_x(n_datensatz,:)] = max(SET_DEC(n_datensatz,:));
-TAS_SET_H_DEC_vec(n_datensatz,:) = [v_TAS_j_DEC(n_datensatz, SET_DEC_x(n_datensatz,1)), SET_DEC_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
+[Hochpunkte.SET_DEC_y(n_datensatz,:), Hochpunkte.SET_DEC_x(n_datensatz,:)] = max(SET_DEC(n_datensatz,:));
+TAS_SET_H_DEC_vec(n_datensatz,:) = [v_TAS_j_DEC(n_datensatz, Hochpunkte.SET_DEC_x(n_datensatz,1)), Hochpunkte.SET_DEC_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
 
 
 
@@ -199,49 +199,49 @@ TAS_SET_H_DEC_vec(n_datensatz,:) = [v_TAS_j_DEC(n_datensatz, SET_DEC_x(n_datensa
 %% Spezifischer Leistungueberschuss SEP
 
 SEP(n_datensatz, :) = v_TAS_j(n_datensatz, :) .* (S_G_vorh_j(n_datensatz, :) - eps_kompr_j(n_datensatz, :));
-[SEP_y(n_datensatz,:), SEP_x(n_datensatz,:)] = max(SEP(n_datensatz,:));
-TAS_SEP_H_vec(n_datensatz,:) = [v_TAS_j(n_datensatz, SEP_x(n_datensatz,1)), SEP_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
+[Hochpunkte.SEP_y(n_datensatz,:), Hochpunkte.SEP_x(n_datensatz,:)] = max(SEP(n_datensatz,:));
+TAS_SEP_H_vec(n_datensatz,:) = [v_TAS_j(n_datensatz, Hochpunkte.SEP_x(n_datensatz,1)), Hochpunkte.SEP_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
 
 
 SEP_CL(n_datensatz, :) = v_TAS_j_CL(n_datensatz, :) .* (S_G_vorh_j_CL(n_datensatz, :) - eps_kompr_j_CL(n_datensatz, :));
 
 
-[SEP_CL_y(n_datensatz,:), SEP_CL_x(n_datensatz,:)] = max(SEP_CL(n_datensatz,:));
-TAS_SEP_H_CL_vec(n_datensatz,:) = [v_TAS_j_CL(n_datensatz, SEP_CL_x(n_datensatz,1)), SEP_CL_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
+[Hochpunkte.SEP_CL_y(n_datensatz,:), Hochpunkte.SEP_CL_x(n_datensatz,:)] = max(SEP_CL(n_datensatz,:));
+TAS_SEP_H_CL_vec(n_datensatz,:) = [v_TAS_j_CL(n_datensatz, Hochpunkte.SEP_CL_x(n_datensatz,1)), Hochpunkte.SEP_CL_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
 
 SEP_DEC(n_datensatz, :) = v_TAS_j_DEC(n_datensatz, :) .* (S_G_vorh_j_DEC(n_datensatz, :) - eps_kompr_j_DEC(n_datensatz, :));
-[SEP_DEC_y(n_datensatz,:), SEP_DEC_x(n_datensatz,:)] = max(SEP_DEC(n_datensatz,:));
-TAS_SEP_H_DEC_vec(n_datensatz,:) = [v_TAS_j_DEC(n_datensatz, SEP_DEC_x(n_datensatz,1)), SEP_DEC_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
+[Hochpunkte.SEP_DEC_y(n_datensatz,:), Hochpunkte.SEP_DEC_x(n_datensatz,:)] = max(SEP_DEC(n_datensatz,:));
+TAS_SEP_H_DEC_vec(n_datensatz,:) = [v_TAS_j_DEC(n_datensatz, Hochpunkte.SEP_DEC_x(n_datensatz,1)), Hochpunkte.SEP_DEC_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
 
 
 %% Spezifische Reichweite SR
 
 SR(n_datensatz,:) = (v_TAS_j(n_datensatz,:))./(sfc_1PERs_Horizontalflug(n_datensatz,:) .* eps_kompr_j(n_datensatz,:) .* Momentane_Masse_ICA);
-[SR_y(n_datensatz,:), SR_x(n_datensatz,:)] = max(SR(n_datensatz,:));
-TAS_SR_H_vec(n_datensatz,:) = [v_TAS_j(n_datensatz, SR_x(n_datensatz,1)), SR_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
+[Hochpunkte.SR_y(n_datensatz,:), Hochpunkte.SR_x(n_datensatz,:)] = max(SR(n_datensatz,:));
+TAS_SR_H_vec(n_datensatz,:) = [v_TAS_j(n_datensatz, Hochpunkte.SR_x(n_datensatz,1)), Hochpunkte.SR_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
 
 SR_CL(n_datensatz,:) = (v_TAS_j_CL(n_datensatz,:))./(sfc_1PERs_Horizontalflug_CL(n_datensatz,:) .* eps_kompr_j_CL(n_datensatz,:) .* Momentane_Masse_CL);
-[SR_CL_y(n_datensatz,:), SR_CL_x(n_datensatz,:)] = max(SR_CL(n_datensatz,:));
-TAS_SR_H_CL_vec(n_datensatz,:) = [v_TAS_j_CL(n_datensatz, SR_CL_x(n_datensatz,1)), SR_CL_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
+[Hochpunkte.SR_CL_y(n_datensatz,:), Hochpunkte.SR_CL_x(n_datensatz,:)] = max(SR_CL(n_datensatz,:));
+TAS_SR_H_CL_vec(n_datensatz,:) = [v_TAS_j_CL(n_datensatz, Hochpunkte.SR_CL_x(n_datensatz,1)), Hochpunkte.SR_CL_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
 
 SR_DEC(n_datensatz,:) = (v_TAS_j_DEC(n_datensatz,:))./(sfc_1PERs_Horizontalflug_DEC(n_datensatz,:) .* eps_kompr_j_DEC(n_datensatz,:) .* Momentane_Masse_DEC);
-[SR_DEC_y(n_datensatz,:), SR_DEC_x(n_datensatz,:)] = max(SR_DEC(n_datensatz,:));
-TAS_SR_H_DEC_vec(n_datensatz,:) = [v_TAS_j_DEC(n_datensatz, SR_DEC_x(n_datensatz,1)), SR_DEC_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
+[Hochpunkte.SR_DEC_y(n_datensatz,:), Hochpunkte.SR_DEC_x(n_datensatz,:)] = max(SR_DEC(n_datensatz,:));
+TAS_SR_H_DEC_vec(n_datensatz,:) = [v_TAS_j_DEC(n_datensatz, Hochpunkte.SR_DEC_x(n_datensatz,1)), Hochpunkte.SR_DEC_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
 
 
 %% Spezifische Flugdauer SE
 
 SE(n_datensatz,:) = 1 ./ (sfc_1PERs_Horizontalflug(n_datensatz,:) .* eps_kompr_j(n_datensatz,:) .* Momentane_Masse_ICA .* specs.g); 
-[SE_y(n_datensatz,:), SE_x(n_datensatz,:)] = max(SE(n_datensatz,:));
-TAS_SE_H_vec(n_datensatz,:) = [v_TAS_j(n_datensatz, SE_x(n_datensatz,1)), SE_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
+[Hochpunkte.SE_y(n_datensatz,:), Hochpunkte.SE_x(n_datensatz,:)] = max(SE(n_datensatz,:));
+TAS_SE_H_vec(n_datensatz,:) = [v_TAS_j(n_datensatz, Hochpunkte.SE_x(n_datensatz,1)), Hochpunkte.SE_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
 
 SE_CL(n_datensatz,:) = 1 ./ (sfc_1PERs_Horizontalflug_CL(n_datensatz,:) .* eps_kompr_j_CL(n_datensatz,:) .* Momentane_Masse_CL .* specs.g); 
-[SE_CL_y(n_datensatz,:), SE_CL_x(n_datensatz,:)] = max(SE_CL(n_datensatz,:));
-TAS_SE_H_CL_vec(n_datensatz,:) = [v_TAS_j_CL(n_datensatz, SE_CL_x(n_datensatz,1)), SE_CL_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
+[Hochpunkte.SE_CL_y(n_datensatz,:), Hochpunkte.SE_CL_x(n_datensatz,:)] = max(SE_CL(n_datensatz,:));
+TAS_SE_H_CL_vec(n_datensatz,:) = [v_TAS_j_CL(n_datensatz, Hochpunkte.SE_CL_x(n_datensatz,1)), Hochpunkte.SE_CL_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
 
 SE_DEC(n_datensatz,:) = 1 ./ (sfc_1PERs_Horizontalflug_DEC(n_datensatz,:) .* eps_kompr_j_DEC(n_datensatz,:) .* Momentane_Masse_DEC .* specs.g); 
-[SE_DEC_y(n_datensatz,:), SE_DEC_x(n_datensatz,:)] = max(SE_DEC(n_datensatz,:));
-TAS_SE_H_DEC_vec(n_datensatz,:) = [v_TAS_j_DEC(n_datensatz, SE_DEC_x(n_datensatz,1)), SE_DEC_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
+[Hochpunkte.SE_DEC_y(n_datensatz,:), Hochpunkte.SE_DEC_x(n_datensatz,:)] = max(SE_DEC(n_datensatz,:));
+TAS_SE_H_DEC_vec(n_datensatz,:) = [v_TAS_j_DEC(n_datensatz, Hochpunkte.SE_DEC_x(n_datensatz,1)), Hochpunkte.SE_DEC_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
 
 %% Fuer Flugbereichsdiagramm
 % berechnung v_min v_max aus Horizontalflugdiagramm
@@ -481,6 +481,9 @@ Ergebnisse_Flugleistung_1.j = j;
 Ergebnisse_Flugleistung_1.v_EAS_j = v_EAS_j;
 Ergebnisse_Flugleistung_1.v_EAS_j_CL = v_EAS_j_CL;
 Ergebnisse_Flugleistung_1.v_EAS_j_DEC = v_EAS_j_DEC;
+Ergebnisse_Flugleistung_1.v_TAS_j = v_TAS_j;
+Ergebnisse_Flugleistung_1.v_TAS_j_CL = v_TAS_j_CL;
+Ergebnisse_Flugleistung_1.v_TAS_j_DEC = v_TAS_j_DEC;
 Ergebnisse_Flugleistung_1.Ma_j = Ma_j;
 Ergebnisse_Flugleistung_1.Ma_j_CL = Ma_j_CL;
 Ergebnisse_Flugleistung_1.Ma_J_DEC = Ma_j_DEC;
@@ -530,7 +533,7 @@ Ergebnisse_Flugleistung_1.SE_CL = SE_CL;
 Ergebnisse_Flugleistung_1.TAS_SE_H_CL_vec = TAS_SE_H_CL_vec;
 Ergebnisse_Flugleistung_1.SE_DEC = SE_DEC;
 Ergebnisse_Flugleistung_1.TAS_SE_H_DEC_vec = TAS_SE_H_DEC_vec;
-
+Ergebnisse_Flugleistung_1.Hochpunkte = Hochpunkte;
 
 save Ergebnisse_FLugleistung_1.mat Ergebnisse_Flugleistung_1
 

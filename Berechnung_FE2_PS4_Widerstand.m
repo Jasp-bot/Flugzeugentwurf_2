@@ -40,7 +40,7 @@ addpath('Unterfunktionen Widerstand');
 Annahmen.Flughoehe_CR = specs.flight_level * 10^2 ;     % in ft
 Annahmen.hoehe_CR = round(unitsratio('m','ft')*Annahmen.Flughoehe_CR);
 
-stuetzstellen = 500;
+stuetzstellen = 100;
 
 %% Getroffene Annahmen um Rechnungen vor berechnung der richtigen Werte durchfuehren zu können
         % es fehlen Werte als PS2 / PS3
@@ -54,9 +54,10 @@ stuetzstellen = 500;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %     Annahmen.x_SP_MAC = 1.5; %%%%%% Ein random wert angenommen!!!!!!!!!!!
 %     Annahmen.x_NP_MAC_oH = 0.5;
-    Annahmen.dx_SP_lmue =  Delta_CG_MAC_durch_lmue; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    Annahmen.z_abstand = StatStab.z_abstand; % Abstand zwischen Profilsehnen angenommen vergleiche Torenbeek s480
     Faktor = 1; %%%% Achtung ist ein korrekturfsktor weil ich nicht weiter weiß, earum mein Rumpf/ TW Widerstand so klein sind
+    Annahmen.dx_SP_lmue =  Delta_CG_MAC_durch_lmue * Faktor ; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    Annahmen.z_abstand = StatStab.z_abstand; % Abstand zwischen Profilsehnen angenommen vergleiche Torenbeek s480
+ 
     Annahmen.c_M_0_F = FM.c_M_NP_F0; %-0.1; % %* 0.1; % Wert aus FE1 ist zu klein 
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -77,14 +78,14 @@ Annahmen.x_u = Ergebnisse_Fluegel.Fluegeltiefen_eta_oR .* Annahmen.xu_l;      % 
 Annahmen.Ma_unendlich = specs.Ma_CR;
 
     % Rumpfwiderstand
-Annahmen.S_G_Ru = Anteile_einzel_Massen_FE2.Airplane_Structure.Fuselage_group.Sg_12 * Faktor;
+Annahmen.S_G_Ru = Anteile_einzel_Massen_FE2.Airplane_Structure.Fuselage_group.Sg_12;
 Annahmen.c_A_alpha_F = VWA.c_AF_anstieg;      % Annahme bitte ueberpruefen !!!!!!!!!!!!!!!!!!!!
 
 
 Annahmen.zaehlvariabele_itt = 1;
 
     % Triebwerke
-Annahmen.S_G_TW = Anteile_einzel_Massen_FE2.Airplane_Structure.Nacelle_group.Turbine_Area * Faktor; % Umspuehlte TW oberflaeche
+Annahmen.S_G_TW = Anteile_einzel_Massen_FE2.Airplane_Structure.Nacelle_group.Turbine_Area; % Umspuehlte TW oberflaeche
 Annahmen.l_TW = Anteile_einzel_Massen_FE2.Airplane_Structure.Nacelle_group.Turbine_length;
 Annahmen.d_TW = Anteile_einzel_Massen_FE2.Airplane_Structure.Nacelle_group.Turbine_Diameter;
 Annahmen.TW_Einbauwinkel = 0; % Kann gegen einen beliebigen Einbauwinkel ausgetauscht werden ACHTUNG!!! in [GRAD] !!!!!
@@ -158,12 +159,12 @@ FUN.c_a_eta_fun = @(c_A_F) (GRA.gamma_a_eta .* c_A_F .* GRA.l_m) ./ (Ergebnisse_
 save Getroffene_Annahmen_und_FUN.mat Annahmen FUN
 
 
-c_A_F = linspace(0.001, 1, stuetzstellen);
+c_A_F = linspace(0, 1, stuetzstellen);
 
 v_air = ones(stuetzstellen,1) .* specs.Ma_CR .* ISA.a(Annahmen.hoehe_CR);
 
 %-------------------- Off_D
-Ma_off_D = linspace(0.001, 1, stuetzstellen).';
+Ma_off_D = linspace(0, 1, stuetzstellen).';
 v_air_off_D = Ma_off_D .* ISA.a(Annahmen.hoehe_CR);
 
 c_A_F_off_D = (((2)./(Annahmen.kappa .* ISA.p(Annahmen.hoehe_CR) .* Ma_off_D.^2)) .* Ergebnisse_stat_Flaechenbelastung.Fleachenbelastung).'; 
@@ -331,6 +332,8 @@ Ergebnisse_Widerstand_FE2.Ma_off_D = Ma_off_D;
 Ergebnisse_Widerstand_FE2.cW_cA_off_D = gelitzahl;
 Ergebnisse_Widerstand_FE2.Abwindfaktor = Abwindfaktor;
 Ergebnisse_Widerstand_FE2.c_A_alpha = c_A_alpha;
+Ergebnisse_Widerstand_FE2.stuetzstellen = stuetzstellen;
+
 
 
 save Ergebnisse_Widerstand_FE2.mat Ergebnisse_Widerstand_FE2;

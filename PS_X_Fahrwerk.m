@@ -63,7 +63,7 @@ v_reifen_krit = v_reifen_max_LDG * 2.237; %220; % Einfach Festgelegt
 
 S_Reserve = 25; %Drehschraube Normalerweise 25%
 
-S_FW = 1 + ((S_Reserve + S_Reserve)/100);
+S_FW = 1 + ((S_Reserve + 7)/100);
 
 n_FWB = 2; % Es handelt sich um Hauptfahrwerksbeine
 n_reifen_HFW = 8; % Anzahl Reifen insgesamt
@@ -303,6 +303,10 @@ Gear.F_reifen_HFW_max = F_reifen_HFW_max_pfund;
 Gear.Reifen_HFW = tires_edit_HFW.Size(49);
 
 Gear.Reifen_BFW = tires_bugfahrwerk.Size(1);
+
+Gear.durchmesser = tires_edit_HFW.OutsideDiameterMax(49);
+
+Gear.breite = tires_edit_HFW.SectionWidthMax(49);
 
 save Fahrwerk.mat Gear
 

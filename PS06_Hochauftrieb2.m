@@ -15,6 +15,7 @@ load Ergebnisse_Hochauftrieb_1.mat
 load Ergebnisse_CG.mat
 load Schwerpunkt.mat
 load Ergebnisse_Widerstand_FE2.mat
+load Fahrwerk.mat
 
 %% Aus FE 1 -> Für Widerstand
 
@@ -37,7 +38,7 @@ addpath('Unterfunktionen Widerstand');
 %% Steuervariablen/ Iteriervariablen?
 
 %Spannweite Klappenfläche
-spannweite_flaps = 0.6;
+spannweite_flaps = 0.85;
 %Länge Klappe ausgefahren
 flap_length_LDG = 2.0; % in meter
 flap_length_TO = 1.0;
@@ -46,7 +47,7 @@ flap_length_TO = 1.0;
 Flaps_begin = 0.65; %Prozent
 %Faktoren Slat -> Lock der Slat Länge damit auf 70% eta -> Letzter Wert hir
 %ist eta
-Slat_spannweite = 0.85;
+Slat_spannweite = 0.7;
 
 faktoren_Slat = 0.94 * 0.91 * Slat_spannweite;
 
@@ -55,6 +56,25 @@ Slats_pos = 0.1;
 
 %Oswald Zahl
 oswald = 0.8;
+
+
+%% Neue Klappenberechnung
+spannweite_klappen_eta = 0.65;
+
+spannweite_rumpf = specs.D_rumpf + 2 * (0.03 * (Ergebnisse_Fluegel.b / 2));
+
+
+% Fläche Rumpfstück
+
+F_rumpf_dreieck = Flaeche_im_Rumpf_oberes_dreieck;
+
+F_rumpf_quader = specs.D_rumpf * Ergebnisse_Fluegel.Fluegeltiefen_eta_oR(1);
+
+F_Rumpf_ecken = polyarea([0 0 ((Ergebnisse_Fluegel.b / 2) * 0.03) ((Ergebnisse_Fluegel.b / 2) * 0.03) 0],[0 Ergebnisse_Fluegel.Fluegeltiefen_eta_oR(1) Ergebnisse_Fluegel.Fluegeltiefen_eta_oR(30) 0 0]);
+%axis equal
+%plot([0 0 ((Ergebnisse_Fluegel.b / 2) * 0.03) ((Ergebnisse_Fluegel.b / 2) * 0.03) 0],[0 Ergebnisse_Fluegel.Fluegeltiefen_eta_oR(1) Ergebnisse_Fluegel.Fluegeltiefen_eta_oR(30) 0 0])
+
+
 
 %% Andere Variablen die Werte aus anderen PS brauchen!!!
 %MOMENT
@@ -69,14 +89,19 @@ l_mue = Ergebnisse_Fluegel.l_mue;
 
 deltaXSP_l_mue = Delta_CG_MAC_durch_lmue; % LEONS Wert !
 
-[c_w_p, c_w_p_min_Re] = Profilwiderstand(landeanvorderung.v_50,0);
-% Über trapz summieren!
 
-C_W_P_Min_RE = 0.01; %% JASPER WERT PLS!
+% Über trapz summieren!
+CA_index = round(Ergebnisse_Widerstand_FE2.stuetzstellen * 0.207);
+CWPMIN_temp = Ergebnisse_Widerstand_FE2.c_w_p_min_Re_off_D(2,:);
+%C_W_P_Min_RE = trapz(CWPMIN_temp); % Zwei mal wegen zwei Wings?!
+
+C_W_P_Min_RE = Ergebnisse_Widerstand_FE2.c_w_p_min_Re_off_D(2,15);
+
+
 
 % Reifen -> Aus PS Fahrwerk
-durchmesser = 2;
-breite = 0.5;
+durchmesser = Gear.durchmesser / 39.37 ;
+breite = Gear.breite / 39.37 ;
 
 %% Klappenfläche
 % Berechnung F_K
@@ -110,7 +135,7 @@ F_klappen = F_k - F_rumpf;      % Wahre Klappenfläche -> Tiefdecker Rechenvaria
 %% LANDING
 
 % Kleine Formel CA_F_MAX -> AUS PS05
-CA_F_max; %-> Übernehmen aus Hochauftrieb 1
+HA1.CA_F_max; %-> Übernehmen aus Hochauftrieb 1
 
 % kleine Formel deltaCAFMAX,SF,phi
 delta_Ca_max_SF_phi = 1.57;  % Ablesen aus Grafik bei Klappenausschlag ~45°                                                                       
@@ -125,7 +150,7 @@ delta_CA_F_max_VF = 0.93 * faktoren_Slat * (cos(rad2deg(Ergebnisse_Fluegel.phi_2
 
 
 % Damit kann kleine Formel 1 berechnet werden!
-CA_F_max_VFFK = CA_F_max + delta_CA_F_max_SF_phi + delta_CA_F_max_VF;
+CA_F_max_VFFK = HA1.CA_F_max + delta_CA_F_max_SF_phi + delta_CA_F_max_VF;
 
 % Neuer Auftriebsanstieg
 c = Ergebnisse_Fluegel.l_m; % Mittlere Flügeltiefe benutzen
@@ -136,7 +161,7 @@ c_ = flap_length_LDG + Ergebnisse_Fluegel.l_m; % Quelle GPT und ACAMP
 %phi_50 = atan(tan(Ergebnisse_Fluegel.phi_25_max)-(4/Ergebnisse_Fluegel.streckung_phi25_max)* (0.5-0.25) * (1-Ergebnisse_Fluegel.lambda)/(1-Ergebnisse_Fluegel.lambda));
 %CAalpha_F = (pi * Ergebnisse_Fluegel.streckung_phi25_max) / (1+sqrt(1 + ((Ergebnisse_Fluegel.streckung_phi25_max/2)^2) * (tan(phi_50)^2 + (1-specs.Ma_CR^2))));
                         
-CA_alpha_F_FK_phi = CA_alpha_lowspeed * (((c_/c)-1) * (F_klappen/Ergebnisse_Fluegel.F)+1);
+CA_alpha_F_FK_phi = HA1.CA_alpha_F * (((c_/c)-1) * (F_klappen/Ergebnisse_Fluegel.F)+1);
 
 
 %delta_CA_F_SF_phi
@@ -149,24 +174,9 @@ delta_CA_F_SF_phi = (F_klappen / Ergebnisse_Fluegel.F) * (cos(Ergebnisse_Fluegel
 % Große Formel VFFK -> Gobbinsche Version
                                                     %In Übungfolien ist
                                                     %hier ein +                                                                             %+
-alpha_F_max_VFFK = (CA_F_max_VFFK / CA_alpha_F_FK_phi) - (((CA_BEI_6_grad + delta_CA_F_SF_phi)) / CA_alpha_F_FK_phi) + deg2rad(6) + delta_alpha_CA_F_max + alpha_MAC_0_F;
+alpha_F_max_VFFK = (CA_F_max_VFFK / CA_alpha_F_FK_phi) - (((HA1.CA_bei6_deg + delta_CA_F_SF_phi)) / CA_alpha_F_FK_phi) + deg2rad(6) + deg2rad(HA1.delta_alpha_CA_F_max) + deg2rad(HA1.alpha_MAC_F_0);
 
 alpha_F_max_VFFK_deg = rad2deg(alpha_F_max_VFFK);
-
-
-%% Plotting
-%Clean Polare
-plot(alphas,CA_s,'blue','LineWidth',1.5)
-hold on
-
-title("Aufgelöste Flügelpolare mit Hochauftriebshilfen","FontSize",15)
-ylabel("Auftriebsbeiwert des Flügels C_{A} in [-]","FontWeight","bold")
-xlabel("Anstellwinkel \alpha_{F} in °","FontWeight","bold")
-
-%Landing Polare
-alphas = -15:0.01:alpha_F_max_VFFK_deg-delta_alpha_CA_F_max_deg; % normal Plotten bis alphamax - delta alpha
-CA_sl = CA_alpha_F_FK_phi.*(deg2rad(alphas-alpha_MAC_0_deg)) + delta_CA_F_max_SF_phi;
-plot(alphas,CA_sl,'green','LineWidth',1.5)
 
 %% TAKEOFF
 
@@ -184,13 +194,13 @@ delta_CA_F_max_VF_TO = 0.93 * faktoren_Slat * (cos(rad2deg(Ergebnisse_Fluegel.ph
 
 % MAximaler Auftriebsbeiwert des Flügels mit Fowler, Slats
 
-CA_F_max_VFFK_TO = CA_F_max + delta_CA_F_max_SF_phi_TO + delta_CA_F_max_VF_TO;
+CA_F_max_VFFK_TO = HA1.CA_F_max + delta_CA_F_max_SF_phi_TO + delta_CA_F_max_VF_TO;
 
 % Neuer Auftriebsanstieg
 c_TO =  Ergebnisse_Fluegel.l_m; % Mittlere Flügeltiefe benutzen
 c__TO = flap_length_TO +Ergebnisse_Fluegel.l_m; % Quelle GPT und ACAMP
 
-CA_alpha_F_FK_phi_TO = CA_alpha_lowspeed * (((c__TO/c_TO)-1) * (F_klappen/Ergebnisse_Fluegel.F) + 1);
+CA_alpha_F_FK_phi_TO = HA1.CA_alpha_F * (((c__TO/c_TO)-1) * (F_klappen/Ergebnisse_Fluegel.F) + 1);
 
 
 %delta_CA_F_SF_phi
@@ -203,90 +213,50 @@ delta_CA_F_SF_phi_TO = (F_klappen / Ergebnisse_Fluegel.F) * cos(Ergebnisse_Flueg
 % Große Formel VFFK - >Gobbin Version
                                                         %IN ÜBUNG IST HIER
                                                         %+                                                                                           %+ 
-alpha_F_max_VFFK_TO = (CA_F_max_VFFK_TO/CA_alpha_F_FK_phi_TO) - (((CA_BEI_6_grad + delta_CA_F_SF_phi_TO))/CA_alpha_F_FK_phi_TO) + deg2rad(6) + delta_alpha_CA_F_max + alpha_MAC_0_F;
+alpha_F_max_VFFK_TO = (CA_F_max_VFFK_TO/CA_alpha_F_FK_phi_TO) - (((HA1.CA_bei6_deg + delta_CA_F_SF_phi_TO))/CA_alpha_F_FK_phi_TO) + deg2rad(6) + deg2rad(HA1.delta_alpha_CA_F_max) + deg2rad(HA1.alpha_MAC_0_F);
 
 alpha_F_max_VFFK_deg_TO = rad2deg(alpha_F_max_VFFK_TO);
 
 
-%% Polotting 
+%% Alphas/ CAs plotting vorbereiten
 
-alphas = -12:0.01:(alpha_F_max_VFFK_deg_TO-delta_alpha_CA_F_max_deg); % normal Plotten bis alphamax - delta alpha
-CA_st = CA_alpha_F_FK_phi_TO.*(deg2rad(alphas-alpha_MAC_0_deg)) + delta_CA_F_max_SF_phi_TO;
-plot(alphas,CA_st,'red','LineWidth',1.5)
-
-% Kritische Punkte -> CA_Max stimmt nicht perfekt mit ende der geraden
-% überein ?!
-grid on
-plot([alpha_F_max_VFFK_deg_TO - delta_alpha_CA_F_max_deg],[0],'redx','LineWidth',1.5)
-plot([alpha_F_max_VFFK_deg - delta_alpha_CA_F_max_deg],[0],'greenx','LineWidth',1.5)
-
-plot([0],[CA_F_max_VFFK_TO],'redx','LineWidth',1.5)
-plot([0],[CA_F_max_VFFK],'greenx','LineWidth',1.5)
+alphas = -12:0.01:(alpha_F_max_VFFK_deg_TO-HA1.delta_alpha_CA_F_max); % normal Plotten bis alphamax - delta alpha
+CA_st = CA_alpha_F_FK_phi_TO.*(deg2rad(alphas-HA1.alpha_MAC_0)) + delta_CA_F_max_SF_phi_TO;
 
 
-plot(alpha_CA_F_MAX_deg, 0, 'xblue','LineWidth',1.5)
-%CA MAX
-plot(0, CA_F_max,"xblue",'LineWidth',1.5)
-
-%% Abfall der Polaren Plotten
-
-% Parameter der quadratischen Funktion
-a = 0.008; % Koeffizient von x^2
-h = alpha_F_max_VFFK_deg; % x-Koordinate des Maximums
-k = CA_F_max_VFFK; % y-Koordinate des Maximums
-
-% Bereich der x-Achse
-x = linspace(h-6, h+7, 10); % Hier können Sie den Bereich anpassen
-
-% Quadratische Funktion berechnen
-y = -a * (x - h).^2 + k;
-
-% Plot erstellen
-plot(x, y,"green--",'LineWidth',1.5)
-plot(h, k, 'gx','LineWidth',1.5)
+HA1.alphas = -15:0.01:alpha_F_max_VFFK_deg-HA1.delta_alpha_CA_F_max; % normal Plotten bis alphamax - delta alpha
+CA_sl = CA_alpha_F_FK_phi.*(deg2rad(HA1.alphas-HA1.alpha_MAC_0)) + delta_CA_F_max_SF_phi;
 
 
-% Parameter der quadratischen Funktion
-a = 0.0072; % Koeffizient von x^2
-h = alpha_F_max_VFFK_deg_TO; % x-Koordinate des Maximums
-k = CA_F_max_VFFK_TO; % y-Koordinate des Maximums
 
-% Bereich der x-Achse
-x = linspace(h-7, h+7, 10); % Hier können Sie den Bereich anpassen
 
-% Quadratische Funktion berechnen
-y = -a * (x - h).^2 + k;
+%% Plot speichern
 
-% Plot erstellen
-plot(x, y,"red--",'LineWidth',1.5)
-plot(h, k, 'rx','LineWidth',1.5)
+% Speichern
 
-% Parameter der quadratischen Funktion
-a = 0.0058; % Koeffizient von x^2
-h = alpha_CA_F_MAX_deg; % x-Koordinate des Maximums
-k = CA_F_max; % y-Koordinate des Maximums
+HA2.alpha_F_max_VFFK_deg = alpha_F_max_VFFK_deg;
 
-% Bereich der x-Achse
-x = linspace(h-7, h+7, 10); % Hier können Sie den Bereich anpassen
+HA2.CA_alpha_F_FK_phi = CA_alpha_F_FK_phi;
 
-% Quadratische Funktion berechnen
-y = -a * (x - h).^2 + k;
+HA2.delta_CA_F_max_SF_phi = delta_CA_F_max_SF_phi;
 
-% Plot erstellen
-plot(x, y,"blue--",'LineWidth',1.5)
-plot(h, k, 'bx','LineWidth',1.5)
-% Achsen
-P1 = [0 0];
-P2 = [-1 3];
-plot(P1,P2,'black','LineWidth',1.5)
-P3 = [-15 35];
-P4 = [0 0];
-plot(P3,P4,'black','LineWidth',1.5)
+HA2.alpha_F_max_VFFK_deg_TO = alpha_F_max_VFFK_deg_TO;
 
-ylim([-1, 3])
+HA2.CA_alpha_F_FK_phi_TO = CA_alpha_F_FK_phi_TO;
 
-legend("Clean Konfiguration mit 0° Klappenausschlag","Landing mit 45° Klappenausschlag","Takeoff mit 20° Klappenausschlag",'','','','','Location', 'southeast')
-hold off
+HA2.delta_CA_F_max_SF_phi_TO = delta_CA_F_max_SF_phi_TO;
+
+HA2.CA_F_max_VFFK_TO = CA_F_max_VFFK_TO;
+
+HA2.CA_F_max_VFFK = CA_F_max_VFFK;
+
+HA2.CA_sl = CA_sl;
+
+HA2.CA_st= CA_st;
+
+
+
+
 
 %% Prüfen ob CA max passt für alle Flugphasen GILT NUR FÜR FLÜGEL SELBER!!
 
@@ -412,7 +382,7 @@ X_VF = linspace(0,Slat_spannweite,Slat_spannweite*1000);
 % Slat tiefen!
 Fluegel_VF = Slats_pos .* Ergebnisse_Fluegel.Fluegeltiefen_eta(1,1:(Slat_spannweite*1000));
 % Fläche Slats
-F_VF = (Ergebnisse_Fluegel.b/2)*trapz(X_VF,Fluegel_VF);
+F_VF = (Ergebnisse_Fluegel.b/2)*trapz(X_VF,Fluegel_VF)+10;
 
 
 laenge_Fluegel = Ergebnisse_Fluegel.b; %Ohne Rumpf?
@@ -422,7 +392,7 @@ laenge_Fluegel = Ergebnisse_Fluegel.b; %Ohne Rumpf?
 %F_VF = 1.93+5.26;
 
 
-delta_CW_VF = C_W_P_Min_RE * (F_VF/Ergebnisse_Fluegel.F) * (laenge_Slats/laenge_Fluegel) *cos(Ergebnisse_Fluegel.phi_25_max);
+delta_CW_VF = C_W_P_Min_RE * (F_VF/Ergebnisse_Fluegel.F) * (laenge_Slats/(laenge_Fluegel-specs.D_rumpf)) * cos(Ergebnisse_Fluegel.phi_25_max);
 
 
 % Fahrwerkswiderstand % Bleibt gleich bei TO/LDG
@@ -430,8 +400,8 @@ delta_CW_VF = C_W_P_Min_RE * (F_VF/Ergebnisse_Fluegel.F) * (laenge_Slats/laenge_
 % Braucht finale Werte aus Fahrwerk 
 F_vorder = durchmesser*breite*4;   % Gleiche Werte weil vorne und hinten gleich groß sind
 F_hinter = durchmesser*breite*4;
-l_HFW = 30; % Ríchtiger Wert aus CG?
-delta_CA_F_0 = 0.3; % Richtiger Wert aus wo?
+l_HFW = BFWL.l_HFW_min; % Ríchtiger Wert aus CG?
+delta_CA_F_0 = 1;%0.03; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 delta_C_W_Fahrwerk = ((1.5 * F_vorder + 0.75 * F_hinter)/Ergebnisse_Fluegel.F) * (1 - 0.04 * ((CA_F + delta_CA_F_0 *(1.5 * (Ergebnisse_Fluegel.F / F_klappen)-1))/(l_HFW/Ergebnisse_Fluegel.l_m)));
 
@@ -444,9 +414,22 @@ delta_CW_klappen_TO = delta_CW_VF + delta_C_W_Ind_TO + delta_C_W_Inf_TO + delta_
 delta_CW_klappen_LDG_fahrwerk = delta_CW_VF + delta_C_W_Ind + delta_C_W_Inf + delta_C_W_P + delta_C_W_Fahrwerk;
 delta_CW_klappen_TO_fahrwerk = delta_CW_VF + delta_C_W_Ind_TO + delta_C_W_Inf_TO + delta_C_W_P_TO + delta_C_W_Fahrwerk;
 
+
+% Speichern
+
+HA2.delta_CW_klappen_LDG = delta_CW_klappen_LDG;
+
+HA2.delta_CW_klappen_TO = delta_CW_klappen_TO;
+
+HA2.delta_CW_klappen_LDG_fahrwerk = delta_CW_klappen_LDG_fahrwerk;
+
+Ha2.delta_CW_klappen_TO_fahrwerk = delta_CW_klappen_TO_fahrwerk;
+
+
 %% Aufaddieren zu dem vorhandenen Widerstand
 
-%Widerstand.C_W_TO_clean = Widerstand.C_w_clean_all + delta_CW_klappen_TO ;
+C_W_clean = Widerstand.C_w_clean_all;
+%plot(Widerstand.C_w_clean_all,)
 
 %Widerstand.C_W_TO_FW = Widerstand.C_w_clean_all + delta_CW_klappen_TO_fahrwerk ;
 
@@ -454,13 +437,17 @@ delta_CW_klappen_TO_fahrwerk = delta_CW_VF + delta_C_W_Ind_TO + delta_C_W_Inf_TO
 
 %Widerstand.C_W_LDG_FW = Widerstand.C_w_clean_all + delta_CW_klappen_LDG_fahrwerk ; 
 
-k = 1 / (pi * Ergebnisse_Fluegel.streckung_phi25_max * oswald);
+
 
 % Berechnug des CW 
 %% HIER NOCH FE2 ANTEILE ADDIEREN!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-for i = 1:length(CA_s)    
-    CW_clean(i) = N_W.Cw0 + k * CA_s(i)^2  ;    
+k = 1 / (pi * Ergebnisse_Fluegel.streckung_phi25_max * oswald);
+
+
+
+for i = 1:length(HA1.CAs)    
+    CW_clean(i) = N_W.Cw0 + k * HA1.CAs(i)^2  ;    
 end
 
 for i = 1:length(CA_st) 
@@ -477,7 +464,7 @@ end
 figure(2)
 hold on
 
-plot(CW_clean,CA_s,'blue')
+plot(CW_clean,HA1.CAs,'blue')
 
 plot(CW_TO,CA_st,'red')
 plot(CW_TO_FW,CA_st,'red--')
@@ -500,7 +487,7 @@ hold off
 %% REZIPROKE GLEITZAHLEN
 %% E = C_A / C_W
 
-E_Clean = CA_s./CW_clean;
+E_Clean = HA1.CAs./CW_clean;
 
 E_TO = CA_st./CW_TO;
 E_TO_FW = CA_st./CW_TO_FW;
@@ -512,7 +499,7 @@ figure(3)
 grid on
 hold on
 
-plot(CA_s,E_Clean,'blue')
+plot(HA1.CAs,E_Clean,'blue')
 
 plot(CA_st,E_TO,'red')
 plot(CA_st,E_TO_FW,'red--')
@@ -540,7 +527,7 @@ Fluegel_FOWLER = (1-Flaps_begin) .* Ergebnisse_Fluegel.Fluegeltiefen_eta(1,1:(sp
 F_FOWLER = 2 * ((Ergebnisse_Fluegel.b/2)*trapz(X_FOWLER,Fluegel_FOWLER));
 
 
-save Ergebnisse_Hochauftrieb_2.mat spannweite_flaps Flaps_begin flap_length_LDG F_FOWLER
+save Ergebnisse_Hochauftrieb_2.mat HA2 spannweite_flaps Flaps_begin flap_length_LDG F_FOWLER
 
 
 

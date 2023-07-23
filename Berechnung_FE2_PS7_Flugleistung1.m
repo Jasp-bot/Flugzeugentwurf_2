@@ -428,7 +428,7 @@ v_s_min = 0.94 .* v_s_1g;
 m_BOP = 0.795;
 M_BO = m_BOP/sqrt(cos(Ergebnisse_Fluegel.phi_25_max));
 v_BO = M_BO .* a_H;
-v_MO = specs.Ma_MO .* a_H;
+v_MO = Anteile_einzel_Massen_FE2.Airplane_Structure.Fuselage_group.M_Rumpf.v_D_EAS .* sqrt(ISA.rho_0./ ISA.rho(hoehe_m));
 
 
 % test v min
@@ -534,6 +534,19 @@ Ergebnisse_Flugleistung_1.TAS_SE_H_CL_vec = TAS_SE_H_CL_vec;
 Ergebnisse_Flugleistung_1.SE_DEC = SE_DEC;
 Ergebnisse_Flugleistung_1.TAS_SE_H_DEC_vec = TAS_SE_H_DEC_vec;
 Ergebnisse_Flugleistung_1.Hochpunkte = Hochpunkte;
+
+% fuer Flugbereichsdiagramm
+Ergebnisse_Flugleistung_1.v_s_1g = v_s_1g;
+Ergebnisse_Flugleistung_1.v_s_min = v_s_min;
+Ergebnisse_Flugleistung_1.m_BOP = m_BOP;
+Ergebnisse_Flugleistung_1.M_BO = M_BO;
+Ergebnisse_Flugleistung_1.v_BO = v_BO;
+Ergebnisse_Flugleistung_1.v_MO = v_MO;
+
+
+
+
+
 
 save Ergebnisse_FLugleistung_1.mat Ergebnisse_Flugleistung_1
 

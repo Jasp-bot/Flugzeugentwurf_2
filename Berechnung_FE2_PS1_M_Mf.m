@@ -261,8 +261,8 @@ while abs(delta_M_to) > 0.0001
     v_D_2_TAS = (specs.Ma_CR * ISA.a(hoehe_ALT) + convvel(60, 'kts','m/s')) ; 
     v_D_2_TAS_kts = convvel(v_D_2_TAS,'m/s', 'kts') ;
     v_D_1_TAS_kts = convvel(v_D_1_TAS,'m/s', 'kts') ;
-    M_Rumpf.v_D_EAS = v_D_1_TAS * sqrt(ISA.rho(hoehe_ALT)/ISA.rho_0) ;       
-%     M_Rumpf.v_D_TAS = v_D_1_TAS;
+    M_Rumpf.v_D_EAS = v_D_1_TAS * sqrt(ISA.rho(hoehe_ALT)/ISA.rho_0);       
+    M_Rumpf.v_D_EAS_kts = convvel(M_Rumpf.v_D_EAS,'m/s', 'kts');
     
     
     

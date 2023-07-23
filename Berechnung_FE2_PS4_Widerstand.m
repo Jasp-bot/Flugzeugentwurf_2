@@ -40,7 +40,7 @@ addpath('Unterfunktionen Widerstand');
 Annahmen.Flughoehe_CR = specs.flight_level * 10^2 ;     % in ft
 Annahmen.hoehe_CR = round(unitsratio('m','ft')*Annahmen.Flughoehe_CR);
 
-stuetzstellen = 100;
+stuetzstellen = 300;
 
 %% Getroffene Annahmen um Rechnungen vor berechnung der richtigen Werte durchfuehren zu können
         % es fehlen Werte als PS2 / PS3

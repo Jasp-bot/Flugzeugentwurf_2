@@ -261,8 +261,8 @@ while abs(delta_M_to) > 0.0001
     v_D_2_TAS = (specs.Ma_CR * ISA.a(hoehe_ALT) + convvel(60, 'kts','m/s')) ; 
     v_D_2_TAS_kts = convvel(v_D_2_TAS,'m/s', 'kts') ;
     v_D_1_TAS_kts = convvel(v_D_1_TAS,'m/s', 'kts') ;
-    M_Rumpf.v_D_EAS = v_D_1_TAS * sqrt(ISA.rho(hoehe_ALT)/ISA.rho_0) ;       
-%     M_Rumpf.v_D_TAS = v_D_1_TAS;
+    M_Rumpf.v_D_EAS = v_D_1_TAS * sqrt(ISA.rho(hoehe_ALT)/ISA.rho_0);       
+    M_Rumpf.v_D_EAS_kts = convvel(M_Rumpf.v_D_EAS,'m/s', 'kts');
     
     
     
@@ -677,7 +677,11 @@ while abs(delta_M_to) > 0.0001
     % PAX Cabin Accomodities S.291
     
     % Pax Sitze gemäß Torenbeek Table 3-2 S.76
-    NR_Airframe_service.seats = [[8 16 24]; [13.6 25.4 35.4].*0.9; [21.3 65 0]]; % [[10.9 21.3 29.9]; [13.6 25.4 35.4]; [21.3 31.8 0]]; orginal
+    % Spalten: Single, Double, Triple
+    % Zeilen: Eco, Business, First Class
+    NR_Airframe_service.seats = [[8 16 24]; 
+        [13.6 25.4 35.4].*0.9; 
+        [21.3 65 0]]; % [[10.9 21.3 29.9]; [13.6 25.4 35.4]; [21.3 31.8 0]]; orginal
     % Quelle fuer ECO: https://www.expliseat.com/products-seat-lines/ ||
     %       zum Sitz TISEAT E2 X-LINE wurden noch 1.5 kg addiert um
     %       Elektronik zu beruecksichtigen
@@ -687,7 +691,7 @@ while abs(delta_M_to) > 0.0001
     % Quelle fuer First: https://wingdesign.com/shop/flugzeugmoebel/flugzeugsitze/flugzeugsitz-doppelsitzbank-businessclass-leder-schwarz/
     %       Doppelsitz First Class 10 kg leichter als Modernisierungsfaktor
 
-    % Spalten Eco bis Firts- Jewils single bis triple Seat
+   
     
     % ATT Seats
     NR_Airframe_service.n_flight_att = 9;           %% Bei All Eco ist es 9
@@ -775,8 +779,9 @@ while abs(delta_M_to) > 0.0001
     % PAX Seats                 %% Bei All ECO ist es 432 
     % m_opp_items.W_PAX_seats_ECO = (specs.n_pax / 3) * NR_Airframe_service.seats(1,3); 
     m_opp_items.W_PAX_seats_Basic = (30/2) * NR_Airframe_service.seats(3,2) + 10 * NR_Airframe_service.seats(2,3) + 16 * NR_Airframe_service.seats(2,2) + (219) *NR_Airframe_service.seats(1,1); 
-                                     %First Class                           %business Class                                              % Economy 
- 
+                                     %First Class                           %business Class                                                              % Economy 
+    m_opp_items.W_PAX_seats_AllEco = 136 * NR_Airframe_service.seats(1,3) + 12 * NR_Airframe_service.seats(1,2);
+    m_opp_items.SeatDeltaBasicAllEco = m_opp_items.W_PAX_seats_AllEco - m_opp_items.W_PAX_seats_Basic;
 
     m_opp_items.Zusammen = m_opp_items.m_prov_crew + m_opp_items.m_computer +...
         m_opp_items.m_snacks + m_opp_items.m_main_meal + m_opp_items.m_port_water +...

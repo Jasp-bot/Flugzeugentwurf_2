@@ -9,6 +9,7 @@ close all
 load Projekt_specs.mat
 load Ergebnisse_FLugleistung_1.mat
 load Ergebnisse_Widerstand_FE2.mat
+load Ergebnisse_Massen_FE2.mat
 
 % Anzahl der Plots
 numPlots = length(Ergebnisse_Flugleistung_1.hoehe_m);
@@ -163,7 +164,7 @@ title('Optimalgeschwindigkeiten bei G_{LDG}','FontSize',25)
 
 ylabel('H in m','FontSize',20);
 xlabel('v_{TAS} in m/s','FontSize',20);
-% xlim([0 350]);
+xlim([0 350]);
 
 
 plot(Ergebnisse_Flugleistung_1.TAS_SR_H_vec(1:10,1), Ergebnisse_Flugleistung_1.TAS_SR_H_vec(1:10,3),'k');
@@ -173,3 +174,54 @@ plot(Ergebnisse_Flugleistung_1.TAS_SET_H_vec(1:10,1), Ergebnisse_Flugleistung_1.
 legend('SR', 'SEP', 'SET', 'FontSize',15)
 
 hold off
+
+
+%% Flugbereichsdiagramm
+
+
+
+hoehe_CR = round(unitsratio('m','ft')*(specs.flight_level*10^2));
+
+figure(7)
+hold on
+grid on
+
+title('Flugbereichsdiagramm', FontSize=25)
+xlabel('v_{TAS} in m/s', FontSize=20);
+ylabel('H in m', FontSize=20);
+
+pl(1) = plot(v_s_1g, Ergebnisse_Flugleistung_1.hoehe_m, '--b');
+pl(2) = plot(v_s_min, Ergebnisse_Flugleistung_1.hoehe_m, 'k');
+pl(3) = plot(v_BO, Ergebnisse_Flugleistung_1.hoehe_m, 'r');
+
+pl(4) = plot(Ergebnisse_Flugleistung_1.TAS_SR_H_vec(:,1), Ergebnisse_Flugleistung_1.TAS_SR_H_vec(:,3),'.-k');
+pl(5) = plot(Ergebnisse_Flugleistung_1.TAS_SEP_H_vec(:,1), Ergebnisse_Flugleistung_1.TAS_SEP_H_vec(:,3),'.-b');
+pl(6) = plot(Ergebnisse_Flugleistung_1.TAS_SET_H_vec(:,1), Ergebnisse_Flugleistung_1.TAS_SET_H_vec(:,3),'.-r');
+pl(7) = plot(Ergebnisse_Flugleistung_1.TAS_SE_H_vec(:,1), Ergebnisse_Flugleistung_1.TAS_SE_H_vec(:,3),'.-m');
+
+pl(8) = plot(Ergebnisse_Flugleistung_1.v_MO, Ergebnisse_Flugleistung_1.hoehe_m, 'g');
+
+% 
+% pl(9) = plot(v_min_HFD, hoehe_m.', '.-g');
+% pl(10) = plot(v_max_HFD, hoehe_m, '.-k');
+
+pl(11) = plot(specs.Ma_CR * ISA.a(hoehe_CR), hoehe_CR, '*r'); % Design point
+
+legend('v_s_{1g}', 'v_s_{min}', 'Ma_{BO}', 'SR_{max}', 'SEP_{max}', 'SET_{max}', 'SE_{max}', 'v_{MO}', 'DP', 'FontSize',15 ,Location='eastoutside');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

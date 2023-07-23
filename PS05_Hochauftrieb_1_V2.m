@@ -13,44 +13,45 @@ load Ergebnisse_Widerstand_FE2.mat
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Feste Variablen
-%phi_50 = atan(tan(Ergebnisse_Fluegel.phi_25_max)-(4/Ergebnisse_Fluegel.streckung_phi25_max)* (0.5-0.25) * (1-Ergebnisse_Fluegel.lambda)/(1-Ergebnisse_Fluegel.lambda));
+phi_50 = atan(tan(Ergebnisse_Fluegel.phi_25_max) - (4/Ergebnisse_Fluegel.streckung_phi25_max) * (0.5-0.25) * ((1 - Ergebnisse_Fluegel.lambda)/(1 + Ergebnisse_Fluegel.lambda))) ;
 
-%CA_H = Ergebnisse_Widerstand_FE2.c_A_H(1); 
-                                                                                                                              %Ergebnisse_Fluegel.phi_50                                          
-CAalpha_F = (pi * Ergebnisse_Fluegel.streckung_phi25_max) / (1+sqrt(1 + ((Ergebnisse_Fluegel.streckung_phi25_max/2)^2) * (tan(0.2)^2 + (1-specs.Ma_CR^2))));
+%CA_H = Ergebnisse_Widerstand_FE2.c_A_H(1);
+%
+CAalpha_F = (pi * Ergebnisse_Fluegel.streckung_phi25_max) / (1+sqrt(1 + ((Ergebnisse_Fluegel.streckung_phi25_max/2)^2) * (tan(phi_50)^2 + (1-specs.Ma_CR^2))));
 
-CAalpha_F = Ergebnisse_Auftriebsverteilung.VWA.c_AF_anstieg;
+%CAalpha_F = Ergebnisse_Auftriebsverteilung.VWA.c_AF_anstieg;    % Altes CA alpha aus FE1 über Diederich?
 
-[~,a,~,~,~] = atmosisa(50);
+
+[~,a,~,~,~] = atmosisa(convlength(50,'ft','m'));
 M = (landeanvorderung.v_50) / a;
-
-% Jasper HILFE!
+%M = 0.3;
 % CA F CR UND CA_H bestimmen über Machzahl
 
 CA_ind = round(Ergebnisse_Widerstand_FE2.stuetzstellen * specs.Ma_CR);
 
-CA_CR_ges = Ergebnisse_Widerstand_FE2.c_A_ges(CA_ind);
-
-CA_CR_ges_offD = Ergebnisse_Widerstand_FE2.c_A_ges_off_D(CA_ind);
+%CA_CR_ges = Ergebnisse_Widerstand_FE2.c_A_ges(CA_ind);
+CA_CR_ges = Ergebnisse_Widerstand_FE2.c_A_ges_off_D(CA_ind);
+%CA_CR_ges_offD = Ergebnisse_Widerstand_FE2.c_A_ges_off_D(CA_ind);
 %%%
 
-CA_CR_H = Ergebnisse_Widerstand_FE2.c_A_H(CA_ind);
-
-CA_CR_H_offD = Ergebnisse_Widerstand_FE2.c_A_H(CA_ind);
-
-
-CA_F_CR = CA_CR_ges - CA_CR_H * 0.85 * (HLW.F / Ergebnisse_Fluegel.F);
+%CA_CR_H = Ergebnisse_Widerstand_FE2.c_A_H(CA_ind);
+CA_CR_H = Ergebnisse_Widerstand_FE2.c_A_H_off_D(CA_ind);
+%CA_CR_H_offD = Ergebnisse_Widerstand_FE2.c_A_H_off_D(CA_ind);
 
 
-F_H = HLW.F; % HLW Fläche % Richtig @Japser?
+% Probe ob Berechnung richtig :) PASST!
+CA_F_CR_2 = Ergebnisse_Widerstand_FE2.c_A_F(CA_ind);
+
+
+CA_F_CR = CA_CR_ges - CA_CR_H * 0.85 * ((2 * HLW.F + 31) / Ergebnisse_Fluegel.F);
+
+
+F_H = 2 * HLW.F  + 5 + 26; % HLW Fläche % Richtig @Japser?
 
 F = Ergebnisse_Fluegel.F; % Flügelfläche
 
-CA = 0.0; % Auftrieb im Cruise des gesamten AC  
+CA = 0.0; % Auftrieb im Cruise des gesamten AC für alpha 0 berechnung
 
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% 1. Winkel Bezugsflügel zur Nullauftriebsrichtung
 % CA_F_CR = Flügelauftriebsbeiwert Reiseflug aus Trimmbetrachtung
@@ -59,8 +60,8 @@ CA = 0.0; % Auftrieb im Cruise des gesamten AC
 alpha_MAC_F_CR_0 = CA_F_CR / CAalpha_F;
 alpha_MAC_F_CR_0_deg = rad2deg(alpha_MAC_F_CR_0);
 
-%% 2. Nullanstellwinkel Profil aus Katalog 
-% Aus Profilkatalog Alpha0 = -3° bei 0.83 Mach
+%% 2. Nullanstellwinkel Profil aus Katalog
+% Aus Profilkatalog Alpha0 = -2.8° bei 0.82 Mach
 alpha0profil = -2.8;
 
 alpha_MAC_0_F = deg2rad(alpha0profil);
@@ -74,9 +75,9 @@ alpha_MAC_F_CR_deg = rad2deg(alpha_MAC_F_CR);
 
 %% 4. Verwindungskorrektur zur Symmetriebene! ALSO MIT RUMPfANTEIL?!
 % mittlere Verwindung % Aus diederich das Integral
-% Integral 
+% Integral
 %X = 0:.001:1;
-%Delta_epsilon_sym = -trapz(VWA.epsilon_eta,X); 
+%Delta_epsilon_sym = -trapz(VWA.epsilon_eta,X);
 %Delta_epsilon_sym_deg  = rad2deg(Delta_epsilon_sym);
 
 % Neue Methode
@@ -91,15 +92,15 @@ Delta_epsilon_sym_deg  = rad2deg(Delta_epsilon_sym);
 
 
 
-%% 5. Einbauwinkel 
+%% 5. Einbauwinkel
 psi_sym_inst = alpha_MAC_F_CR + Delta_epsilon_sym;
 psi_sym_inst_deg = rad2deg(psi_sym_inst);
 
 
-%% 6.Einbauwinkel des Flügelwurzelprofils 
+%% 6.Einbauwinkel des Flügelwurzelprofils
 
 %eta_root = length(Ergebnisse_Fluegel.Fluegeltiefen_eta_Ru);
-%delta_epsilon_root = dEps_dEta * eta_root 
+%delta_epsilon_root = dEps_dEta * eta_root
 Delta_epsilon_root = VWA.epsilon_eta_Ru(1,93);
 deltaEpsRoot_deg = rad2deg(Delta_epsilon_root);
 
@@ -116,7 +117,7 @@ psiRootDeg= rad2deg(psi_root);
 % Braucht CA Flügel bei CAgesamt = 0
 % Also Formel von oben mit CA= 0???????
 
-CA_F_0 = CA - CA_CR_H_offD * 0.85 * (F_H/F);
+CA_F_0 = CA - CA_CR_H * 0.85 * (F_H/F);
 
 alpha_MAC_0 = alpha_MAC_0_F + (CA_F_0/CAalpha_F);
 
@@ -136,13 +137,7 @@ alpha_0_deg = rad2deg(alpha_0);
 %alpha_0_deg = -2.3;
 
 
-%% C. Aufeglöste Polare 
-
-streckung = Ergebnisse_Fluegel.streckung_phi25_max;
-
-phi_50 = atan(tan(Ergebnisse_Fluegel.phi_25_max)-(4/streckung)* (0.5-0.25) * (1-Ergebnisse_Fluegel.lambda)/(1-Ergebnisse_Fluegel.lambda));
-phi_50_deg = rad2deg(phi_50);
-
+%% C. Aufeglöste Polare
 
 %CAalpha_F = Ergebnisse_Auftriebsverteilung.VWA.c_AF_anstieg;    %->Das
 %wäre für Cruise
@@ -150,9 +145,8 @@ phi_50_deg = rad2deg(phi_50);
 %Benötigt Werte:
 
 % Alpha 0,F -> Oben bekannt aus Profilkatalog
-alpha_0;
-% CAAlpha bei MA 0.269 -> Berechnet
-CA_alpha_lowspeed =  (pi * Ergebnisse_Fluegel.streckung_phi25_max)/(1 + sqrt(1 + ((Ergebnisse_Fluegel.streckung_phi25_max/2)^2) * (tan(0.2)^2 + (1 - (M^2))))); %->muss kleiner sein als bei Highspeed
+% CAAlpha bei MA 0.20 -> Berechnet
+CA_alpha_lowspeed =  (pi * Ergebnisse_Fluegel.streckung_phi25_max)/(1 + sqrt(1 + ((Ergebnisse_Fluegel.streckung_phi25_max/2)^2) * (tan(Ergebnisse_Fluegel.phi_50)^2 + (1 - (M^2))))); %->muss kleiner sein als bei Highspeed
 
 % Alpha CA F Max -> Ablesen
 delta_alpha_CA_F_max = deg2rad(3.6);
@@ -179,16 +173,16 @@ alpha_CA_F_MAX_deg = rad2deg(alpha_CA_F_MAX);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Plotten
 
-alphas = -6:0.001:alpha_CA_F_MAX_deg-delta_alpha_CA_F_max_deg; % normal Plotten bis alphamax - delta alpha
+alphas = -6:0.1:alpha_CA_F_MAX_deg-delta_alpha_CA_F_max_deg; % normal Plotten bis alphamax - delta alpha
 for i=1:length(alphas)
-CA_s(i) = CA_alpha_lowspeed * (deg2rad(alphas(i)-alpha_MAC_0_deg));%*0.8309;
+    CA_s(i) = CA_alpha_lowspeed * (deg2rad(alphas(i)-alpha_MAC_0_deg));%*0.8309;
 end
 
 % plot(alphas,CA_s,'blue','LineWidth',1.5)
-% 
-% 
+%
+%
 % %P = polyfit(alphas,CA_s,1)
-% 
+%
 % hold on
 % title("Aufgelöste Flügelpolare ohne Hochauftriebshilfen","FontSize",15)
 % ylabel("Auftriebsbeiwert des Flügels C_{A} in [-]","FontWeight","bold")
@@ -199,20 +193,20 @@ end
 % P3 = [-10 25];
 % P4 = [0 0];
 % plot(P3,P4,'black')
-% 
+%
 % % Kritische Points
 % %Alpha MAX
 % plot(alpha_CA_F_MAX_deg, 0, 'xred')
-% 
+%
 % %CA MAX
 % plot([0 20],[CA_F_max CA_F_max], 'red')
 % plot(0, CA_F_max,"xred")
-% 
+%
 % %Alpha 0
 % plot(alpha_MAC_0_deg, 0,'xred')
-% 
+%
 % plot([alpha_CA_F_MAX_deg  alpha_CA_F_MAX_deg-delta_alpha_CA_F_max_deg],[CA_F_max CA_F_max],'xgreen')
-% 
+%
 % grid on
 
 
@@ -228,6 +222,8 @@ closestValue = alphas(index);
 
 CA_BEI_6_grad = CA_s(index);
 
+
+% CA_F_0 bei alpha = 0
 
 
 
@@ -279,18 +275,18 @@ save Ergebnisse_Hochauftrieb_1.mat HA1
 %save Ergebnisse_Hochauftrieb_1.mat psiRootDeg psi_sym_inst_deg alpha_CA_F_MAX_deg CA_F_max CA_alpha_lowspeed delta_alpha_CA_F_max alpha_MAC_0_F_deg CA_F alpha_MAC_0_F CA_alpha_lowspeed CA_s alphas alpha_0 alpha_MAC_0_deg delta_alpha_CA_F_max_deg CA_BEI_6_grad;
 
 
-% 
+%
 % % Parameter der quadratischen Funktion
 % a = 0.0058; % Koeffizient von x^2
 % h = alpha_CA_F_MAX_deg; % x-Koordinate des Maximums
 % k = CA_F_max; % y-Koordinate des Maximums
-% 
+%
 % % Bereich der x-Achse
 % x = linspace(h-7, h+7, 10); % Hier können Sie den Bereich anpassen
-% 
+%
 % % Quadratische Funktion berechnen
 % y = -a * (x - h).^2 + k;
-% 
+%
 % % Plot erstellen
 % plot(x, y,"blue--",'LineWidth',1.5)
 % plot(h, k, 'bx','LineWidth',1.5)

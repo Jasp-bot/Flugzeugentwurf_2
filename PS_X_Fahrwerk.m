@@ -63,7 +63,7 @@ v_reifen_krit = v_reifen_max_LDG * 2.237; %220; % Einfach Festgelegt
 
 S_Reserve = 25; %Drehschraube Normalerweise 25%
 
-S_FW = 1 + ((S_Reserve + S_Reserve)/100);
+S_FW = 1 + ((S_Reserve + 7)/100);
 
 n_FWB = 2; % Es handelt sich um Hauptfahrwerksbeine
 n_reifen_HFW = 8; % Anzahl Reifen insgesamt

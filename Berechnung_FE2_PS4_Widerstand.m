@@ -40,7 +40,10 @@ addpath('Unterfunktionen Widerstand');
 Annahmen.Flughoehe_CR = specs.flight_level * 10^2 ;     % in ft
 Annahmen.hoehe_CR = round(unitsratio('m','ft')*Annahmen.Flughoehe_CR);
 
-stuetzstellen = 300;
+stuetzstellen = 500;
+c_A_F = linspace(0, 1, stuetzstellen);
+Ma_off_D = linspace(0, 2, stuetzstellen).';
+
 
 %% Getroffene Annahmen um Rechnungen vor berechnung der richtigen Werte durchfuehren zu können
         % es fehlen Werte als PS2 / PS3
@@ -61,7 +64,6 @@ stuetzstellen = 300;
     Annahmen.c_M_0_F = FM.c_M_NP_F0; %-0.1; % %* 0.1; % Wert aus FE1 ist zu klein 
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
     
     
 
@@ -159,12 +161,12 @@ FUN.c_a_eta_fun = @(c_A_F) (GRA.gamma_a_eta .* c_A_F .* GRA.l_m) ./ (Ergebnisse_
 save Getroffene_Annahmen_und_FUN.mat Annahmen FUN
 
 
-c_A_F = linspace(0, 1, stuetzstellen);
+
 
 v_air = ones(stuetzstellen,1) .* specs.Ma_CR .* ISA.a(Annahmen.hoehe_CR);
 
 %-------------------- Off_D
-Ma_off_D = linspace(0, 1, stuetzstellen).';
+
 v_air_off_D = Ma_off_D .* ISA.a(Annahmen.hoehe_CR);
 
 c_A_F_off_D = (((2)./(Annahmen.kappa .* ISA.p(Annahmen.hoehe_CR) .* Ma_off_D.^2)) .* Ergebnisse_stat_Flaechenbelastung.Fleachenbelastung).'; 
@@ -247,11 +249,8 @@ delta_Ma_off_D = diag(delta_Ma_off_D_interm).';
 
 
 
+%% Ergebnisse berechnen
 
-
-
-
-%% Ergebnisse speichern
 
 
 % Anzahl der Plots festlegen
@@ -279,7 +278,15 @@ for n_vec_off_D = 1:numPlots
     end
 end
 
+% Reziproke Gleitzahlen
 
+Gleitverhaeltnis_Des = c_A_F ./ x_vector_sum(numPlots,:);
+
+Gleitverhaeltnis_off_D = c_A_F_off_D ./ x_vector_sum_off_D(numPlots,:);
+
+
+
+%% Ergebnisse speichern
 schnittpunkt_off_D_c_A_CR = InterX([x_vector_sum_off_D(numPlots,:); c_A_F_off_D], [[0, 1]; [Ergebnisse_stat_Flaechenbelastung.C_A_CR, Ergebnisse_stat_Flaechenbelastung.C_A_CR]]);
 gelitzahl = schnittpunkt_off_D_c_A_CR(1,1)./schnittpunkt_off_D_c_A_CR(2,1);
 
@@ -333,6 +340,8 @@ Ergebnisse_Widerstand_FE2.cW_cA_off_D = gelitzahl;
 Ergebnisse_Widerstand_FE2.Abwindfaktor = Abwindfaktor;
 Ergebnisse_Widerstand_FE2.c_A_alpha = c_A_alpha;
 Ergebnisse_Widerstand_FE2.stuetzstellen = stuetzstellen;
+Ergebnisse_Widerstand_FE2.Gleitverhaeltnis_Des = Gleitverhaeltnis_Des;
+Ergebnisse_Widerstand_FE2.Gleitverhaeltnis_off_D = Gleitverhaeltnis_off_D;
 
 
 

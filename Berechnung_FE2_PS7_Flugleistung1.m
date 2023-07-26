@@ -1,4 +1,7 @@
+function Berechnung_FE2_PS7_Flugleistung1
 %% PS7 Flugleistung 1
+
+
 clc
 clear all
 close all
@@ -33,6 +36,9 @@ k_CR = 0.98;
 Momentane_Masse_ICA = TO_Masse * 0.98 * specs.g;
 Momentane_Masse_DEC = (Ergebnisse_Massen_FE2.M_TO - Ergebnisse_Massen_FE2.M_F)*specs.g;
 Momentane_Masse_CL = TO_Masse * specs.g;
+Masse_ICA = TO_Masse * 0.98;
+Masse_CL = TO_Masse;
+Masse_DEC = (Ergebnisse_Massen_FE2.M_TO - Ergebnisse_Massen_FE2.M_F);
 GTO_G_ICA = G_TO / Momentane_Masse_ICA;
 GTO_G_CL = 1;
 GTO_G_DEC = G_TO / Momentane_Masse_DEC;
@@ -53,8 +59,8 @@ hoehe_CR = round(unitsratio('m','ft')*(specs.flight_level*10^2));
 % hoehe =round(unitsratio('m','ft')*Flughoehe);                     % in m
 
 schritte = 100;
-hoehe_plus = 50;
-hoehe = (round(linspace(5, ((specs.flight_level + hoehe_plus)*10^2), schritte))); % 1000: 3000: specs.flight_level*10^2;
+hoehe_plus = 37;
+hoehe = (round(linspace(1500, ((specs.flight_level + hoehe_plus)*10^2), schritte))); % 1000: 3000: specs.flight_level*10^2;
 % hoehe = 1000: 1000: specs.flight_level*10^2;
 hoehe_m = round(unitsratio('m','ft').*hoehe);
 
@@ -221,32 +227,40 @@ TAS_SEP_H_DEC_vec(n_datensatz,:) = [v_TAS_j_DEC(n_datensatz, Hochpunkte.SEP_DEC_
 
 %% Spezifische Reichweite SR
 
-SR(n_datensatz,:) = (v_TAS_j(n_datensatz,:))./(sfc_1PERs_Horizontalflug(n_datensatz,:) .* eps_kompr_j(n_datensatz,:) .* Momentane_Masse_ICA);
+SR(n_datensatz,:) = (v_TAS_j(n_datensatz,:) .* specs.g)./(sfc_1PERs_Horizontalflug(n_datensatz,:) .* eps_kompr_j(n_datensatz,:) .* Momentane_Masse_ICA);
 [Hochpunkte.SR_y(n_datensatz,:), Hochpunkte.SR_x(n_datensatz,:)] = max(SR(n_datensatz,:));
 TAS_SR_H_vec(n_datensatz,:) = [v_TAS_j(n_datensatz, Hochpunkte.SR_x(n_datensatz,1)), Hochpunkte.SR_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
 
-SR_CL(n_datensatz,:) = (v_TAS_j_CL(n_datensatz,:))./(sfc_1PERs_Horizontalflug_CL(n_datensatz,:) .* eps_kompr_j_CL(n_datensatz,:) .* Momentane_Masse_CL);
+SR_CL(n_datensatz,:) = (v_TAS_j_CL(n_datensatz,:) .* specs.g)./(sfc_1PERs_Horizontalflug_CL(n_datensatz,:) .* eps_kompr_j_CL(n_datensatz,:) .* Momentane_Masse_CL);
 [Hochpunkte.SR_CL_y(n_datensatz,:), Hochpunkte.SR_CL_x(n_datensatz,:)] = max(SR_CL(n_datensatz,:));
 TAS_SR_H_CL_vec(n_datensatz,:) = [v_TAS_j_CL(n_datensatz, Hochpunkte.SR_CL_x(n_datensatz,1)), Hochpunkte.SR_CL_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
 
-SR_DEC(n_datensatz,:) = (v_TAS_j_DEC(n_datensatz,:))./(sfc_1PERs_Horizontalflug_DEC(n_datensatz,:) .* eps_kompr_j_DEC(n_datensatz,:) .* Momentane_Masse_DEC);
+SR_DEC(n_datensatz,:) = (v_TAS_j_DEC(n_datensatz,:) .* specs.g)./(sfc_1PERs_Horizontalflug_DEC(n_datensatz,:) .* eps_kompr_j_DEC(n_datensatz,:) .* Momentane_Masse_DEC);
 [Hochpunkte.SR_DEC_y(n_datensatz,:), Hochpunkte.SR_DEC_x(n_datensatz,:)] = max(SR_DEC(n_datensatz,:));
 TAS_SR_H_DEC_vec(n_datensatz,:) = [v_TAS_j_DEC(n_datensatz, Hochpunkte.SR_DEC_x(n_datensatz,1)), Hochpunkte.SR_DEC_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
 
 
 %% Spezifische Flugdauer SE
 
-SE(n_datensatz,:) = 1 ./ (sfc_1PERs_Horizontalflug(n_datensatz,:) .* eps_kompr_j(n_datensatz,:) .* Momentane_Masse_ICA .* specs.g); 
+SE(n_datensatz,:) = 1 ./ (sfc_1PERs_Horizontalflug(n_datensatz,:) .* eps_kompr_j(n_datensatz,:) .* Masse_ICA); 
 [Hochpunkte.SE_y(n_datensatz,:), Hochpunkte.SE_x(n_datensatz,:)] = max(SE(n_datensatz,:));
 TAS_SE_H_vec(n_datensatz,:) = [v_TAS_j(n_datensatz, Hochpunkte.SE_x(n_datensatz,1)), Hochpunkte.SE_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
 
-SE_CL(n_datensatz,:) = 1 ./ (sfc_1PERs_Horizontalflug_CL(n_datensatz,:) .* eps_kompr_j_CL(n_datensatz,:) .* Momentane_Masse_CL .* specs.g); 
+SE_CL(n_datensatz,:) = 1 ./ (sfc_1PERs_Horizontalflug_CL(n_datensatz,:) .* eps_kompr_j_CL(n_datensatz,:) .* Masse_CL); 
 [Hochpunkte.SE_CL_y(n_datensatz,:), Hochpunkte.SE_CL_x(n_datensatz,:)] = max(SE_CL(n_datensatz,:));
 TAS_SE_H_CL_vec(n_datensatz,:) = [v_TAS_j_CL(n_datensatz, Hochpunkte.SE_CL_x(n_datensatz,1)), Hochpunkte.SE_CL_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
 
-SE_DEC(n_datensatz,:) = 1 ./ (sfc_1PERs_Horizontalflug_DEC(n_datensatz,:) .* eps_kompr_j_DEC(n_datensatz,:) .* Momentane_Masse_DEC .* specs.g); 
+% SE_DEC(n_datensatz,:) = 1 ./ (sfc_1PERs_Horizontalflug_DEC(n_datensatz,:) .* eps_kompr_j_DEC(n_datensatz,:) .* Masse_DEC .* specs.g); 
+% [Hochpunkte.SE_DEC_y(n_datensatz,:), Hochpunkte.SE_DEC_x(n_datensatz,:)] = max(SE_DEC(n_datensatz,:));
+% TAS_SE_H_DEC_vec(n_datensatz,:) = [v_TAS_j_DEC(n_datensatz, Hochpunkte.SE_DEC_x(n_datensatz,1)), Hochpunkte.SE_DEC_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
+
+SE_DEC(n_datensatz,:) = 1 ./ (sfc_1PERs_Horizontalflug_DEC(n_datensatz,:) .* eps_kompr_j_DEC(n_datensatz,:) .* Masse_DEC); 
 [Hochpunkte.SE_DEC_y(n_datensatz,:), Hochpunkte.SE_DEC_x(n_datensatz,:)] = max(SE_DEC(n_datensatz,:));
 TAS_SE_H_DEC_vec(n_datensatz,:) = [v_TAS_j_DEC(n_datensatz, Hochpunkte.SE_DEC_x(n_datensatz,1)), Hochpunkte.SE_DEC_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
+
+
+
+
 
 %% Fuer Flugbereichsdiagramm
 % berechnung v_min v_max aus Horizontalflugdiagramm
@@ -268,14 +282,16 @@ end
 
 
 
-%% Flugbereichsdiagramm
+%% Flugbereichsdiagramm CR
 
 
 % Physikalische Grenzen
 
 % Formel 27 S10
 v_s_1g = sqrt((2./(rho_H .* c_A_max)) .* (G ./ Ergebnisse_Fluegel.F));
-v_s_min = 0.94 .* v_s_1g;
+v_s_min_DEV = 0.94 .* v_s_1g;
+
+
 
 m_BOP = 0.795;
 M_BO = m_BOP/sqrt(cos(Ergebnisse_Fluegel.phi_25_max));
@@ -288,6 +304,61 @@ intersection = InterX([v_EAS_j(1,:); S_G_erf_j(1,:)],[v_EAS_j(1,:); S_G_vorh_j(1
 intersection_2 = InterX([v_EAS_j; S_G_erf_j],[v_EAS_j; S_G_vorh_j]);
 v_min_HFD = v_TAS_HFD(:,1);
 v_max_HFD = v_TAS_HFD(:,2);
+
+
+%% Dienstgipfelhoehe DEC
+
+% Physikalische Grenzen
+
+% Formel 27 S10
+v_s_1g_DEC = sqrt((2./(rho_H .* c_A_max)) .* (Momentane_Masse_DEC ./ Ergebnisse_Fluegel.F));
+v_s_min_DEC = 0.94 .* v_s_1g_DEC;
+
+
+% Dienstgipfelhoehe: Bedingung SEP < 0.5 [m/s]
+zaehler2 = 1;
+for z = 1 : length(TAS_SEP_H_DEC_vec)
+    if TAS_SEP_H_DEC_vec(z,2) > 0.5
+        zaehler2 = z;
+    else
+    end
+end
+H_Dienstgipfel_DEC= hoehe_m(1,zaehler2);
+% Maximale Kabinendruckhoehe soll 1000m oder 1000ft ueber H_Dienstgipfel
+% liegen
+H_Kabienendruck_DEC = H_Dienstgipfel_DEC + (unitsratio('m','ft').* 1500); 
+
+
+
+m_BOP = 0.795;
+M_BO_DEC = m_BOP/sqrt(cos(Ergebnisse_Fluegel.phi_25_max));
+v_BO_DEC = M_BO .* a_H;
+v_MO_DEC = Anteile_einzel_Massen_FE2.Airplane_Structure.Fuselage_group.M_Rumpf.v_D_EAS .* sqrt(ISA.rho_0./ ISA.rho(hoehe_m));
+
+
+% test v min
+intersection_DEC = InterX([v_EAS_j_DEC(1,:); S_G_erf_j_DEC(1,:)],[v_EAS_j_DEC(1,:); S_G_vorh_j_DEC(1,:)]);
+intersection_2_DEC = InterX([v_EAS_j_DEC; S_G_erf_j_DEC],[v_EAS_j_DEC; S_G_vorh_j_DEC]);
+v_min_HFD_DEC = v_TAS_HFD_DEC(:,1);
+v_max_HFD_DEC = v_TAS_HFD_DEC(:,2);
+
+
+
+%nachtrag Flugbereichsdiagramm CR
+% Dienstgipfelhoehe: Bedingung SEP < 0.5 [m/s]
+zaehler1 = 1;
+for z = 1 : length(TAS_SEP_H_vec)
+    if TAS_SEP_H_vec(z,2) > 0.5
+        zaehler1 = zaehler1 +1;
+    else
+    end
+end
+H_Dienstgipfel_CR = hoehe_m(1,zaehler1);
+% Maximale Kabinendruckhoehe soll 1000m oder 1000ft ueber H_Dienstgipfel
+% liegen
+H_Kabienendruck_CR = H_Dienstgipfel_DEC + (unitsratio('m','ft').* 1500); 
+
+
 
 
 
@@ -366,7 +437,7 @@ Ergebnisse_Flugleistung_1.TAS_SET_H_vec = TAS_SET_H_vec;
 Ergebnisse_Flugleistung_1.SET_CL = SET_CL;
 Ergebnisse_Flugleistung_1.TAS_SET_H_CL_vec = TAS_SE_H_CL_vec;
 Ergebnisse_Flugleistung_1.SET_DEC = SET_DEC;
-Ergebnisse_Flugleistung_1.TAS_SET_H_DEC_vec = TAS_SEP_H_DEC_vec;
+Ergebnisse_Flugleistung_1.TAS_SET_H_DEC_vec = TAS_SET_H_DEC_vec;
 Ergebnisse_Flugleistung_1.SEP = SEP;
 Ergebnisse_Flugleistung_1.TAS_SEP_H_vec = TAS_SEP_H_vec;
 Ergebnisse_Flugleistung_1.SEP_CL = SEP_CL;
@@ -394,21 +465,35 @@ Ergebnisse_Flugleistung_1.S_G_inter_HFD_CL = S_G_inter_HFD_CL;
 Ergebnisse_Flugleistung_1.S_G_inter_HFD_DEC = S_G_inter_HFD_DEC;
 
 % fuer Flugbereichsdiagramm
+        % CR
 Ergebnisse_Flugleistung_1.v_s_1g = v_s_1g;
-Ergebnisse_Flugleistung_1.v_s_min = v_s_min;
+Ergebnisse_Flugleistung_1.v_s_min = v_s_min_DEV;
 Ergebnisse_Flugleistung_1.m_BOP = m_BOP;
 Ergebnisse_Flugleistung_1.M_BO = M_BO;
 Ergebnisse_Flugleistung_1.v_BO = v_BO;
 Ergebnisse_Flugleistung_1.v_MO = v_MO;
 Ergebnisse_Flugleistung_1.v_min_HFD = v_min_HFD;
 Ergebnisse_Flugleistung_1.v_max_HFD = v_max_HFD;
-
-
-
+Ergebnisse_Flugleistung_1.H_Dienstgipfel_CR = H_Dienstgipfel_CR;
+Ergebnisse_Flugleistung_1.H_Kabienendruck_CR = H_Kabienendruck_CR;
+        % DEC
+Ergebnisse_Flugleistung_1.v_s_1g_DEC = v_s_1g_DEC;
+Ergebnisse_Flugleistung_1.v_s_min_DEC = v_s_min_DEC;
+Ergebnisse_Flugleistung_1.M_BO_DEC = M_BO_DEC;
+Ergebnisse_Flugleistung_1.v_BO_DEC = v_BO_DEC;
+Ergebnisse_Flugleistung_1.v_MO_DEC = v_MO_DEC;
+Ergebnisse_Flugleistung_1.v_min_HFD_DEC = v_min_HFD_DEC;
+Ergebnisse_Flugleistung_1.v_max_HFD_DEC = v_max_HFD_DEC;
+Ergebnisse_Flugleistung_1.H_Dienstgipfel_DEC = H_Dienstgipfel_CR;
+Ergebnisse_Flugleistung_1.H_Kabienendruck_DEC = H_Kabienendruck_DEC;
 
 
 
 save Ergebnisse_FLugleistung_1.mat Ergebnisse_Flugleistung_1
+
+end
+
+
 
 
 

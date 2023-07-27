@@ -59,21 +59,21 @@ Rumpf_SP_Faktoren.zSP_ResFuel =-2.5;
 % [Masse,x(%),y,z]
 
 CG_Data.Rumpf = [Anteile_einzel_Massen_FE2.Airplane_Structure.Fuselage_group.M + Anteile_einzel_Massen_FE2.Airplane_Structure.Tail_group - M_HLW.W_HLW_basic - M_SLW.W_SLW_basic,0.42,0,0];
-CG_Data.HLW = [M_HLW.W_HLW_basic, 0.93, 0, 1];
-CG_Data.SLW = [M_SLW.W_SLW_basic, 0.95, 0, 5];
+CG_Data.HLW = [M_HLW.W_HLW_basic, 0.93, 0, 2];
+CG_Data.SLW = [M_SLW.W_SLW_basic, 0.95, 0, 6];
 CG_Data.Bugfahrwerk = [Anteile_einzel_Massen_FE2.Airplane_Structure.FrontGear, 0.09, 0, -4.5];
-CG_Data.APU = [specs.m_APU, 0.97, 0, 1];
-CG_Data.CockpitInstruments = [Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Intruments_Nav_Electr, 0.035,0,-1.5];
-CG_Data.HydraulicsElectricalWing = [Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Hydraulics_Electric*0.6,0.3, 0, -2];
-CG_Data.HydraulicsElectricalTail = [Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Hydraulics_Electric*0.4,0.7, 0, -1];
-CG_Data.Furnishing = [Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Furnishing_equipment, 0.5, 0, 2];
+CG_Data.APU = [specs.m_APU, 0.96, 0, 2];
+CG_Data.CockpitInstruments = [Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Intruments_Nav_Electr, 0.06,0,-1];
+CG_Data.HydraulicsElectricalWing = [Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Hydraulics_Electric*0.9,0.46, 0, -2];
+CG_Data.HydraulicsElectricalTail = [Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Hydraulics_Electric*0.1,0.9, 0, 1];
+CG_Data.Furnishing = [Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Furnishing_equipment, 0.46, 0, 2];
 CG_Data.AC_AntiIce = [Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Aircon_AntiIce, 0.5,0,-2];
 CG_Data.Misc = [Anteile_einzel_Massen_FE2.Airframe_Service_equipment.Miscellaneous, 0.5,0,0];
-CG_Data.CrewProvisions = [Anteile_einzel_Massen_FE2.Opperational_Items.Crew_provi, 0.48,0,0];
+CG_Data.CrewProvisions = [Anteile_einzel_Massen_FE2.Opperational_Items.Crew_provi, 0.47,0,0.5];
 CG_Data.PassengerCabinSupplies = [Anteile_einzel_Massen_FE2.Opperational_Items.Passenger_cabin_supp, 0.52,0,0];
 CG_Data.WaterToiletChem = [Anteile_einzel_Massen_FE2.Opperational_Items.Liquids, 0.80,0,-1];
-CG_Data.SafetyEq = [Anteile_einzel_Massen_FE2.Opperational_Items.Safty_equip, 0.5,0,0.5];
-CG_Data.Seating = [Anteile_einzel_Massen_FE2.Opperational_Items.Seating, 0.51,0,0];
+CG_Data.SafetyEq = [Anteile_einzel_Massen_FE2.Opperational_Items.Safty_equip, 0.49,0,0.5];
+CG_Data.Seating = [Anteile_einzel_Massen_FE2.Opperational_Items.Seating, 0.48,0,0.5];
 CG_Data.ResFuel = [Anteile_einzel_Massen_FE2.Opperational_Items.Residual_Fuel, 0.49, 0, -2.5];
 
 CG_DataMatrix=[CG_Data.Rumpf;CG_Data.HLW;CG_Data.SLW;CG_Data.Bugfahrwerk;CG_Data.APU;CG_Data.CockpitInstruments;...
@@ -102,11 +102,11 @@ CG_Rumpf_Z=CG_Moment_Z/CG_MZ;
 
 %% Berechnung Flügelschwerpunkt
 % Achtung: Alles im Flügelkoordinatensystem
-CG_Data_Wing.Fluegel = [Anteile_einzel_Massen_FE2.Airplane_Structure.Wing_group, (NP.versatz_HK + DT.l_i_R + tan(Ergebnisse_Fluegel.phi_VK_max)*specs.R_rumpf)-NP.x_SP_ges-3, 0, 1]; 
-CG_Data_Wing.MainGear = [Anteile_einzel_Massen_FE2.Airplane_Structure.MainGear, DT.s_R*tan(DT.phi_VK_max)+0.82*DT.l_i_R, 0, -3]; 
+CG_Data_Wing.Fluegel = [Anteile_einzel_Massen_FE2.Airplane_Structure.Wing_group, (NP.versatz_HK + DT.l_i_R + tan(Ergebnisse_Fluegel.phi_VK_max)*specs.R_rumpf)-NP.x_SP_ges-4, 0, 1]; 
+CG_Data_Wing.MainGear = [Anteile_einzel_Massen_FE2.Airplane_Structure.MainGear, DT.s_R*tan(DT.phi_VK_max)+0.775*DT.l_i_R, 0, -3]; 
 CG_Data_Wing.SurfaceControls = [Anteile_einzel_Massen_FE2.Airplane_Structure.Surface_control_group, (NP.versatz_HK + DT.l_i_R + tan(Ergebnisse_Fluegel.phi_VK_max)*specs.R_rumpf)-NP.x_SP_ges, 0, 0.5]; 
-CG_Data_Wing.EngineSection = [Anteile_einzel_Massen_FE2.Propulsion.Propulsion_group, 4, 0, -1.5]; 
-CG_Data_Wing.Nacelle = [Anteile_einzel_Massen_FE2.Airplane_Structure.Nacelle_group.Masse, 4.5, 0, -0.5]; 
+CG_Data_Wing.EngineSection = [Anteile_einzel_Massen_FE2.Propulsion.Propulsion_group, 4.5, 0, -1.5]; 
+CG_Data_Wing.Nacelle = [Anteile_einzel_Massen_FE2.Airplane_Structure.Nacelle_group.Masse, 5, 0, -1]; 
  
 CG_DataMatrix_Wing = [CG_Data_Wing.Fluegel;CG_Data_Wing.MainGear;CG_Data_Wing.SurfaceControls;CG_Data_Wing.EngineSection;CG_Data_Wing.Nacelle]; 
  
@@ -129,7 +129,7 @@ CG_Wing_Z_RG=CG_Wing_Z_FG-2.19;
 
 %% Bestimmung von X_MAC
 
-Wing_MAC.xSP_MAC_lmue = 0.19; % siehe Übung: Wert zwischen 20% und 25%
+Wing_MAC.xSP_MAC_lmue = 0.20; % siehe Übung: Wert zwischen 20% und 25%
 
 Wing_MAC.xSP_MAC_FG = 0.5*NP.l_mue_ges -(CG_Data_Wing.Fluegel(2)-CG_Wing_X);
 
@@ -151,7 +151,7 @@ Wing_Position2 = Wing_MAC.XMAC - CG_Data_Wing.Fluegel(2) + DT.s_R*tan(Ergebnisse
 %% Bestimmung Schwerpunkt Tank
 
 % Schwerpunkt Außentrapez
-CG_Fuel_X.Epsilon_Aussen = Tank.c_aussen*tan(Ergebnisse_Fluegel.phi_VK_max) + Tank.b1_A;
+CG_Fuel_X.Epsilon_Aussen = 0.8*Tank.c_aussen*tan(Ergebnisse_Fluegel.phi_VK_max) + Tank.b1_A;
 CG_Fuel_X.Aussentrapez = (Tank.b1_I^2 - Tank.b1_A^2 + CG_Fuel_X.Epsilon_Aussen*(Tank.b1_I + 2*Tank.b1_A))/(3*(Tank.b1_A+Tank.b1_I));
 CG_Fuel_X.Flaeche_Aussentrapez = 0.5*(Tank.b1_I + Tank.b1_A)*Tank.c_aussen;
 
@@ -180,8 +180,8 @@ CG_Fuel_X.Rumpf_MAC = 0.5*NP.l_mue_ges -(CG_Data_Wing.Fluegel(2)-CG_Fuel_X.Rumpf
 CG_Fuel_X.CG_Tank_MAC = 0.5*NP.l_mue_ges -(CG_Data_Wing.Fluegel(2)-CG_Fuel_X.CG_Tank_FG);
 
 %% Bestimmung Schwerpunkt Frachträume
-CG_Fracht.X_vorn_Prozent = 0.27;
-CG_Fracht.X_hinten_Prozent = 0.63;
+CG_Fracht.X_vorn_Prozent = 0.31;
+CG_Fracht.X_hinten_Prozent = 0.66;
 CG_Fracht.Masse_vorn_theoretisch = 14000;
 CG_Fracht.Masse_hinten_theoretisch = 7344;
 CG_Fracht.FrachtVornMac = CG_Fracht.X_vorn_Prozent*specs.l_rumpf - Wing_MAC.XMAC;
@@ -196,11 +196,11 @@ Betankung.Masse_Fuel_Aussen_Theoretisch = 2*Tank.V_OB_A*Tank.ka*Tank.kb*1000*Tan
 Betankung.Masse_Fuel_Innen = 2*Tank.V_OB_I*Tank.ka*Tank.kb*1000*Tank.rho_kerosin;
 Betankung.Masse_Fuel_Aussen_Praktisch = Ergebnisse_Massen_FE2.M_F-Betankung.Masse_Fuel_Innen;
 
-% Betankung Außentank
+% Betankung Innentank
 Betankung.CG_BetankterInnentank = (CG_Gesamt_x*Ergebnisse_Massen_FE2.M_OE + CG_Fuel_X.Innentrapez_MAC*Betankung.Masse_Fuel_Innen)/(Ergebnisse_Massen_FE2.M_OE + Betankung.Masse_Fuel_Innen);
 Betankung.P1 = [CG_Gesamt_x/NP.l_mue_ges; Ergebnisse_Massen_FE2.M_OE];
 Betankung.P2 = [Betankung.CG_BetankterInnentank/NP.l_mue_ges; Ergebnisse_Massen_FE2.M_OE + Betankung.Masse_Fuel_Innen];
-% Betankung Innentank
+% Betankung Aussentank
 Betankung.CG_BetankterAussentank = (Betankung.CG_BetankterInnentank*(Ergebnisse_Massen_FE2.M_OE + Betankung.Masse_Fuel_Innen) + CG_Fuel_X.Aussentrapez_MAC*Betankung.Masse_Fuel_Aussen_Praktisch)/(Betankung.Masse_Fuel_Aussen_Praktisch + Ergebnisse_Massen_FE2.M_OE + Betankung.Masse_Fuel_Innen);
 Betankung.P3 = [Betankung.CG_BetankterAussentank/NP.l_mue_ges; (Betankung.Masse_Fuel_Aussen_Praktisch + Ergebnisse_Massen_FE2.M_OE + Betankung.Masse_Fuel_Innen)];
 
@@ -389,11 +389,11 @@ BetankungAllEco.Masse_Fuel_Aussen_Theoretisch = 2*Tank.V_OB_A*Tank.ka*Tank.kb*10
 BetankungAllEco.Masse_Fuel_Innen = 2*Tank.V_OB_I*Tank.ka*Tank.kb*1000*Tank.rho_kerosin;
 BetankungAllEco.Masse_Fuel_Aussen_Praktisch = AllEcoMassen.m_Fuel-BetankungAllEco.Masse_Fuel_Innen;
 
-% Betankung Außentank
+% Betankung Innentank
 BetankungAllEco.CG_BetankterInnentank = (CG_Gesamt_x*Ergebnisse_Massen_FE2.M_OE + CG_Fuel_X.Innentrapez_MAC*BetankungAllEco.Masse_Fuel_Innen)/(Ergebnisse_Massen_FE2.M_OE + BetankungAllEco.Masse_Fuel_Innen);
 BetankungAllEco.P1 = [CG_Gesamt_x/NP.l_mue_ges; Ergebnisse_Massen_FE2.M_OE];
 BetankungAllEco.P2 = [BetankungAllEco.CG_BetankterInnentank/NP.l_mue_ges; Ergebnisse_Massen_FE2.M_OE + BetankungAllEco.Masse_Fuel_Innen];
-% Betankung Innentank
+% Betankung Aussentank
 BetankungAllEco.CG_BetankterAussentank = (BetankungAllEco.CG_BetankterInnentank*(Ergebnisse_Massen_FE2.M_OE + BetankungAllEco.Masse_Fuel_Innen) + CG_Fuel_X.Aussentrapez_MAC*BetankungAllEco.Masse_Fuel_Aussen_Praktisch)/(BetankungAllEco.Masse_Fuel_Aussen_Praktisch + Ergebnisse_Massen_FE2.M_OE + BetankungAllEco.Masse_Fuel_Innen);
 BetankungAllEco.P3 = [BetankungAllEco.CG_BetankterAussentank/NP.l_mue_ges; (BetankungAllEco.Masse_Fuel_Aussen_Praktisch + Ergebnisse_Massen_FE2.M_OE + BetankungAllEco.Masse_Fuel_Innen)];
 
@@ -573,6 +573,35 @@ for i = 1:length(AllEcoPax.BackwardsInnenPaxMAC)
     CG_PaxBFI_AllEco.BackwardsMass_Shift_Inner = CG_PaxBFI_AllEco.BackwardsMass_Shift_Inner - AllEcoPax.BackwardsMasseInnenPax(i);
 end
 
+%% Beladung Überführung
+CG_Ueberfuehrung.m_Fuel = Betankung.Masse_Fuel_Aussen_Theoretisch + Betankung.Masse_Fuel_Innen;
+CG_Ueberfuehrung.m_TO = Ergebnisse_Massen_FE2.M_OE + CG_Ueberfuehrung.m_Fuel;
+CG_Ueberfuehrung.Masse_Fuel_Innen = Betankung.Masse_Fuel_Innen;
+CG_Ueberfuehrung.Masse_Fuel_Aussen_Theoretisch = Betankung.Masse_Fuel_Aussen_Theoretisch;
+
+% FUEL
+% Betankung Innentank
+CG_Ueberfuehrung.CG_BetankterInnentank = (CG_Gesamt_x*Ergebnisse_Massen_FE2.M_OE + CG_Fuel_X.Innentrapez_MAC*CG_Ueberfuehrung.Masse_Fuel_Innen)/(Ergebnisse_Massen_FE2.M_OE + CG_Ueberfuehrung.Masse_Fuel_Innen);
+CG_Ueberfuehrung.P1 = [CG_Gesamt_x/NP.l_mue_ges; Ergebnisse_Massen_FE2.M_OE];
+CG_Ueberfuehrung.P2 = [CG_Ueberfuehrung.CG_BetankterInnentank/NP.l_mue_ges; Ergebnisse_Massen_FE2.M_OE + CG_Ueberfuehrung.Masse_Fuel_Innen];
+% Betankung Aussentank
+CG_Ueberfuehrung.CG_BetankterAussentank = (CG_Ueberfuehrung.CG_BetankterInnentank*(Ergebnisse_Massen_FE2.M_OE + CG_Ueberfuehrung.Masse_Fuel_Innen) + CG_Fuel_X.Aussentrapez_MAC*CG_Ueberfuehrung.Masse_Fuel_Aussen_Theoretisch)/(CG_Ueberfuehrung.Masse_Fuel_Aussen_Theoretisch + Ergebnisse_Massen_FE2.M_OE + CG_Ueberfuehrung.Masse_Fuel_Innen);
+CG_Ueberfuehrung.P3 = [CG_Ueberfuehrung.CG_BetankterAussentank/NP.l_mue_ges; (CG_Ueberfuehrung.Masse_Fuel_Aussen_Theoretisch + Ergebnisse_Massen_FE2.M_OE + CG_Ueberfuehrung.Masse_Fuel_Innen)];
+
+%% Entladung Überführung
+
+% FUEL
+% Enttankung Innentank
+Enttankung_Ueberfuehrung.CG_Start = CG_Ueberfuehrung.CG_BetankterAussentank;
+
+Enttankung_Ueberfuehrung.CG_EnttankterInnentank = (Enttankung_Ueberfuehrung.CG_Start*CG_Ueberfuehrung.m_TO - CG_Fuel_X.Innentrapez_MAC*CG_Ueberfuehrung.Masse_Fuel_Innen)/(CG_Ueberfuehrung.m_TO - CG_Ueberfuehrung.Masse_Fuel_Innen);
+Enttankung_Ueberfuehrung.P1 = [Enttankung_Ueberfuehrung.CG_Start/NP.l_mue_ges; CG_Ueberfuehrung.m_TO];
+Enttankung_Ueberfuehrung.P2 = [Enttankung_Ueberfuehrung.CG_EnttankterInnentank/NP.l_mue_ges; CG_Ueberfuehrung.m_TO - CG_Ueberfuehrung.Masse_Fuel_Innen];
+
+% Enttankung Außentank
+Enttankung_Ueberfuehrung.CG_EnttankterAussentank = (Enttankung_Ueberfuehrung.CG_EnttankterInnentank*(CG_Ueberfuehrung.m_TO - CG_Ueberfuehrung.Masse_Fuel_Innen) - CG_Fuel_X.Aussentrapez_MAC*CG_Ueberfuehrung.Masse_Fuel_Aussen_Theoretisch)/(CG_Ueberfuehrung.m_TO - CG_Ueberfuehrung.Masse_Fuel_Innen - CG_Ueberfuehrung.Masse_Fuel_Aussen_Theoretisch);
+Enttankung_Ueberfuehrung.P3 = [Enttankung_Ueberfuehrung.CG_EnttankterAussentank/NP.l_mue_ges; (CG_Ueberfuehrung.m_TO - CG_Ueberfuehrung.Masse_Fuel_Innen - CG_Ueberfuehrung.Masse_Fuel_Aussen_Theoretisch)];
+
 %% Berechnung Grenzen
 % LÄNGSSTABILITÄT AM BODEN
 LS.x_MainGear_MAC = (0.5*NP.l_mue_ges -(CG_Data_Wing.Fluegel(2)-CG_Data_Wing.MainGear(2)))/NP.l_mue_ges; %[Prozent l_mue]
@@ -642,230 +671,17 @@ X_NP_durch_l_mue = X_NP_OH_durch_l_mue +((r_H/Ergebnisse_Fluegel.l_mue)*0.85*(HL
 Neutralpunkt=X_NP_durch_l_mue*Ergebnisse_Fluegel.l_mue+l_fn
 
 % NEUTRALPUNKTLAGE
-StatStab.CG_sigma_x = X_NP_durch_l_mue -0.05;
+StatStab.CG_sigma_x = X_NP_durch_l_mue -0.05*NP.l_mue_ges;
 
 %%%%%%%% +- Man weiß es nicht %%%%%%%%
 Delta_CG_MAC_durch_lmue = abs(Wing_MAC.xSP_MAC_lmue - X_NP_OH_durch_l_mue);
 
-%% Plotten
-% BELADUNG 3-KLASSEN
-figure(1)
-hold on 
-grid on
-xlim([-40 80])
-ylim([Ergebnisse_Massen_FE2.M_OE-10000 Ergebnisse_Massen_FE2.M_TO+10000])
 
-% Fuel
-plot([Betankung.P1(1)*100 Betankung.P2(1)*100], [Betankung.P1(2) Betankung.P2(2)],"b-",'LineWidth', 2)
-plot([Betankung.P2(1)*100 Betankung.P3(1)*100], [Betankung.P2(2) Betankung.P3(2)],"bo-",'LineWidth', 2)
-% Pax Außen
-plot(CG_Shift_Outer*100/NP.l_mue_ges, NewMassCounter,"rx-",'LineWidth', 2)
-plot(BackwardsCG_Shift_Outer*100/NP.l_mue_ges, BackwardsNewMassCounter,"mx-",'LineWidth', 2)
-% Pax Innen
-plot(CG_Shift_Inner*100/NP.l_mue_ges, InnerMassCounter,"rx-",'LineWidth', 2)
-plot(BackwardsCG_Shift_Inner*100/NP.l_mue_ges, BackwardsInnerMassCounter,"mx-",'LineWidth', 2)
-% Fracht Vorn nach Hinten
-plot([BackwardsCG_Startposition_Innen*100/NP.l_mue_ges, CG_Fracht.CG_BeladenVorn*100/NP.l_mue_ges],[BackwardsMass_Shift_Inner, CG_Fracht.Masse_BeladenVorn],"g-",'LineWidth', 2)
-plot([CG_Fracht.CG_BeladenVorn*100/NP.l_mue_ges, CG_Fracht.CG_BeladenHinten*100/NP.l_mue_ges],[CG_Fracht.Masse_BeladenVorn, CG_Fracht.Masse_BeladenHinten],"go-",'LineWidth', 2)
-% Fracht Hinten nach Vorn
-plot([BackwardsCG_Startposition_Innen*100/NP.l_mue_ges, CG_Fracht.CG_BeladenHinten1*100/NP.l_mue_ges],[BackwardsMass_Shift_Inner, CG_Fracht.Masse_BeladenHinten1],"g--",'LineWidth', 2)
-plot([CG_Fracht.CG_BeladenHinten1*100/NP.l_mue_ges, CG_Fracht.CG_BeladenVorn1*100/NP.l_mue_ges],[CG_Fracht.Masse_BeladenHinten1, CG_Fracht.Masse_BeladenVorn1],"go--",'LineWidth', 2)
-%Grenzen
-plot([BFWL.x_CG_BFW_Min_MAC_Prozent*100,BFWL.x_CG_BFW_Min_MAC_Prozent*100],[Ergebnisse_Massen_FE2.M_OE Ergebnisse_Massen_FE2.M_TO+10000],"-k",'LineWidth', 1.5)
-plot(BFWL.x_CG_BFW_Max_MAC_Prozent*100,BFWL.MomentanMasse,"--k",'LineWidth', 1.5)
-plot([LS.Laengsstabilitaet*100,LS.Laengsstabilitaet*100],[Ergebnisse_Massen_FE2.M_OE Ergebnisse_Massen_FE2.M_TO+10000],"--b",'LineWidth', 1.5)
-plot([StatStab.CG_sigma_x*100,StatStab.CG_sigma_x*100],[Ergebnisse_Massen_FE2.M_OE Ergebnisse_Massen_FE2.M_TO+10000],":b",'LineWidth', 1.5)
-plot([-100,100],[Ergebnisse_Massen_FE2.M_OE,Ergebnisse_Massen_FE2.M_OE],'Color','#607B8B','LineWidth', 1.5)
-plot([-100,100],[Ergebnisse_Massen_FE2.M_TO,Ergebnisse_Massen_FE2.M_TO],'Color',"#104E8B",'LineWidth', 1.5)
+%% Speichern
+S = whos;
+T = cell2table(struct2cell(S)','VariableNames', matlab.lang.makeValidName(fieldnames(S)));
+names = table2array(T(:,1));
+names1 = strjoin(string({S.name}));
 
-title('Beladung 3-Klassenbestuhlung','FontSize',20);
-xlabel('X^{MAC}_{SP}/l_{\mu} [%]','FontSize',16)
-ylabel('Masse [kg]','FontSize',16)
-legend('Betankung Innentank','Betankung Außentank', 'Außenreihen von vorn','Außenreihen von hinten','Innenreihen von vorn','Innenreihen von hinten','Fracht vorn voll','Fracht hinten auffüllen','Fracht hinten','Fracht vorn voll','Minimale BFWL','Maximale BFWL','Längsstabilität','NP -5%','M_{OE}','M_{TO}')
-
-hold off
-
-%---------------------------
-% ENTLADUNG 3-KLASSE
-figure(2)
-hold on 
-grid on
-xlim([-40 80])
-ylim([Ergebnisse_Massen_FE2.M_OE-10000 Ergebnisse_Massen_FE2.M_TO+10000])
-
-% Fuel
-plot([Enttankung.P1(1)*100 Enttankung.P2(1)*100], [Enttankung.P1(2) Enttankung.P2(2)],"b-",'LineWidth', 2)
-plot([Enttankung.P2(1)*100 Enttankung.P3(1)*100], [Enttankung.P2(2) Enttankung.P3(2)],"bo-",'LineWidth', 2)
-% Fracht Vorn nach Hinten
-plot([CG_Fracht.CG_EntladungStart*100/NP.l_mue_ges, CG_Fracht.CG_EntladenVorn*100/NP.l_mue_ges], [CG_Fracht.Masse_EntladungStart CG_Fracht.Masse_EntladungVorn],"g-",'LineWidth', 2)
-plot([CG_Fracht.CG_EntladenVorn*100/NP.l_mue_ges, CG_Fracht.CG_EntladenHinten*100/NP.l_mue_ges], [CG_Fracht.Masse_EntladungVorn, CG_Fracht.Masse_EntladungHinten],"go-",'LineWidth', 2)
-% Fracht Hinten nach Vorn
-plot([CG_Fracht.CG_EntladungStart*100/NP.l_mue_ges, CG_Fracht.CG_EntladenHinten2*100/NP.l_mue_ges], [CG_Fracht.Masse_EntladungStart CG_Fracht.Masse_EntladungHinten2],"g--",'LineWidth', 2)
-plot([CG_Fracht.CG_EntladenHinten2*100/NP.l_mue_ges, CG_Fracht.CG_EntladenVorn2*100/NP.l_mue_ges], [CG_Fracht.Masse_EntladungHinten2, CG_Fracht.Masse_EntladungVorn2],"go--",'LineWidth', 2)
-% Pax Außen
-plot(CG_PaxFBA.CG_Shift_Outer*100/NP.l_mue_ges, CG_PaxFBA.NewMassCounter,"rx-",'LineWidth', 2)
-plot(CG_PaxBFA.BackwardsCG_Shift_Outer*100/NP.l_mue_ges, CG_PaxBFA.BackwardsNewMassCounter,"mx-",'LineWidth', 2)
-% Pax Innen
-plot(CG_PaxFBI.CG_Shift_Inner*100/NP.l_mue_ges, CG_PaxFBI.InnerMassCounter,"rx-",'LineWidth', 2)
-plot(CG_PaxBFI.BackwardsCG_Shift_Inner*100/NP.l_mue_ges, CG_PaxBFI.BackwardsInnerMassCounter,"mx-",'LineWidth', 2)
-%Grenzen
-plot([BFWL.x_CG_BFW_Min_MAC_Prozent*100,BFWL.x_CG_BFW_Min_MAC_Prozent*100],[Ergebnisse_Massen_FE2.M_OE Ergebnisse_Massen_FE2.M_TO+10000],"-k",'LineWidth', 1.5)
-plot(BFWL.x_CG_BFW_Max_MAC_Prozent*100,BFWL.MomentanMasse,"--k",'LineWidth', 1.5)
-plot([LS.Laengsstabilitaet*100,LS.Laengsstabilitaet*100],[Ergebnisse_Massen_FE2.M_OE Ergebnisse_Massen_FE2.M_TO+10000],"--b",'LineWidth', 1.5)
-plot([StatStab.CG_sigma_x*100,StatStab.CG_sigma_x*100],[Ergebnisse_Massen_FE2.M_OE Ergebnisse_Massen_FE2.M_TO+10000],":b",'LineWidth', 1.5)
-plot([-100,100],[Ergebnisse_Massen_FE2.M_OE,Ergebnisse_Massen_FE2.M_OE],'Color','#607B8B','LineWidth', 1.5)
-plot([-100,100],[Ergebnisse_Massen_FE2.M_TO,Ergebnisse_Massen_FE2.M_TO],'Color',"#104E8B",'LineWidth', 1.5)
-
-title('Entladung 3-Klassenbestuhlung','FontSize',20);
-xlabel('X^{MAC}_{SP}/l_{\mu} [%]','FontSize',16)
-ylabel('Masse [kg]','FontSize',16)
-legend('Enttankung Innentank','Enttankung Außentank','Entladung Fracht vorn','Entladung Fracht hinten','Entladung Fracht hinten','Entladung Fracht vorn','Außenreihen von vorn','Außenreihen von hinten','Innenreihen von vorn','Innenreihen von hinten','Minimale BFWL','Maximale BFWL','Längsstabilität','NP -5%','M_{OE}','M_{TO}')
-
-hold off
-
-%----------------------------------------------------------
-% BELADUNG ALL-ECO
-figure(3)
-hold on 
-grid on
-xlim([-40 80])
-ylim([Ergebnisse_Massen_FE2.M_OE-10000 Ergebnisse_Massen_FE2.M_TO+10000])
-
-% Fuel
-plot([BetankungAllEco.P1(1)*100 BetankungAllEco.P2(1)*100], [BetankungAllEco.P1(2) BetankungAllEco.P2(2)],"b-",'LineWidth', 2)
-plot([BetankungAllEco.P2(1)*100 BetankungAllEco.P3(1)*100], [BetankungAllEco.P2(2) BetankungAllEco.P3(2)],"bo-",'LineWidth', 2)
-% Pax Außen
-plot(AllEcoPax.CG_Shift_Outer*100/NP.l_mue_ges, AllEcoPax.NewMassCounter,"rx-",'LineWidth', 2)
-plot(AllEcoPax.BackwardsCG_Shift_Outer*100/NP.l_mue_ges, AllEcoPax.BackwardsNewMassCounter,"mx-",'LineWidth', 2)
-% Pax Innen
-plot(AllEcoPax.CG_Shift_Inner*100/NP.l_mue_ges, AllEcoPax.InnerMassCounter,"rx-",'LineWidth', 2)
-plot(AllEcoPax.BackwardsCG_Shift_Inner*100/NP.l_mue_ges, AllEcoPax.BackwardsInnerMassCounter,"mx-",'LineWidth', 2)
-% Fracht Vorn nach Hinten
-plot([AllEcoPax.BackwardsCG_Startposition_Innen*100/NP.l_mue_ges, CG_Fracht_AllEco.CG_BeladenVorn*100/NP.l_mue_ges],[AllEcoPax.BackwardsMass_Shift_Inner, CG_Fracht_AllEco.Masse_BeladenVorn],"g-",'LineWidth', 2)
-plot([CG_Fracht_AllEco.CG_BeladenVorn*100/NP.l_mue_ges, CG_Fracht_AllEco.CG_BeladenHinten*100/NP.l_mue_ges],[CG_Fracht_AllEco.Masse_BeladenVorn, CG_Fracht_AllEco.Masse_BeladenHinten],"go-",'LineWidth', 2)
-% Fracht Hinten nach Vorn
-plot([AllEcoPax.BackwardsCG_Startposition_Innen*100/NP.l_mue_ges, CG_Fracht_AllEco.CG_BeladenHinten1*100/NP.l_mue_ges],[AllEcoPax.BackwardsMass_Shift_Inner, CG_Fracht_AllEco.Masse_BeladenHinten1],"g--",'LineWidth', 2)
-plot([CG_Fracht_AllEco.CG_BeladenHinten1*100/NP.l_mue_ges, CG_Fracht_AllEco.CG_BeladenVorn1*100/NP.l_mue_ges],[CG_Fracht_AllEco.Masse_BeladenHinten1, CG_Fracht_AllEco.Masse_BeladenVorn1],"go--",'LineWidth', 2)
-%Grenzen
-plot([BFWL.x_CG_BFW_Min_MAC_Prozent*100,BFWL.x_CG_BFW_Min_MAC_Prozent*100],[Ergebnisse_Massen_FE2.M_OE Ergebnisse_Massen_FE2.M_TO+10000],"-k",'LineWidth', 1.5)
-plot(BFWL.x_CG_BFW_Max_MAC_Prozent*100,BFWL.MomentanMasse,"--k",'LineWidth', 1.5)
-plot([LS.Laengsstabilitaet*100,LS.Laengsstabilitaet*100],[Ergebnisse_Massen_FE2.M_OE Ergebnisse_Massen_FE2.M_TO+10000],"--b",'LineWidth', 1.5)
-plot([StatStab.CG_sigma_x*100,StatStab.CG_sigma_x*100],[Ergebnisse_Massen_FE2.M_OE Ergebnisse_Massen_FE2.M_TO+10000],":b",'LineWidth', 1.5)
-plot([-100,100],[Ergebnisse_Massen_FE2.M_OE,Ergebnisse_Massen_FE2.M_OE],'Color','#607B8B','LineWidth', 1.5)
-plot([-100,100],[Ergebnisse_Massen_FE2.M_TO,Ergebnisse_Massen_FE2.M_TO],'Color',"#104E8B",'LineWidth', 1.5)
-
-title('Beladung All-Eco','FontSize',20);
-xlabel('X^{MAC}_{SP}/l_{\mu} [%]','FontSize',16)
-ylabel('Masse [kg]','FontSize',16)
-legend('Betankung Innentank','Betankung Außentank', 'Außenreihen von vorn','Außenreihen von hinten','Innenreihen von vorn','Innenreihen von hinten','Fracht vorn voll','Fracht hinten auffüllen','Fracht hinten','Fracht vorn voll','Minimale BFWL','Maximale BFWL','Längsstabilität','NP -5%','M_{OE}','M_{TO}')
-
-hold off
-
-%---------------------------
-% ENTLADUNG ALL-ECO
-figure(4)
-hold on 
-grid on
-xlim([-40 80])
-ylim([Ergebnisse_Massen_FE2.M_OE-10000 Ergebnisse_Massen_FE2.M_TO+10000])
-
-% Fuel
-plot([Enttankung_AllEco.P1(1)*100 Enttankung_AllEco.P2(1)*100], [Enttankung_AllEco.P1(2) Enttankung_AllEco.P2(2)],"b-",'LineWidth', 2)
-plot([Enttankung_AllEco.P2(1)*100 Enttankung_AllEco.P3(1)*100], [Enttankung_AllEco.P2(2) Enttankung_AllEco.P3(2)],"bo-",'LineWidth', 2)
-% Fracht Vorn nach Hinten
-plot([CG_Fracht_AllEco.CG_EntladungStart*100/NP.l_mue_ges, CG_Fracht_AllEco.CG_EntladenVorn*100/NP.l_mue_ges], [CG_Fracht_AllEco.Masse_EntladungStart CG_Fracht_AllEco.Masse_EntladungVorn],"g-",'LineWidth', 2)
-plot([CG_Fracht_AllEco.CG_EntladenVorn*100/NP.l_mue_ges, CG_Fracht_AllEco.CG_EntladenHinten*100/NP.l_mue_ges], [CG_Fracht_AllEco.Masse_EntladungVorn, CG_Fracht_AllEco.Masse_EntladungHinten],"go-",'LineWidth', 2)
-% Fracht Hinten nach Vorn
-plot([CG_Fracht_AllEco.CG_EntladungStart*100/NP.l_mue_ges, CG_Fracht_AllEco.CG_EntladenHinten2*100/NP.l_mue_ges], [CG_Fracht_AllEco.Masse_EntladungStart CG_Fracht_AllEco.Masse_EntladungHinten2],"g--",'LineWidth', 2)
-plot([CG_Fracht_AllEco.CG_EntladenHinten2*100/NP.l_mue_ges, CG_Fracht_AllEco.CG_EntladenVorn2*100/NP.l_mue_ges], [CG_Fracht_AllEco.Masse_EntladungHinten2, CG_Fracht_AllEco.Masse_EntladungVorn2],"go--",'LineWidth', 2)
-% Pax Außen
-plot(CG_PaxFBA_AllEco.CG_Shift_Outer*100/NP.l_mue_ges, CG_PaxFBA_AllEco.NewMassCounter,"rx-",'LineWidth', 2)
-plot(CG_PaxBFA_AllEco.BackwardsCG_Shift_Outer*100/NP.l_mue_ges, CG_PaxBFA_AllEco.BackwardsNewMassCounter,"mx-",'LineWidth', 2)
-% Pax Innen
-plot(CG_PaxFBI_AllEco.CG_Shift_Inner*100/NP.l_mue_ges, CG_PaxFBI_AllEco.InnerMassCounter,"rx-",'LineWidth', 2)
-plot(CG_PaxBFI_AllEco.BackwardsCG_Shift_Inner*100/NP.l_mue_ges, CG_PaxBFI_AllEco.BackwardsInnerMassCounter,"mx-",'LineWidth', 2)
-%Grenzen
-plot([BFWL.x_CG_BFW_Min_MAC_Prozent*100,BFWL.x_CG_BFW_Min_MAC_Prozent*100],[Ergebnisse_Massen_FE2.M_OE Ergebnisse_Massen_FE2.M_TO+10000],"-k",'LineWidth', 1.5)
-plot(BFWL.x_CG_BFW_Max_MAC_Prozent*100,BFWL.MomentanMasse,"--k",'LineWidth', 1.5)
-plot([LS.Laengsstabilitaet*100,LS.Laengsstabilitaet*100],[Ergebnisse_Massen_FE2.M_OE Ergebnisse_Massen_FE2.M_TO+10000],"--b",'LineWidth', 1.5)
-plot([StatStab.CG_sigma_x*100,StatStab.CG_sigma_x*100],[Ergebnisse_Massen_FE2.M_OE Ergebnisse_Massen_FE2.M_TO+10000],":b",'LineWidth', 1.5)
-plot([-100,100],[Ergebnisse_Massen_FE2.M_OE,Ergebnisse_Massen_FE2.M_OE],'Color','#607B8B','LineWidth', 1.5)
-plot([-100,100],[Ergebnisse_Massen_FE2.M_TO,Ergebnisse_Massen_FE2.M_TO],'Color',"#104E8B",'LineWidth', 1.5)
-
-title('Entladung All-Eco','FontSize',20);
-xlabel('X^{MAC}_{SP}/l_{\mu} [%]','FontSize',16)
-ylabel('Masse [kg]','FontSize',16)
-legend('Enttankung Innentank','Enttankung Außentank','Entladung Fracht vorn','Entladung Fracht hinten','Entladung Fracht hinten','Entladung Fracht vorn','Außenreihen von vorn','Außenreihen von hinten','Innenreihen von vorn','Innenreihen von hinten','Minimale BFWL','Maximale BFWL','Längsstabilität','NP -5%','M_{OE}','M_{TO}')
-
-hold off
-
-%-------------------------------------
-% PLOT SCHWERPUNKTLAGE
-figure(5)
-hold on
-grid on
-xlim([30 50])
-
-% RUMPF
-% Mittelpunkt der Ellipse
-center_x = specs.l_rumpf/2;
-center_y = 0;
-% Erstellen der Ellipse
-theta = linspace(0, 2*pi, 100); % Winkel für die Ellipsenpunkte
-x = center_x + (specs.l_rumpf/2) * cos(theta);
-y = center_y + (specs.D_rumpf/2) * sin(theta);
-
-% ERSATZFLÜGEL
-x1 = Wing_MAC.XMAC;
-y1 = -24;
-x2 = Wing_MAC.XMAC + NP.l_mue_ges;
-y2 = 24;
-
-
-% PLOTTEN
-% Rumpf
-plot(x, y, 'k', 'LineWidth', 1.5);
-% Ersatzflügel
-rectangle('Position', [x1, y1, x2-x1, y2-y1], 'EdgeColor', 'r', 'LineWidth', 1);
-% Flügel
-plot([Wing_Position1, Wing_Position1 + (DT.s_A+DT.s_I+DT.s_R)*tan(DT.phi_VK_max)], [0, (DT.s_A+DT.s_I+DT.s_R)], 'k', 'LineWidth', 1.5);
-plot([Wing_Position1, Wing_Position1 + (DT.s_A+DT.s_I+DT.s_R)*tan(DT.phi_VK_max)], [0, -(DT.s_A+DT.s_I+DT.s_R)], 'k', 'LineWidth', 1.5);
-plot([Wing_Position1+(DT.s_R+DT.s_I)*tan(DT.phi_VK_max), Wing_Position1+DT.l_i_A+(DT.s_R+DT.s_I)*tan(DT.phi_VK_max)],[DT.s_R+DT.s_I, DT.s_R+DT.s_I], 'k', 'LineWidth', 1.5);
-plot([Wing_Position1+(DT.s_R+DT.s_I)*tan(DT.phi_VK_max), Wing_Position1+DT.l_i_A+(DT.s_R+DT.s_I)*tan(DT.phi_VK_max)],[-(DT.s_R+DT.s_I), -(DT.s_R+DT.s_I)], 'k', 'LineWidth', 1.5);
-plot([Wing_Position1+(DT.s_R+DT.s_I+DT.s_A)*tan(DT.phi_VK_max),DT.l_a+Wing_Position1+(DT.s_R+DT.s_I+DT.s_A)*tan(DT.phi_VK_max)],[-(DT.s_R+DT.s_I+DT.s_A),-(DT.s_R+DT.s_I+DT.s_A)], 'k', 'LineWidth', 1.5);
-plot([Wing_Position1+(DT.s_R+DT.s_I+DT.s_A)*tan(DT.phi_VK_max),DT.l_a+Wing_Position1+(DT.s_R+DT.s_I+DT.s_A)*tan(DT.phi_VK_max)],[DT.s_R+DT.s_I+DT.s_A,DT.s_R+DT.s_I+DT.s_A], 'k', 'LineWidth', 1.5);
-plot([Wing_Position1+DT.l_i_A+(DT.s_R+DT.s_I)*tan(DT.phi_VK_max),DT.l_a+Wing_Position1+(DT.s_R+DT.s_I+DT.s_A)*tan(DT.phi_VK_max)],[-(DT.s_R+DT.s_I),-(DT.s_R+DT.s_I+DT.s_A)], 'k', 'LineWidth', 1.5);
-plot([Wing_Position1+DT.l_i_A+(DT.s_R+DT.s_I)*tan(DT.phi_VK_max),DT.l_a+Wing_Position1+(DT.s_R+DT.s_I+DT.s_A)*tan(DT.phi_VK_max)],[DT.s_R+DT.s_I,DT.s_R+DT.s_I+DT.s_A], 'k', 'LineWidth', 1.5);
-plot([Wing_Position1+DT.l_i_A+(DT.s_R+DT.s_I)*tan(DT.phi_VK_max),Wing_Position1+DT.l_i_A+(DT.s_R+DT.s_I)*tan(DT.phi_VK_max)],[DT.s_R+DT.s_I,-(DT.s_R+DT.s_I)], 'k', 'LineWidth', 1.5);
-% Schwerpunkte Tank
-% plot([CG_Fuel_X.Aussentrapez+(DT.s_I*tan(DT.phi_VK_max))+Wing_Position1+DT.s_R*tan(DT.phi_VK_max)+(0.15*DT.l_i_R),CG_Fuel_X.Aussentrapez+(DT.s_I*tan(DT.phi_VK_max))+Wing_Position1+DT.s_R*tan(DT.phi_VK_max)+(0.15*DT.l_i_R)],[-30,30], '-b');
-%plot([Wing_MAC.XMAC+CG_Fuel_X.CG_Tank_MAC,Wing_MAC.XMAC+CG_Fuel_X.CG_Tank_MAC],[-30,30], '--m');
-%plot([Wing_Position1+CG_Fuel_X.CG_Tank_FG,Wing_Position1+CG_Fuel_X.CG_Tank_FG],[-30,30], ':g');
-
-%plot([Wing_MAC.XMAC+LS.x_MainGear_MAC*NP.l_mue_ges,Wing_MAC.XMAC+LS.x_MainGear_MAC*NP.l_mue_ges],[-30,30], '--m');
-%plot([Wing_Position1+CG_Data_Wing.MainGear(2),Wing_Position1+CG_Data_Wing.MainGear(2)],[-30,30], ':g');
-
-% CGs
-plot(CG_Rumpf_X,0,'xb','LineWidth', 2);
-plot(Wing_Position1+CG_Wing_X,0,'ob','LineWidth', 2);
-plot(LS.x_MainGear_MAC*NP.l_mue_ges +Wing_MAC.XMAC, 0, 'xr','LineWidth', 2);
-%plot(CG_Data.Bugfahrwerk(2)*specs.l_rumpf,0,'*k','LineWidth', 2);
-plot(CG_Gesamt_x + Wing_MAC.XMAC,0,'og','LineWidth', 3)
-plot([Wing_Position1+CG_Data_Wing.Fluegel(2),Wing_Position1+CG_Data_Wing.Fluegel(2)],[-30,30],'--r')
-plot(Wing_MAC.XMAC+(X_NP_durch_l_mue*NP.l_mue_ges),0,'dm','LineWidth', 2);
-plot(Wing_MAC.XMAC+(X_NP_OH_durch_l_mue*NP.l_mue_ges),0,'*m','LineWidth', 2);
-
-axis equal;
-legend('','','','','','','','','','','CG Rumpf','CG Flügelgruppe','CG HFW', 'CG Gesamt','','Gesamtneutralpunkt','NP oH')
-
-% Achsenbeschriftungen und Titel
-xlabel('x [m]');
-ylabel('y [m]');
-title('Schwerpunktlagen');
-hold off
-
-<<<<<<< HEAD
-save Schwerpunkt.mat Delta_CG_MAC_durch_lmue LS r_H BFWL Betankung CG_Data CG_Data_Wing CG_Fracht CG_Fuel_X CG_Gesamt_x CG_Gesamt_z CG_Rumpf_X CG_Rumpf_Z CG_Wing_X CG_Wing_Z_RG CG_Wing_Z_FG Rumpf_MAC StatStab Wing_MAC Wing_Position1 Wing_Position2
-=======
 save Schwerpunkt.mat AllEcoPax AllEcoMassen BetankungAllEco CG_Fracht_AllEco Enttankung_AllEco Pax_Bording Delta_CG_MAC_durch_lmue r_H BFWL Betankung CG_Data CG_Data_Wing CG_Fracht CG_Fuel_X CG_Gesamt_x CG_Gesamt_z CG_Rumpf_X CG_Rumpf_Z CG_Wing_X CG_Wing_Z_RG CG_Wing_Z_FG Rumpf_MAC StatStab Wing_MAC Wing_Position1 Wing_Position2
->>>>>>> main
+save SchwerpunktPlot.mat Abwindfaktor AllEcoMassen AllEcoPax Anteile_einzel_Massen_FE2 AussenPax AussenPaxMAC BFWL BO BackwardsAussenPaxMAC BackwardsCG_Shift_Inner BackwardsCG_Shift_Outer BackwardsCG_Startposition BackwardsCG_Startposition_Innen BackwardsInnenPaxMAC BackwardsInnerMassCounter BackwardsMass_Shift_Inner BackwardsMass_Shift_Outer BackwardsMasseAussenPax BackwardsMasseInnenPax BackwardsNewMassCounter BackwardsnewCGvalue BackwardsnewCGvalue1 Betankung BetankungAllEco C CG_Data CG_DataMatrix CG_DataMatrix_Wing CG_Data_Wing CG_Fracht CG_Fracht_AllEco CG_Fuel_X CG_Gesamt_x CG_Gesamt_z CG_M CG_MZ CG_Moment_X CG_Moment_Z CG_PaxBFA CG_PaxBFA_AllEco CG_PaxBFI CG_PaxBFI_AllEco CG_PaxFBA CG_PaxFBA_AllEco CG_PaxFBI CG_PaxFBI_AllEco CG_Rumpf_X CG_Rumpf_X_Prozent CG_Rumpf_Z CG_Shift_Inner CG_Shift_Outer CG_Startposition CG_Startposition_Innen CG_Ueberfuehrung CG_Wing_M CG_Wing_MZ CG_Wing_Moment_X CG_Wing_Moment_Z CG_Wing_X CG_Wing_Z_FG CG_Wing_Z_RG CG_mostBackward CG_mostForward DT Delta_CG_MAC_durch_lmue Durchmesser_Flugzeug_wo_Fluegel_durchgeht ET Enttankung Enttankung_AllEco Enttankung_Ueberfuehrung Ergebnisse_Auftriebsverteilung Ergebnisse_Fluegel Ergebnisse_Massen_FE2 Ergebnisse_stat_Flaechenbelastung FF FM F_ges_Fluegel_MAC Flaeche_im_Rumpf_oberes_dreieck GRA HLW ISA InnenPax InnenPaxMAC InnerMassCounter KS LS M_HLW M_SLW Mass_Shift_Inner Mass_Shift_Outer MasseAussenPax MasseInnenPax NP Neutralpunkt NewMassCounter Pax_Bording Rumpf_MAC Rumpf_SP_Faktoren SLW StatStab Streckung_ges Tank Umrechnung_Z_FG_RG VWA Wing_MAC Wing_Position1 Wing_Position2 X_NP_F X_NP_F_MAC X_NP_OH_durch_l_mue X_NP_durch_l_mue c_A_alpha c_A_alpha_H d_F1_X_NP_durch_l_mue d_F2_X_NP_durch_l_mue d_TW_X_NP_durch_l_mue i l_fn l_i_Mitte newCGvalue newCGvalue1 r_H specs

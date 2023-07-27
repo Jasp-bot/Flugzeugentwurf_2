@@ -216,11 +216,12 @@ while abs(delta_M_to) > 0.0001
 
     FF.Mff_2_10 = prod(FF.mfi(3:11)); % Gesamtanteil Mff ab TO
     FF.Mff_2_5 = prod(FF.mfi(3:6)); % Nur Reisefluganteil ohne DIV
-    FF.Mff_6_10 = prod(FF.mfi(7:11));
+    FF.Mff_6_10 = prod(FF.mfi(7:11)); % Nur Diversion
 
     % Kraftstoffmassenfaktor neu
     FF.Kappa_ges = 1- FF.Mff_2_10 + 0.05 * (1 - FF.Mff_2_5); 
-    
+    FF.Kappa_ALT = 1 - FF.Mff_6_10;
+
     M_take_off_initial.M_fuel = M_TO_initial * FF.Kappa_ges;
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -835,6 +836,9 @@ Ergebnisse_Massen_FE2.M_OE = M_OE_initial;
 Ergebnisse_Massen_FE2.M_DE = M_del_empty_initial;
 Ergebnisse_Massen_FE2.M_ZF = M_Zero_Fuel_initial;
 Ergebnisse_Massen_FE2.M_F = M_TO_initial * FF.Kappa_ges;
+
+Ergebnisse_Massen_FE2.M_Z_Tripfuel = (M_TO_initial * FF.Kappa_ges) - (M_TO_initial * FF.Kappa_ALT);
+Ergebnisse_Massen_FE2.M_F_ALT = M_TO_initial * FF.Kappa_ALT;
 
 
 

@@ -25,7 +25,11 @@ addpath('Unterfunktionen Widerstand');
 
 hoehe_m = Ergebnisse_Flugleistung_1.hoehe_m;
 hoehe_CR = round(unitsratio('m','ft')*(specs.flight_level*10^2));
-v_CR = specs.Ma_CR * ISA.a(hoehe_CR) 
+hoehe_ALT = round(unitsratio('m','ft')*(specs.flight_level_ALT*10^2));
+v_CR = specs.Ma_CR * ISA.a(hoehe_CR);
+v_ALT = specs.Ma_CR * ISA.a(hoehe_ALT);
+
+
 TO_Masse =  Ergebnisse_Massen_FE2.M_TO;
 G_TO = TO_Masse * specs.g;
 k_CR = 0.98;
@@ -49,16 +53,16 @@ end
 
 %% Kann FEHLER erzeugen
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-v_CR_index = find(round(Ergebnisse_Flugleistung_1.v_TAS_j_CL(punkt_H_CR,:))==round(v_CR+0.2));
-
+% v_CR_index = find(round(Ergebnisse_Flugleistung_1.v_TAS_j_CL(punkt_H_CR,:))==round(v_CR+0.2));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-v_TAS_j_CL_index = 1;
 
-for zv2 = Ergebnisse_Flugleistung_1.Hochpunkte.SEP_CL_x : length(Ergebnisse_Flugleistung_1.v_TAS_j_CL)
+v_TAS_j_CL_index = 1;
+HP_x_SEP_CL_H_CR = Ergebnisse_Flugleistung_1.Hochpunkte.SEP_CL_x(punkt_H_CR,1); 
+for zv2 = HP_x_SEP_CL_H_CR : length(Ergebnisse_Flugleistung_1.v_TAS_j_CL)
     if Ergebnisse_Flugleistung_1.v_TAS_j_CL(punkt_H_CR,zv2) <= v_CR
        v_TAS_j_CL_index = zv2+1;
-    elseif v_TAS_j_CL_index > length(Ergebnisse_Flugleistung_1.v_TAS_j_CL)
-       disp('Achtung zv2 ist groesser als die laenge des Vektors v_TAS_j_CL')
+%     elseif v_TAS_j_CL_index > length(Ergebnisse_Flugleistung_1.v_TAS_j_CL)
+%        disp('Achtung zv2 ist groesser als die laenge des Vektors v_TAS_j_CL')
     end
 end
 
@@ -68,21 +72,23 @@ end
 
 
 % PS8 Formel 2
-
-
 HE_SEP_max_CL = Ergebnisse_Flugleistung_1.TAS_SEP_H_CL_vec(1:punkt_H_CR,3) + (Ergebnisse_Flugleistung_1.TAS_SEP_H_CL_vec(1:punkt_H_CR,1).^2)/(2* specs.g);
 HE_CL_max_vector_SEP = HE_SEP_max_CL;
-% HE_CL_max_vector_SEP(length(HE_CL_max_vector_SEP)+1) = HE_SEP_max_CL(length(HE_SEP_max_CL),1);
 
-%plot(HE_SEP_max_CL, 1./Ergebnisse_Flugleistung_1.TAS_SEP_H_CL_vec(:,2),'*k')
+% fuer Beschleunigungsanteil
+v_beschl_CL = Ergebnisse_Flugleistung_1.v_TAS_j_CL(punkt_H_CR, HP_x_SEP_CL_H_CR:v_TAS_j_CL_index).';
+HE_SEP_besch = Ergebnisse_Flugleistung_1.TAS_SEP_H_CL_vec(punkt_H_CR,3) + (v_beschl_CL .^2)./(2* specs.g);
+
 
 SEP_CL_max_vector = Ergebnisse_Flugleistung_1.TAS_SEP_H_CL_vec(1:punkt_H_CR,2); %./10;
 % SEP_CL_max_vector(length(SEP_CL_max_vector)+1) =  Ergebnisse_Flugleistung_1.TAS_SEP_H_CL_vec(length(Ergebnisse_Flugleistung_1.TAS_SEP_H_CL_vec),2);%./10;
-
+SEP_CL_max_beschl_vec = Ergebnisse_Flugleistung_1.SEP_CL(punkt_H_CR, HP_x_SEP_CL_H_CR : v_TAS_j_CL_index).';
 
 %t = trapz(SEP_CL_max_vector, HE_CL_max_vector_SEP)
-t = trapz(HE_CL_max_vector_SEP, 1./SEP_CL_max_vector) % Ergebnis macht mit unseren inkorrekten werten sinn denke ich
+t_CL = trapz(HE_CL_max_vector_SEP, 1./SEP_CL_max_vector); % Ergebnis macht mit unseren inkorrekten werten sinn denke ich
+t_beschl = trapz(HE_SEP_besch, 1./SEP_CL_max_beschl_vec);
 
+t = t_CL + t_beschl;
 
 
 %% Steigstrecke
@@ -100,10 +106,14 @@ t = trapz(HE_CL_max_vector_SEP, 1./SEP_CL_max_vector) % Ergebnis macht mit unser
 % da wir am kostenguenstigsten steigen wollen wir aus SEP SET errechnet
 SEP_CL_max_vector_R = Ergebnisse_Flugleistung_1.TAS_SEP_H_CL_vec(1:punkt_H_CR,2) ./ Ergebnisse_Flugleistung_1.TAS_SEP_H_CL_vec(1:punkt_H_CR,1); 
 % SET_CL_max_vector(length(SET_CL_max_vector)+1) =  Ergebnisse_Flugleistung_1.TAS_SEP_H_CL_vec(length(Ergebnisse_Flugleistung_1.TAS_SEP_H_CL_vec),2);
-
+SEP_CL_max_beschl_vector_R = SEP_CL_max_beschl_vec ./ v_beschl_CL;
 
 %t = trapz(SET_CL_max_vector, HE_CL_max_vector_SET)
-R_CL = trapz(HE_CL_max_vector_SEP, 1./SEP_CL_max_vector_R) % Ergebnis macht mit unseren inkorrekten werten sinn denke ich
+R_CL1 = trapz(HE_CL_max_vector_SEP, 1./SEP_CL_max_vector_R); % Ergebnis macht mit unseren inkorrekten werten sinn denke ich
+R_beschl = trapz(HE_SEP_besch, 1./SEP_CL_max_beschl_vector_R);
+
+R_CL = R_CL1 + R_beschl;
+
 
 %% Steigkraftstoffverbrauch
 
@@ -111,24 +121,36 @@ R_CL = trapz(HE_CL_max_vector_SEP, 1./SEP_CL_max_vector_R) % Ergebnis macht mit 
 
 
 Ma_h_CL =  Ergebnisse_Flugleistung_1.TAS_SEP_H_CL_vec(1:punkt_H_CR,1) ./ a_H;
- 
+Ma_h_CL_beschl = v_beschl_CL ./ a_H(punkt_H_CR,1);
+
 [~,~,b_s_CL_1_s] = SFC_vec(Ergebnisse_Flugleistung_1.TAS_SEP_H_CL_vec(1:punkt_H_CR,3), Ma_h_CL, specs.bypass);
+[~,~,b_s_CL_1_s_beschl] = SFC_vec(Ergebnisse_Flugleistung_1.TAS_SEP_H_CL_vec(punkt_H_CR,3), Ma_h_CL_beschl, specs.bypass);
 b_s_CL = b_s_CL_1_s .* (1/specs.g);
+b_s_CL_beschl = b_s_CL_1_s_beschl .* (1/specs.g);
 %b_s_CL_ = b_s_CL(:,1);
 % b_s_CL_kg_Ns_vec(9,1) = b_s_CL_kg_Ns(length(b_s_CL_kg_Ns),1);
 
 [S_S0_CL] = S_S0_KF_j(0.9, rho_rho0_H, Ma_h_CL, p_p0_H, specs.bypass);
+[S_S0_CL_beschl] = S_S0_KF_j(0.9, rho_rho0_H(punkt_H_CR), Ma_h_CL_beschl, p_p0_H(punkt_H_CR), specs.bypass);
 S_S0_CL_vec = S_S0_CL(:,1);
+S_S0_CL_vec_beschl = S_S0_CL_beschl(:,1);
 % S_S0_CL_vec = S_S0_CL(length(S_S0_CL),1);
 zu_integrierende_werte_Steigkraftstoff = (b_s_CL .* S_S0_CL_vec .* (S0)) ./ (SEP_CL_max_vector);
 
-m_F_CL = trapz(HE_CL_max_vector_SEP, zu_integrierende_werte_Steigkraftstoff)
+zu_integrierende_werte_Steigkraftstoff_beschl = (b_s_CL_beschl .* S_S0_CL_vec_beschl .* (S0)) ./ (SEP_CL_max_beschl_vec);
+
+m_F_CL1 = trapz(HE_CL_max_vector_SEP, zu_integrierende_werte_Steigkraftstoff);
 % trapz( zu_integrierende_werte_Steigkraftstoff,HE_CL_max_vector_SEP)
 
+m_F_beschl = trapz(HE_SEP_besch, zu_integrierende_werte_Steigkraftstoff_beschl);
+
+m_F_CL = m_F_CL1 + m_F_beschl;  
 
 
 
 %% NRD
+
+
 m_OE = Ergebnisse_Massen_FE2.M_OE;
 m_TO = Ergebnisse_Massen_FE2.M_TO;
 m_fuel = Ergebnisse_Massen_FE2.M_F;
@@ -281,7 +303,7 @@ p1(6) = plot([0, 20000],[m_OE, m_OE], Color=[0.5 0.5 0.5], LineStyle="-.");
 % % plot(R_DP, m_P,'rx')
 
 title('Nutzlast-Reichweiten-Diagramm', 'FontSize',25)
-legend(p1([1:6]),{'Nutzlast', 'Treibstoffmasse', 'Reisekraftstoffmasse', 'Reserve', 'M_{TO}', 'M_{OE}'},...
+legend(p1(1:6),{'Nutzlast', 'Treibstoffmasse', 'Reisekraftstoffmasse', 'Reserve', 'M_{TO}', 'M_{OE}'},...
      'Location','southwest','FontSize',25);
 xlabel('Reichweite in km','FontSize',20)
 ylabel('Masse in kg','FontSize',20)

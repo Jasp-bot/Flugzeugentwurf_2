@@ -157,17 +157,34 @@ close all
 
 
 
-% Y = [2 2 2]
-% Z = [1 1.5 1]
-% x = trapz(Y,2)
+% % Y = [2 2 2]
+% % Z = [1 1.5 1]
+% % x = trapz(Y,2)
+% 
+% % Beispiel-Datenpunkte
+% x = [0, 1, 2, 3, 4];
+% y = [0, 1, 4, 9, 16];
+% 
+% % Berechnung der Fläche unter der Kurve mit trapz
+% area_under_curve = trapz(y)
+% 
+% hold on
+% plot(x)
+% plot(y)
 
-% Beispiel-Datenpunkte
-x = [0, 1, 2, 3, 4];
-y = [0, 1, 4, 9, 16];
 
-% Berechnung der Fläche unter der Kurve mit trapz
-area_under_curve = trapz(y)
+% 
+% value1 = 0.022
+% value2 = 0.021
+% 
+% 
+% 
+% result = isequal(value1, value2)
+% 
+% 
 
-hold on
-plot(x)
-plot(y)
+
+
+
+
+

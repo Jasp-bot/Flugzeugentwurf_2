@@ -39,7 +39,7 @@ load Ergebnisse_Massen_FE2.mat
 % Anzahl der Plots
 numPlots = length(Ergebnisse_Flugleistung_1.hoehe_m);
 
-w = 5;     % Variabele zur reduktion der geplotteten graphen es empiehlt sich abhaengig von der anzahn der stuetzstellen eine zahl zu waehlen
+w = 10;     % Variabele zur reduktion der geplotteten graphen es empiehlt sich abhaengig von der anzahn der stuetzstellen eine zahl zu waehlen
 
 % Farbverlauf definieren
 colorStart = [1, 0.2, 0];   % Startfarbe (RGB)

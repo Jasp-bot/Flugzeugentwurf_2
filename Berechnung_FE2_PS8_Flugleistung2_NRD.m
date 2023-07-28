@@ -266,166 +266,166 @@ FFneu.mf9 = 1/(exp(specs.t_HLD * Ergebnisse_Widerstand_FE2.cW_cA_off_D * sfc_HLD
 
 
 %% NRD
-% 
-% 
-% m_OE = Ergebnisse_Massen_FE2.M_OE;
-% m_TO = Ergebnisse_Massen_FE2.M_TO;
-% m_fuel = Ergebnisse_Massen_FE2.M_F;
-% m_ZF = Ergebnisse_Massen_FE2.M_ZF;
-% % Bestimmung der neuen Massen mf3, mf4, mf9
-% 
-% % m_3 = Ergebnisse_Massen_FE2.M_TO * FF.mf2;
-% m_alt_u_HLD = (1 - FF.Mff_6_10) * Ergebnisse_Massen_FE2.M_TO;
-% % mf3_neu = 1 - m_F_CL/m_3;
-% m_P = specs.m_cargo + specs.m_pax;
-% 
-% 
-% % Punkt A--------------------------------
-% m_TO_A = Ergebnisse_Massen_FE2.M_OE + m_P + m_alt_u_HLD;
-% m_F_HLD_A = (1 - FF.mf9) * m_TO_A;
+
+
+m_OE = Ergebnisse_Massen_FE2.M_OE;
+m_TO = Ergebnisse_Massen_FE2.M_TO;
+m_fuel = Ergebnisse_Massen_FE2.M_F;
+m_ZF = Ergebnisse_Massen_FE2.M_ZF;
+% Bestimmung der neuen Massen mf3, mf4, mf9
+
+% m_3 = Ergebnisse_Massen_FE2.M_TO * FF.mf2;
+m_alt_u_HLD = (1 - FF.Mff_6_10) * Ergebnisse_Massen_FE2.M_TO;
+% mf3_neu = 1 - m_F_CL/m_3;
+m_P = specs.m_cargo + specs.m_pax;
+
+
+% Punkt A--------------------------------
+m_TO_A = Ergebnisse_Massen_FE2.M_OE + m_P + m_alt_u_HLD;
+m_F_HLD_A = (1 - FF.mf9) * m_TO_A;
+R_A = 0;
+m_RF_A = m_alt_u_HLD;
+m_F_A = m_RF_A;
+m_TF_A = 0;
+A = [0; m_P; m_F_A; m_TF_A; m_RF_A];
+
+% m_TO_A = m_P + m_OE + Fuel.m_F_ALT + Fuel.m_F_HLD;
+% m_F_HLD_A = (1-Fuel.Fractions.m_f9) * m_TO_A;
 % R_A = 0;
-% m_RF_A = m_alt_u_HLD;
+% m_RF_A = Fuel.m_F_ALT + m_F_HLD_A;
 % m_F_A = m_RF_A;
 % m_TF_A = 0;
-% A = [0; m_P; m_F_A; m_TF_A; m_RF_A];
-% 
-% % m_TO_A = m_P + m_OE + Fuel.m_F_ALT + Fuel.m_F_HLD;
-% % m_F_HLD_A = (1-Fuel.Fractions.m_f9) * m_TO_A;
-% % R_A = 0;
-% % m_RF_A = Fuel.m_F_ALT + m_F_HLD_A;
-% % m_F_A = m_RF_A;
-% % m_TF_A = 0;
-% % A = [0;m_P_alleco; m_F_A; m_TF_A; m_RF_A];
-% 
-% % B--------------------------------------
-% 
-% 
-% m_P_B = m_P;
-% m_TO_B = Ergebnisse_Massen_FE2.M_TO;
-% m_F_B = m_TO_B -Ergebnisse_Massen_FE2.M_OE - m_P_B;
-% 
+% A = [0;m_P_alleco; m_F_A; m_TF_A; m_RF_A];
+
+% B--------------------------------------
+
+
+m_P_B = m_P;
+m_TO_B = Ergebnisse_Massen_FE2.M_TO;
+m_F_B = m_TO_B -Ergebnisse_Massen_FE2.M_OE - m_P_B;
+
+m_ZF_B = m_P_B + m_OE;
+mf4_B = (1.05 - m_F_B/m_TO)/(FF.mf2 * FF.mf3 * FF.mf5 * FF.mf6 * FF.mf7 * FF.mf8 * FF.mf9 + 0.05);
+R_CR_B = v_CR / (FF.sfc_CR_1PERs * Ergebnisse_Widerstand_FE2.cW_cA_off_D * specs.g) * log(1/mf4_B);
+R_B = (Steigflug.R_CL + R_CR_B)/1000;
+
+m_F_C_B = 0.05 *(1 - (FF.mf2 * FF.mf3 * mf4_B * FF.mf5)) * m_TO_B;
+m_RF_OC_B = m_ZF_B * (1/((1-m_F_C_B/m_ZF_B) * FF.mf6 * FF.mf7 * FF.mf8 * FF.mf9) -1);
+
+m_RF_B = m_RF_OC_B + m_F_C_B;
+m_TF_B = m_F_B - m_RF_B;
+
+B = [R_B; m_P_B; m_F_B; m_TF_B; m_RF_B];
+
+% m_P_B = m_P_alleco;
+
+% m_TO_B = m_TO;
+% m_F_B = m_TO_B - m_OE - m_P_alleco;
 % m_ZF_B = m_P_B + m_OE;
-% mf4_B = (1.05 - m_F_B/m_TO)/(FF.mf2 * FF.mf3 * FF.mf5 * FF.mf6 * FF.mf7 * FF.mf8 * FF.mf9 + 0.05);
-% R_CR_B = v_CR / (FF.sfc_CR_1PERs * Ergebnisse_Widerstand_FE2.cW_cA_off_D * specs.g) * log(1/mf4_B);
+% 
+% Fuel.Fractions.m_f4_B = (1.05 - m_F_B/m_TO)/(Fuel.Fractions.m_f2 * Fuel.Fractions.m_f3_new * Fuel.Fractions.m_f5 * Fuel.Fractions.m_f6 * Fuel.Fractions.m_f7 * Fuel.Fractions.m_f8 * Fuel.Fractions.m_f9 + 0.05);
+% R_CR_B = v_CR/(sfc_CR * Widerstand.epsilon_CR*g0) * log(1/Fuel.Fractions.m_f4_B);
 % R_B = (R_CL + R_CR_B)/1000;
 % 
-% m_F_C_B = 0.05 *(1 - (FF.mf2 * FF.mf3 * mf4_B * FF.mf5)) * m_TO_B;
-% m_RF_OC_B = m_ZF_B * (1/((1-m_F_C_B/m_ZF_B) * FF.mf6 * FF.mf7 * FF.mf8 * FF.mf9) -1);
-% 
+% m_F_C_B = 0.05 *(1 - (Fuel.Fractions.m_f2 * Fuel.Fractions.m_f3_new * Fuel.Fractions.m_f4_B * Fuel.Fractions.m_f5)) * m_TO_B;
+% m_RF_OC_B = m_ZF_B * (1/((1-m_F_C_B/m_ZF_B) * Fuel.Fractions.m_f6 * Fuel.Fractions.m_f7 * Fuel.Fractions.m_f8 * Fuel.Fractions.m_f9) -1);
 % m_RF_B = m_RF_OC_B + m_F_C_B;
 % m_TF_B = m_F_B - m_RF_B;
 % 
 % B = [R_B; m_P_B; m_F_B; m_TF_B; m_RF_B];
-% 
-% % m_P_B = m_P_alleco;
-% 
-% % m_TO_B = m_TO;
-% % m_F_B = m_TO_B - m_OE - m_P_alleco;
-% % m_ZF_B = m_P_B + m_OE;
-% % 
-% % Fuel.Fractions.m_f4_B = (1.05 - m_F_B/m_TO)/(Fuel.Fractions.m_f2 * Fuel.Fractions.m_f3_new * Fuel.Fractions.m_f5 * Fuel.Fractions.m_f6 * Fuel.Fractions.m_f7 * Fuel.Fractions.m_f8 * Fuel.Fractions.m_f9 + 0.05);
-% % R_CR_B = v_CR/(sfc_CR * Widerstand.epsilon_CR*g0) * log(1/Fuel.Fractions.m_f4_B);
-% % R_B = (R_CL + R_CR_B)/1000;
-% % 
-% % m_F_C_B = 0.05 *(1 - (Fuel.Fractions.m_f2 * Fuel.Fractions.m_f3_new * Fuel.Fractions.m_f4_B * Fuel.Fractions.m_f5)) * m_TO_B;
-% % m_RF_OC_B = m_ZF_B * (1/((1-m_F_C_B/m_ZF_B) * Fuel.Fractions.m_f6 * Fuel.Fractions.m_f7 * Fuel.Fractions.m_f8 * Fuel.Fractions.m_f9) -1);
-% % m_RF_B = m_RF_OC_B + m_F_C_B;
-% % m_TF_B = m_F_B - m_RF_B;
-% % 
-% % B = [R_B; m_P_B; m_F_B; m_TF_B; m_RF_B];
-% 
-% % C --------------------------------------
-% 
-% m_F_C = m_fuel;
+
+% C --------------------------------------
+
+m_F_C = m_fuel;
+m_TO_C = m_TO;
+m_P_C = m_TO_C - (m_OE + m_F_C);
+
+m_ZF_C = m_OE + m_P_C;
+mf4_C = (1.05 - m_F_C/m_TO_C)/(FF.mf2 * FF.mf3 * FF.mf5 * FF.mf6 * FF.mf7 * FF.mf8 * FF.mf9 + 0.05);
+R_CR_C = v_CR / (FF.sfc_CR_1PERs * Ergebnisse_Widerstand_FE2.cW_cA_off_D *specs.g) * log(1/mf4_C);
+R_C = (Steigflug.R_CL + R_CR_C)/1000;
+
+
+% m_F_C_C = 0.05 *(1 - (FF.mf2 * FF.mf3 * mf4_C * FF.mf5)) * m_TO_C;
+m_F_C_C = 0.05 *(1 - (FF.mf2 * FF.mf3 * mf4_B * FF.mf5)) * m_TO_C;
+m_RF_OC_C = m_ZF_C * (1/((1-m_F_C_C/m_ZF_C) * FF.mf6 * FF.mf7 * FF.mf8 * FF.mf9) -1);
+m_RF_C = m_RF_OC_C + m_F_C_C;
+m_TF_C = m_F_C - m_RF_C;
+
+C = [R_C; m_P_C; m_F_C; m_TF_C; m_RF_C];
+
+% m_F_C = Fluegel.Tank.M_fuel;
 % m_TO_C = m_TO;
 % m_P_C = m_TO_C - (m_OE + m_F_C);
 % 
 % m_ZF_C = m_OE + m_P_C;
-% mf4_C = (1.05 - m_F_C/m_TO_C)/(FF.mf2 * FF.mf3 * FF.mf5 * FF.mf6 * FF.mf7 * FF.mf8 * FF.mf9 + 0.05);
-% R_CR_C = v_CR / (FF.sfc_CR_1PERs * Ergebnisse_Widerstand_FE2.cW_cA_off_D *specs.g) * log(1/mf4_C);
+% Fuel.Fractions.m_f4_C = (1.05 - m_F_C/m_TO_C)/(Fuel.Fractions.m_f2 * Fuel.Fractions.m_f3_new * Fuel.Fractions.m_f5 * Fuel.Fractions.m_f6 * Fuel.Fractions.m_f7 * Fuel.Fractions.m_f8 * Fuel.Fractions.m_f9 + 0.05);
+% R_CR_C = v_CR/(sfc_CR * Widerstand.epsilon_CR*g0) * log(1/Fuel.Fractions.m_f4_C);
 % R_C = (R_CL + R_CR_C)/1000;
 % 
 % 
-% % m_F_C_C = 0.05 *(1 - (FF.mf2 * FF.mf3 * mf4_C * FF.mf5)) * m_TO_C;
-% m_F_C_C = 0.05 *(1 - (FF.mf2 * FF.mf3 * mf4_B * FF.mf5)) * m_TO_C;
-% m_RF_OC_C = m_ZF_C * (1/((1-m_F_C_C/m_ZF_C) * FF.mf6 * FF.mf7 * FF.mf8 * FF.mf9) -1);
+% m_F_C_C = 0.05 *(1 - (Fuel.Fractions.m_f2 * Fuel.Fractions.m_f3_new * Fuel.Fractions.m_f4_B * Fuel.Fractions.m_f5)) * m_TO_C;
+% m_RF_OC_C = m_ZF_C * (1/((1-m_F_C_C/m_ZF_C) * Fuel.Fractions.m_f6 * Fuel.Fractions.m_f7 * Fuel.Fractions.m_f8 * Fuel.Fractions.m_f9) -1);
 % m_RF_C = m_RF_OC_C + m_F_C_C;
 % m_TF_C = m_F_C - m_RF_C;
 % 
 % C = [R_C; m_P_C; m_F_C; m_TF_C; m_RF_C];
-% 
-% % m_F_C = Fluegel.Tank.M_fuel;
-% % m_TO_C = m_TO;
-% % m_P_C = m_TO_C - (m_OE + m_F_C);
-% % 
-% % m_ZF_C = m_OE + m_P_C;
-% % Fuel.Fractions.m_f4_C = (1.05 - m_F_C/m_TO_C)/(Fuel.Fractions.m_f2 * Fuel.Fractions.m_f3_new * Fuel.Fractions.m_f5 * Fuel.Fractions.m_f6 * Fuel.Fractions.m_f7 * Fuel.Fractions.m_f8 * Fuel.Fractions.m_f9 + 0.05);
-% % R_CR_C = v_CR/(sfc_CR * Widerstand.epsilon_CR*g0) * log(1/Fuel.Fractions.m_f4_C);
-% % R_C = (R_CL + R_CR_C)/1000;
-% % 
-% % 
-% % m_F_C_C = 0.05 *(1 - (Fuel.Fractions.m_f2 * Fuel.Fractions.m_f3_new * Fuel.Fractions.m_f4_B * Fuel.Fractions.m_f5)) * m_TO_C;
-% % m_RF_OC_C = m_ZF_C * (1/((1-m_F_C_C/m_ZF_C) * Fuel.Fractions.m_f6 * Fuel.Fractions.m_f7 * Fuel.Fractions.m_f8 * Fuel.Fractions.m_f9) -1);
-% % m_RF_C = m_RF_OC_C + m_F_C_C;
-% % m_TF_C = m_F_C - m_RF_C;
-% % 
-% % C = [R_C; m_P_C; m_F_C; m_TF_C; m_RF_C];
-% 
-% % D --------------------------------------
-% 
-% m_F_D = m_fuel;
+
+% D --------------------------------------
+
+m_F_D = m_fuel;
+m_P_D = 0;
+m_TO_D = m_OE + m_F_D ;
+m_ZF_D = m_OE + m_P_D;
+mf4_D = (1.05 - m_F_D / m_TO_D)/(FF.mf2 * FF.mf3* FF.mf5 * FF.mf6 * FF.mf7 * FF.mf8 * FF.mf9 + 0.05);
+R_CR_D = v_CR / (FF.sfc_CR_1PERs * Ergebnisse_Widerstand_FE2.cW_cA_off_D *specs.g) * log(1/mf4_D);
+R_D = (Steigflug.R_CL + R_CR_D)/1000;
+
+% m_F_C_D = 0.05 *(1 - (FF.mf2 * FF.mf3 * mf4_D * FF.mf5)) * m_TO_D;
+m_F_C_D = 0.05 *(1 - (FF.mf2 * FF.mf3 * mf4_B * FF.mf5)) * m_TO_D;
+m_RF_OC_D = m_ZF_D * (1/((1-m_F_C_D/m_ZF_D) * FF.mf6 * FF.mf7 * FF.mf8 * FF.mf9) -1);
+m_RF_D = m_RF_OC_D + m_F_C_D;
+m_TF_D = m_F_D - m_RF_D;
+ 
+D = [R_D; m_P_D; m_F_D; m_TF_D; m_RF_D];
+
+% m_F_D = Fluegel.Tank.M_fuel;
 % m_P_D = 0;
 % m_TO_D = m_OE + m_F_D ;
 % m_ZF_D = m_OE + m_P_D;
-% mf4_D = (1.05 - m_F_D / m_TO_D)/(FF.mf2 * FF.mf3* FF.mf5 * FF.mf6 * FF.mf7 * FF.mf8 * FF.mf9 + 0.05);
-% R_CR_D = v_CR / (FF.sfc_CR_1PERs * Ergebnisse_Widerstand_FE2.cW_cA_off_D *specs.g) * log(1/mf4_D);
+% Fuel.Fractions.m_f4_D = (1.05 - m_F_D/m_TO_D)/(Fuel.Fractions.m_f2 * Fuel.Fractions.m_f3_new * Fuel.Fractions.m_f5 * Fuel.Fractions.m_f6 * Fuel.Fractions.m_f7 * Fuel.Fractions.m_f8 * Fuel.Fractions.m_f9 + 0.05);
+% R_CR_D = v_CR/(sfc_CR * Widerstand.epsilon_CR*g0) * log(1/Fuel.Fractions.m_f4_D);
 % R_D = (R_CL + R_CR_D)/1000;
 % 
-% % m_F_C_D = 0.05 *(1 - (FF.mf2 * FF.mf3 * mf4_D * FF.mf5)) * m_TO_D;
-% m_F_C_D = 0.05 *(1 - (FF.mf2 * FF.mf3 * mf4_B * FF.mf5)) * m_TO_D;
-% m_RF_OC_D = m_ZF_D * (1/((1-m_F_C_D/m_ZF_D) * FF.mf6 * FF.mf7 * FF.mf8 * FF.mf9) -1);
+% 
+% m_F_C_D = 0.05 *(1 - (Fuel.Fractions.m_f2 * Fuel.Fractions.m_f3_new * Fuel.Fractions.m_f4_B * Fuel.Fractions.m_f5)) * m_TO_D;
+% m_RF_OC_D = m_ZF_D * (1/((1-m_F_C_D/m_ZF_D) * Fuel.Fractions.m_f6 * Fuel.Fractions.m_f7 * Fuel.Fractions.m_f8 * Fuel.Fractions.m_f9) -1);
 % m_RF_D = m_RF_OC_D + m_F_C_D;
 % m_TF_D = m_F_D - m_RF_D;
-%  
+% 
 % D = [R_D; m_P_D; m_F_D; m_TF_D; m_RF_D];
-% 
-% % m_F_D = Fluegel.Tank.M_fuel;
-% % m_P_D = 0;
-% % m_TO_D = m_OE + m_F_D ;
-% % m_ZF_D = m_OE + m_P_D;
-% % Fuel.Fractions.m_f4_D = (1.05 - m_F_D/m_TO_D)/(Fuel.Fractions.m_f2 * Fuel.Fractions.m_f3_new * Fuel.Fractions.m_f5 * Fuel.Fractions.m_f6 * Fuel.Fractions.m_f7 * Fuel.Fractions.m_f8 * Fuel.Fractions.m_f9 + 0.05);
-% % R_CR_D = v_CR/(sfc_CR * Widerstand.epsilon_CR*g0) * log(1/Fuel.Fractions.m_f4_D);
-% % R_D = (R_CL + R_CR_D)/1000;
-% % 
-% % 
-% % m_F_C_D = 0.05 *(1 - (Fuel.Fractions.m_f2 * Fuel.Fractions.m_f3_new * Fuel.Fractions.m_f4_B * Fuel.Fractions.m_f5)) * m_TO_D;
-% % m_RF_OC_D = m_ZF_D * (1/((1-m_F_C_D/m_ZF_D) * Fuel.Fractions.m_f6 * Fuel.Fractions.m_f7 * Fuel.Fractions.m_f8 * Fuel.Fractions.m_f9) -1);
-% % m_RF_D = m_RF_OC_D + m_F_C_D;
-% % m_TF_D = m_F_D - m_RF_D;
-% % 
-% % D = [R_D; m_P_D; m_F_D; m_TF_D; m_RF_D];
-% 
-% 
-% 
-% figure(1) 
-% hold on 
-% grid on 
-% ylim([100000 m_TO+10000])
-% xlim([0 20000])
-% 
-% p1(1) = plot([A(1) B(1) C(1) D(1)].*10,[A(2)+m_OE, B(2)+m_OE, C(2)+m_OE, D(2)+m_OE]);
-% p1(2) = plot([A(1) B(1) C(1) D(1)].*10,[A(3)+m_ZF, B(3)+m_ZF, C(3)+m_ZF, D(3)+m_ZF]);
-% p1(3) = plot([A(1) B(1) C(1) D(1)].*10,[A(4)+m_ZF, B(4)+m_ZF, C(4)+m_ZF, D(4)+m_ZF]);
-% p1(4) = plot([A(1) B(1) C(1) D(1)].*10,[A(5)+m_ZF, B(5)+m_ZF, C(5)+m_ZF, D(5)+m_ZF]);
-% p1(5) = plot([0, 20000],[m_TO, m_TO], Color=[0.5 0.5 0.5], LineStyle="--");
-% p1(6) = plot([0, 20000],[m_OE, m_OE], Color=[0.5 0.5 0.5], LineStyle="-.");
-% % % plot(R_DP, m_P,'rx')
-% 
-% title('Nutzlast-Reichweiten-Diagramm', 'FontSize',25)
-% legend(p1(1:6),{'Nutzlast', 'Treibstoffmasse', 'Reisekraftstoffmasse', 'Reserve', 'M_{TO}', 'M_{OE}'},...
-%      'Location','southwest','FontSize',25);
-% xlabel('Reichweite in km','FontSize',20)
-% ylabel('Masse in kg','FontSize',20)
+
+
+
+figure(1) 
+hold on 
+grid on 
+ylim([100000 m_TO+10000])
+xlim([0 20000])
+
+p1(1) = plot([A(1) B(1) C(1) D(1)].*10,[A(2)+m_OE, B(2)+m_OE, C(2)+m_OE, D(2)+m_OE]);
+p1(2) = plot([A(1) B(1) C(1) D(1)].*10,[A(3)+m_ZF, B(3)+m_ZF, C(3)+m_ZF, D(3)+m_ZF]);
+p1(3) = plot([A(1) B(1) C(1) D(1)].*10,[A(4)+m_ZF, B(4)+m_ZF, C(4)+m_ZF, D(4)+m_ZF]);
+p1(4) = plot([A(1) B(1) C(1) D(1)].*10,[A(5)+m_ZF, B(5)+m_ZF, C(5)+m_ZF, D(5)+m_ZF]);
+p1(5) = plot([0, 20000],[m_TO, m_TO], Color=[0.5 0.5 0.5], LineStyle="--");
+p1(6) = plot([0, 20000],[m_OE, m_OE], Color=[0.5 0.5 0.5], LineStyle="-.");
+% % plot(R_DP, m_P,'rx')
+
+title('Nutzlast-Reichweiten-Diagramm', 'FontSize',25)
+legend(p1(1:6),{'Nutzlast', 'Treibstoffmasse', 'Reisekraftstoffmasse', 'Reserve', 'M_{TO}', 'M_{OE}'},...
+     'Location','southwest','FontSize',25);
+xlabel('Reichweite in km','FontSize',20)
+ylabel('Masse in kg','FontSize',20)
 
 
 

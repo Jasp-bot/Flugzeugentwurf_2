@@ -389,7 +389,7 @@ while abs(delta_M_to) > 0.0001
     S_f = F_FOWLER;%(spannweite_flaps * (Ergebnisse_Fluegel.b/2)) * Ergebnisse_Fluegel.l_m;  % Fläche Klappen über mittlere Flügeltiefe
     b_fs = spannweite_flaps * (Ergebnisse_Fluegel.b); % Spannweite Klappen
     V_lf = landeanvorderung.v_50;
-    beta = deg2rad(45);%° % Vorgegeben als Optimum PS 6
+    beta = deg2rad(45);% % Vorgegeben als Optimum PS 6
     pfeilung = (Ergebnisse_Fluegel.phi_25_max); 
     t_c = specs.d_l;
     %rad oder degree?
@@ -577,6 +577,7 @@ while abs(delta_M_to) > 0.0001
     % Oberflaeche
     
     % ???????????????????????????????? Quelle der Werte ???????????????????
+    % Maintenance Handbuch
     % deklarationen
     feet = 3.28084;     %% Umrechnungsfactor
     ln = specs.ln_TW * feet;        %%länge fan cowling

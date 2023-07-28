@@ -5,12 +5,13 @@ clear all
 close all
 clc
 
+Berechnung_FE2_PS4_Widerstand;
 
 load Ergebnisse_Massen_FE2.mat;
 load Projekt_specs.mat
 load Ergebnisse_ISA_DATA.mat
 load Ergebnisse_Start_Landeanforderungen.mat
-
+load Ergebnisse_Widerstand.mat;
 
 P_oe=1.245;      %Price per Kilogramm aus PS 09 [€/kg]
 f_ir=0.05;       %interest rate [%]  
@@ -32,95 +33,105 @@ I_PAX=[550,400]; %income per seat long haul [3 KLassen, all eco]
 n_pax=specs.n_pax;
 
 %Variabeln
-R= linspace(500, specs.max_range_basis_km , 20);     %Reichweite
+R= linspace(500, specs.max_range_basis_km, 20)     %Reichweite
 %R=5000;
 
 
 %Annahmen
-R_STD=9000;
+
 P_GES=1;
 
 Flughoehe_CR = specs.flight_level * 10^2 ;     % in ft
 hoehe_CR = round(unitsratio('m','ft')*Flughoehe_CR);
-v = specs.Ma_CR * ISA.a(hoehe_CR);       %Geschwindigkeit
+v = specs.Ma_CR * ISA.a(hoehe_CR)       %Geschwindigkeit
 S_0 = startschub.S0 / 1000;
 %S_0 = 800; %Standschub [t]
 v_h= v * 3.6;
 
 
+
 %%Rechnung
 alpha=f_ir*P_GES*((1-f__RV*(1/(1+f_ir))^t_DEP)/((1-(1/(1+f_ir))^t_DEP)));
 
-C_cap=P_oe*Ergebnisse_Massen_FE2.M_OE*(alpha+f_I);        %Capital costs
+C_cap=P_oe*Ergebnisse_Massen_FE2.M_OE*(alpha+f_I);        %Capital costs. M_OE ändert sich nie
 
-C_crew=n_crew*(S_FA*((Ergebnisse_Massen_FE2.M_ZF-Ergebnisse_Massen_FE2.M_OE)/5000)+S_FC(1)); %Kosten der Crew ca 3mio
+C_crew=n_crew*(S_FA*specs.n_crew*((Ergebnisse_Massen_FE2.M_ZF-Ergebnisse_Massen_FE2.M_OE)/5000)+S_FC(1)*specs.n_flight); %Kosten der Crew ca 24mio  %%Vielleicht noch anpassen wegen weniger Crew wegen weniger PAX
 
 C1=C_cap+C_crew;    %C1 ist Routen unabhängige kosten
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-FC_pa=(6011./((R./v_h)+BT_avg));          %PS09 Formel 10
+FC_pa=(6011/((specs.max_range_basis_km/v_h)+BT_avg));           %PS09 Formel 10     %%Vielleicht auch noch änder (R_STD)
 
-FT_PA = 6011./(1+(v_h.*(BT_avg./R)));    %yearly flight time 
-
-
+FT_PA = 6011./(1+(v_h.*(BT_avg./R)));                           %yearly flight time 
 
 FT= FT_PA ./ FC_pa;
 
-<<<<<<< Updated upstream
+
 C_MRO_AF_MAT = (Ergebnisse_Massen_FE2.M_OE./1000)*(0.2.*FT +13.7)+57.5; %Airframe Material maintenance costs (repair and replacement)
 
 C_MRO_AF_PER = f_lr .*(1+C_B).*((0.655+0.01*Ergebnisse_Massen_FE2.M_OE/1000) * FT + 0.254 + 0.01 .* (Ergebnisse_Massen_FE2.M_OE./1000));   %Aiframe personal maintenance costs (inspection and repair)
-=======
-C_MRO_AF_MAT = (Ergebnisse_Massen_FE2.M_OE./1000).* (0.2.* FT + 13.7) + 57.5; %Airframe Material maintenance costs (repair and replacement)
-
-C_MRO_AF_PER = f_lr .*(1+C_B).* ((0.655 + 0.01.*Ergebnisse_Massen_FE2.M_OE./1000) .* FT + 0.254 + 0.01 .* (Ergebnisse_Massen_FE2.M_OE./1000));   %Aiframe personal maintenance costs (inspection and repair)
->>>>>>> Stashed changes
 
 C_MRO_ENG = specs.n_TW .* (1.5 .* (S_0./specs.n_TW) + (30.5 .* FT) + 10.6);
 
 C_MRO = C_MRO_ENG + C_MRO_AF_PER + C_MRO_AF_MAT;
 
-Fuel = fuel_range(R);
+
+
+Fuel = Tripfuel(R)
+%Fuel=Ergebnisse_Massen_FE2.M_TO*(1./exp((R*14*2*0.05*specs.g)/v_h)+1)
+
+[SFC1,SFC2,SFC3]=SFC(hoehe_CR,specs.Ma_CR,specs.bypass)
+
 MAX_Fuel=fuel_range(specs.max_range_basis_km);
 
-C2 = FC_pa.*(P_F.*Fuel+((specs.m_cargo+specs.m_pax)).*P_H + P_LDG.*(Ergebnisse_Massen_FE2.M_OE+Fuel) + f_ATC(3).*R.*sqrt(((Ergebnisse_Massen_FE2.M_OE+Fuel)./1000)./50) + C_MRO); % PS09 Formel 4 Routen abhängige kosten
+C2 = FC_pa(1,end)*(P_F*Fuel+(nutzlast(R)).*P_H + P_LDG.*(Ergebnisse_Massen_FE2.M_OE+Fuel) + f_ATC(2).*R.*sqrt(((Ergebnisse_Massen_FE2.M_OE+Fuel)./1000)./50) + C_MRO); % PS09 Formel 4 Routen abhängige kosten
 
 %Komponnenten zum Plotten       
 ko_1=P_F*Fuel(1,end);
-ko_2=((specs.m_cargo+specs.m_pax))*P_H;
+ko_2=(nutzlast(R))*P_H;
 ko_3=P_LDG*(Ergebnisse_Massen_FE2.M_OE+Fuel(1,end));
 ko_4=f_ATC(3)*(R(1,end))*sqrt(((Ergebnisse_Massen_FE2.M_OE+Fuel(1,end))/1000)/50);
 ko_5=C_MRO(1,end);
 
+SKO=R*1000*nutzlast(R)
 
+   % for ZWW=1:length(R)
+   %      if R(1,ZWW) < specs.max_range_basis_km
+   %      % Hier keine 1000 -> Sieht dann aber schön aus :)
+   %          SKO(1,ZWW)= R(1,ZWW) * 1000 * specs.n_pax;
+   % 
+   % 
+   % 
+   %      elseif R(1,ZWW)>= specs.max_range_basis_km
+   %          GEWICHT_VON_ZU_VIEL_FUEL=(MAX_Fuel-fuel_range(R(1,ZWW)))/specs.n_pax
+   %          %GEWICHT_VON_ZU_VIEL_FUEL=0;
+   %          SKO(1,ZWW)=R(1,ZWW) * 1000 * (specs.n_pax + GEWICHT_VON_ZU_VIEL_FUEL);
+   %          %SKO(1,ZWW)=1;
+   % 
+   % 
+   % 
+   %      end
+   %  end
 
-
-    for ZWW=1:length(R)
-        if R(1,ZWW) < specs.max_range_basis_km
-        % Hier keine 1000 -> Sieht dann aber schön aus :)
-            SKO(1,ZWW)= R(1,ZWW) * 1000 * specs.n_pax;
-        elseif R(1,ZWW)>= specs.max_range_basis_km
-            GEWICHT_VON_ZU_VIEL_FUEL=MAX_Fuel-fuel_range(R(1,ZWW))
-
-            SKO(1,ZWW)=R(1,ZWW) * 1000 * (specs.n_pax + GEWICHT_VON_ZU_VIEL_FUEL);
-    
-        end
-    end
-
-
+format long g 
 
 DOC = C1 + C2 ;          %Gesamten kosten 
+DOC_END=DOC(1,end)
 
 SMC = DOC./SKO;
 
-I_CAR = I_FR * (Ergebnisse_Massen_FE2.M_TO - Ergebnisse_Massen_FE2.M_ZF - (311 * 80));          %%MUSS NOCHMAL ANGESEHEN WERDEN!!!! KA WAS DIE BEI FORMEL 13 DAMIT MEINEN 
+I_CAR = I_FR * (Ergebnisse_Massen_FE2.M_TO - Ergebnisse_Massen_FE2.M_ZF - (311 * 80));          %% Cargo correction
 
 n_PAX_CAR = I_CAR / I_PAX(1);
 
+
+
+
+
 %Polution Pro Max langem Flug
-Fuel_P=fuel_range(specs.max_range_basis_km);
+Fuel_P=fuel_range(specs.max_range_basis_km)/specs.n_pax;
 C02=3.15*Fuel_P
 Water=1.24*Fuel_P
 Nitrogen_oxides=0.01*Fuel_P
@@ -134,7 +145,7 @@ soog=0.00002*Fuel_P
 figure(1)
 
 pie([C_cap C_crew])
-labels = {'C_cap' , 'C_crew'}
+labels = {'C_{cap}' , 'C_{crew}'}
 legend(labels)
 title('Routenunabhängige Kosten')
 
@@ -150,46 +161,140 @@ labels = {'Fuel costs' , 'Handling fees' , 'Landing fees' , 'ATC costs' , 'Engin
 legend(labels)
 title('Routenabhängige Kosten')
 
-figure(3)
-plot(R,FT_PA)   %Plot Flight Time per annum
-title('Kosten pro Kilometer')
-
-
 DOC_zuSKO_COR = (DOC./SKO) * (n_pax / (n_pax + n_PAX_CAR));
+
+figure(3)
+plot(R,SKO)   %Plot Flight Time per annum
+title('Kosten pro Kilometer')
+xlabel('km')
+ylabel('Kosten in €')
+
 figure(2)
 plot(R,SMC)
-xlim([0,12000])
+title('Sitzkilometerkosten')
+xlabel('Reichweite in km')
+ylabel('€/km')
+
+xlim([0,15000])
 grid on
 % Noch zweite Funktion plotten !
 
-kerosin_data = readtable("kerosin2.xlsx");
-%kerosin_data_2 = table2array(kerosin_data(5,:))
-kerosin_preis = kerosin_data.x_ProKg;
-figure(6)
-vektor = linspace(1,length(kerosin_preis),length(kerosin_preis));
-plot(vektor,kerosin_preis)
-hold on
 
-f = fittype('a*x^2+b');
-vorhersage = fit(vektor.',kerosin_preis,f);
-coeffvals = coeffvalues(vorhersage)
-
-x = coeffvals(1,1)
-b = coeffvals(1,2)
-
-y = x .* vektor.^2 + b;
-
-plot(vektor, y)
-
-legend("Kerosinpreis in €","Trend")
-xlabel('Monate')
-ylabel('Preis pro kg in €')
+% Kerosinpreis
+% 
+% kerosin_data = readtable("kerosin2.xlsx");
+% %kerosin_data_2 = table2array(kerosin_data(5,:))
+% kerosin_preis = kerosin_data.x_ProKg;
+% figure(6)
+% vektor = linspace(1,length(kerosin_preis),length(kerosin_preis));
+% plot(vektor,kerosin_preis)
+% hold on
+% 
+% f = fittype('a*x^2+b');
+% vorhersage = fit(vektor.',kerosin_preis,f);
+% coeffvals = coeffvalues(vorhersage)
+% 
+% x = coeffvals(1,1)
+% b = coeffvals(1,2)
+% 
+% y = x .* vektor.^2 + b;
+% 
+% plot(vektor, y)
+% 
+% legend("Kerosinpreis in €","Trend")
+% xlabel('Monate')
+ %ylabel('Preis pro kg in €')
 
 hold off
 
 %%%%
 
-function [Fuel]=fuel_range(Range)
+function [TOM] = TOM(Reichweite)        %%Lennis EIGENTUUUUM (hat er auch von Chat GPT :D)
+    
+    x = [NRD.A.R, NRD.B.R, NRD.C.R, NRD.D.R];                               %Reichweiten an den Punkten in NRD
+    y = [NRD.A.m_TO, NRD.B.m_TO_max, NRD.C.m_TO_max, NRD.D.m_TO];           %MTOM an den Punkten des NRD
+
+    if Reichweite <= x(2)
+        TOM = ((x(2) - Reichweite) / (x(2) - x(1))) * y(1) + ((Reichweite - x(1)) / (x(2) - x(1))) * y(2);
+    elseif Reichweite <= x(3)
+        TOM = ((x(3) - Reichweite) / (x(3) - x(2))) * y(2) + ((Reichweite - x(2)) / (x(3) - x(2))) * y(3);
+    elseif Reichweite <= x(4)
+        TOM = ((x(4) - Reichweite) / (x(4) - x(3))) * y(3) + ((Reichweite - x(3)) / (x(4) - x(3))) * y(4);
+    else
+        TOM = NaN; % Für Werte außerhalb des definierten Bereichs
+    end
+
+end
+
+function [PAX] = PAX(Reichweite)        %%Lennis EIgentum 
+    
+    x = [NRD.A.R, NRD.B.R, NRD.C.R, NRD.D.R];   %%Wieder die Reichweiten
+    y = [440, 440, 440*NRD.C.payload_perc, 0];  %%Prozent wie viel Payload noch drin ist
+
+
+    if Reichweite <= x(2)
+        PAX = ((x(2) - Reichweite) / (x(2) - x(1))) * y(1) + ((Reichweite - x(1)) / (x(2) - x(1))) * y(2);
+    elseif Reichweite <= x(3)
+        PAX = ((x(3) - Reichweite) / (x(3) - x(2))) * y(2) + ((Reichweite - x(2)) / (x(3) - x(2))) * y(3);
+    elseif Reichweite <= x(4)
+        PAX = ((x(4) - Reichweite) / (x(4) - x(3))) * y(3) + ((Reichweite - x(3)) / (x(4) - x(3))) * y(4);
+    else
+        PAX = NaN; % Für Werte außerhalb des definierten Bereichs
+    end
+
+end
+
+function [nutzlast] = nutzlast(Reichweite)      %%Lennis und so
+load NRD_funktion.mat
+    if Reichweite <= NRD.B.R
+        nutzlast = ((NRD.B.R - Reichweite) / (NRD.B.R - NRD.A.R)) * NRD.A.m_P_max + ((Reichweite - NRD.A.R) / (NRD.B.R - NRD.A.R)) * NRD.B.m_P_max;
+    elseif Reichweite <= NRD.C.R
+        nutzlast = ((NRD.C.R - Reichweite) / (NRD.C.R - NRD.B.R)) * NRD.B.m_P_max + ((Reichweite - NRD.B.R) / (NRD.C.R - NRD.B.R)) * NRD.C.m_P;
+    elseif Reichweite <= NRD.D.R
+        nutzlast = ((NRD.D.R - Reichweite) / (NRD.D.R - NRD.C.R)) * NRD.C.m_P + ((Reichweite - NRD.C.R) / (NRD.D.R - NRD.C.R)) * NRD.D.m_P;
+    else
+        nutzlast = NaN; % Für Werte außerhalb des definierten Bereichs
+    end
+
+end
+
+function [Tripfuel] = Tripfuel(Reichweite)      %%Irgendwie ist ja meine andere Funktion dann lost?
+    load NRD_funktion.mat
+    x = [NRD.A.R, NRD.B.R, NRD.C.R, NRD.D.R];
+    y = [NRD.A.m_F_CR, NRD.B.m_F_CR, NRD.C.m_F_CR, NRD.D.m_F_CR];
+    
+    if Reichweite <= x(2)
+            Tripfuel = ((x(2) - Reichweite) / (x(2) - x(1))) * y(1) + ((Reichweite - x(1)) / (x(2) - x(1))) * y(2);
+    elseif Reichweite <= x(3)
+            Tripfuel = ((x(3) - Reichweite) / (x(3) - x(2))) * y(2) + ((Reichweite - x(2)) / (x(3) - x(2))) * y(3);
+    elseif Reichweite <= x(4)
+            Tripfuel = ((x(4) - Reichweite) / (x(4) - x(3))) * y(3) + ((Reichweite - x(3)) / (x(4) - x(3))) * y(4);
+    else
+            Tripfuel = NaN; % Für Werte außerhalb des definierten Bereichs
+    end
+
+end
+
+function [Fracht] = Fracht(Reichweite)          %%Lennis
+    load NRD_funktion.mat
+    x = [NRD.A.R, NRD.B.R, NRD.C.R, NRD.D.R];
+    y = [14000, 14000, 14000*NRD.C.payload_perc, 0];
+    load NRD_funktion.mat
+    % Stückweise definierte Funktion
+    
+    if Reichweite <= x(2)
+        Fracht = ((x(2) - Reichweite) / (x(2) - x(1))) * y(1) + ((Reichweite - x(1)) / (x(2) - x(1))) * y(2);
+    elseif Reichweite <= x(3)
+        Fracht = ((x(3) - Reichweite) / (x(3) - x(2))) * y(2) + ((Reichweite - x(2)) / (x(3) - x(2))) * y(3);
+    elseif Reichweite <= x(4)
+        Fracht = ((x(4) - Reichweite) / (x(4) - x(3))) * y(3) + ((Reichweite - x(3)) / (x(4) - x(3))) * y(4);
+    else
+        Fracht = NaN; % Für Werte außerhalb des definierten Bereichs
+    end
+
+end
+
+function [Fuel]=fuel_range(Range)               %%Braucht man nicht mehr wegen des NRD
 
 load Projekt_specs.mat;
 load Ergebnisse_ISA_DATA.mat;

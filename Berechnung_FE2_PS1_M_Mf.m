@@ -82,7 +82,7 @@ load Ergebnisse_Leitwerke.mat;
 % werden wenn genaueres zu den Hochauftriebshilfen bekannt ist 
 load Data_PS1_High_lift_divice_Torenbeek.mat;   
 
-
+load Ergebnisse_Flugleistung_2.mat;
 
 %% Anfangswerte festlegen
 
@@ -114,6 +114,12 @@ while abs(delta_M_to) > 0.0001
     hoehe_ALT = round(unitsratio('m','ft')*specs.flight_level_ALT* 10^2);     % in m
     hoehe_HLD = round(unitsratio('m', 'ft')*1500);
     
+
+     % Nach Roskam
+    FF.mf0 = 0.992; 
+    FF.mf1 = 0.996;
+    FF.mf2 = 0.996;
+
     %% Climbn_ult
     % Berechnungen für FuelFraction Methde nach Roskamp
     
@@ -137,16 +143,22 @@ while abs(delta_M_to) > 0.0001
     [FF.sfc_CL_daNh, FF.sfc_CL_1PERh, FF.sfc_CL_1PERs] = SFC(hoehe_CL, ((2/3) * specs.Ma_CR), specs.bypass);
     
     % Formel 7 PS1 (umgestellte Formel 6 PS1 um mf3 zu erhalten) 
-    FF.mf3 = exp(-FF.t_CL * FF.sfc_CL_1PERs * FF.S_G_CL);
+    FF.mf3_alt = exp(-FF.t_CL * FF.sfc_CL_1PERs * FF.S_G_CL);
     
+    FF.m3_neu = M_TO_initial * FF.mf2;
+
+    FF.mf3 = 1 - (Ergebnisse_Flugleistung_2.Steigflug.m_F_CL)/(FF.m3_neu);
+
     %% Cruise
     
-    FF.R_CR = specs.max_range_basis_km * 1000 - (FF.v_CL * FF.t_CL);
+    FF.R_CR_old = specs.max_range_basis_km * 1000 - (FF.v_CL * FF.t_CL);
+    FF.R_CR = specs.max_range_basis_km * 1000 - (Ergebnisse_Flugleistung_2.Steigflug.R_CL);
     FF.v_CR = specs.Ma_CR * ISA.a(hoehe_CR);
     [FF.sfc_CR_daNh, FF.sfc_CR_1PERh, FF.sfc_CR_1PERs] = SFC(hoehe_CR, (specs.Ma_CR), specs.bypass);
     
-    FF.mf4 = 1/exp((FF.R_CR * FF.sfc_CR_1PERs * (1/(Endwerte_Iteration.CA_CW_Clean))/(FF.v_CR)));
-    
+    FF.mf4_old = 1/exp((FF.R_CR * FF.sfc_CR_1PERs * (1/(Endwerte_Iteration.CA_CW_Clean))/(FF.v_CR)));
+    FF.mf4 = FFneu.mf4;
+
     FF.mf5 = 1;
     %% Diversion
     
@@ -168,8 +180,10 @@ while abs(delta_M_to) > 0.0001
     
     [FF.sfc_CL_ALT_daNh, FF.sfc_CL_ALT_1PERh, FF.sfc_CL_ALT_1PERs] = SFC(hoehe_CL_ALT, FF.Ma_CL_ALT, specs.bypass);
     
-    FF.mf6 = exp(-FF.t_CL_ALT * FF.sfc_CL_ALT_1PERs * FF.S_G_CL_ALT);
-    
+    FF.mf6_old = exp(-FF.t_CL_ALT * FF.sfc_CL_ALT_1PERs * FF.S_G_CL_ALT);
+
+    FF.mf6 = FFneu.mf6;
+
     % Diversion CR
     
     FF.R_ALT = specs.R_ALT ;% - (FF.v_CL_ALT * FF.t_CL_ALT); Es werden mit 200 nm im CR DIV gerechnet
@@ -178,8 +192,10 @@ while abs(delta_M_to) > 0.0001
     
     [FF.sfc_CR_ALT_daNh, FF.sfc_CR_ALT_1PERh, FF.sfc_CR_ALT_1PERs] = SFC(hoehe_ALT, FF.Ma_CR_ALT, specs.bypass);
     
+    
     FF.mf7 = 1/exp((FF.R_ALT * FF.sfc_CR_ALT_1PERs * (1/(Endwerte_Iteration.CA_CW_Clean))/(FF.v_ALT)));
     
+
     FF.mf8 = 1;
     
     %% Holding
@@ -188,16 +204,15 @@ while abs(delta_M_to) > 0.0001
     
     [FF.sfc_HLD_daNh, FF.sfc_HLD_1PERh, FF.sfc_HLD_1PERs] = SFC(hoehe_HLD, FF.Ma_HLD, specs.bypass);
     
-    FF.mf9 = 1/(exp(specs.t_HLD * FF.sfc_HLD_1PERs * (1/Endwerte_Iteration.CA_CW_Clean)));
+    FF.mf9_old = 1/(exp(specs.t_HLD * FF.sfc_HLD_1PERs * (1/Endwerte_Iteration.CA_CW_Clean)));
+    FF.mf9 = FFneu.mf9;
+
     
     
     %% Fuel Fraction ges
     
     
-    % Nach Roskam
-    FF.mf0 = 0.992; 
-    FF.mf1 = 0.996;
-    FF.mf2 = 0.996;
+   
     FF.mf10 = 1; % hat kristof gesagt
     
     %%%%%%%%%%%%%%%%%%%%%%%%  mfi muss noch mal überprüft werden, ich habe
@@ -221,6 +236,9 @@ while abs(delta_M_to) > 0.0001
     % Kraftstoffmassenfaktor neu
     FF.Kappa_ges = 1- FF.Mff_2_10 + 0.05 * (1 - FF.Mff_2_5); 
     FF.Kappa_ALT = 1 - FF.Mff_6_10;
+
+    FF.mf_C = 0.05 * (1- FF.Mff_2_5) * M_TO_initial;
+   
 
     M_take_off_initial.M_fuel = M_TO_initial * FF.Kappa_ges;
     
@@ -803,8 +821,10 @@ while abs(delta_M_to) > 0.0001
     
     %% Zero Fuel Mass 
     M_Zero_Fuel.M_ZF = Masse_opperating_empty + M_Payload.M_payload_basis;
-    
-    
+    FF.M_F_res = M_Zero_Fuel.M_ZF * ((1)/((1 - FF.mf_C / M_Zero_Fuel.M_ZF) * FF.Mff_6_10 ) - 1);
+    FF.M_RF_oC = FF.M_F_res - FF.mf_C;
+
+
     %% takeoff Masse
     
     M_take_off_initial.test_mto = M_Zero_Fuel.M_ZF/(1-FF.Kappa_ges);

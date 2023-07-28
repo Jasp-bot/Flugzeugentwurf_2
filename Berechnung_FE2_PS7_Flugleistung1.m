@@ -34,16 +34,21 @@ TO_Masse =  Ergebnisse_Massen_FE2.M_TO;
 G_TO = TO_Masse * specs.g;
 k_CR = 0.98;
 Momentane_Masse_ICA = TO_Masse * 0.98 * specs.g;
-Momentane_Masse_DEC = (Ergebnisse_Massen_FE2.M_TO - Ergebnisse_Massen_FE2.M_F)*specs.g;
+Momentane_Masse_DEC = (Ergebnisse_Massen_FE2.M_TO - Ergebnisse_Massen_FE2.M_Z_Tripfuel)*specs.g;
 Momentane_Masse_CL = TO_Masse * specs.g;
+Momentane_Masse_CL_ALT = (Ergebnisse_Massen_FE2.M_TO - Ergebnisse_Massen_FE2.M_Z_Tripfuel)*specs.g;
 Masse_ICA = TO_Masse * 0.98;
 Masse_CL = TO_Masse;
-Masse_DEC = (Ergebnisse_Massen_FE2.M_TO - Ergebnisse_Massen_FE2.M_F);
+Masse_DEC = (Ergebnisse_Massen_FE2.M_TO - Ergebnisse_Massen_FE2.M_Z_Tripfuel);
+Masse_CL_ALT = (Ergebnisse_Massen_FE2.M_TO - Ergebnisse_Massen_FE2.M_Z_Tripfuel)
 GTO_G_ICA = G_TO / Momentane_Masse_ICA;
 GTO_G_CL = 1;
 GTO_G_DEC = G_TO / Momentane_Masse_DEC;
+GTO_G_CL_ALT = G_TO / Momentane_Masse_CL_ALT;
 S0 = k_CR * G_TO * (1/schub_CR.Eta) / (schub_CR.S_S0_CR * schub_CR.S_S0_E);
 S0_GTO = S0/G_TO;
+
+
 
 % Annahmen fuer Flugbereichsdiagramm
 
@@ -52,6 +57,7 @@ G = Momentane_Masse_ICA; %%%%%%%%%%%%%%%%%%% ACHTUNG
 
 
 hoehe_CR = round(unitsratio('m','ft')*(specs.flight_level*10^2));
+hoehe_ALT = round(unitsratio('m','ft')*(specs.flight_level_ALT*10^2));
 
 %% Horizontalflugdiagramm
 
@@ -88,6 +94,7 @@ v_EAS_j = sqrt(( (2)./ (ISA.rho_0 .* c_A_j) ) .* (Momentane_Masse_ICA ./Ergebnis
 v_EAS_j_CL = sqrt(( (2) ./ (ISA.rho_0 .* c_A_j) ) .* (Momentane_Masse_CL ./Ergebnisse_Fluegel.F));
 v_EAS_j_DEC = sqrt(( (2) ./ (ISA.rho_0 .* c_A_j) ) .* (Momentane_Masse_DEC./Ergebnisse_Fluegel.F));
 
+v_EAS_j_CL_ALT = sqrt(( (2) ./ (ISA.rho_0 .* c_A_j) ) .* (Momentane_Masse_CL_ALT ./Ergebnisse_Fluegel.F));
 
 
 
@@ -96,9 +103,14 @@ v_TAS_j = (v_EAS_j)./(sqrt(rho_rho0_H));
 v_TAS_j_CL = (v_EAS_j_CL)./(sqrt(rho_rho0_H));
 v_TAS_j_DEC = (v_EAS_j_DEC)./(sqrt(rho_rho0_H));
 
+v_TAS_j_CL_ALT = (v_EAS_j_CL_ALT)./(sqrt(rho_rho0_H));
+
+
 Ma_j = v_TAS_j ./ a_H;
 Ma_j_CL = v_TAS_j_CL ./ a_H;
 Ma_j_DEC = v_TAS_j_DEC ./ a_H;
+
+Ma_j_CL_ALT = v_TAS_j_CL_ALT ./ a_H;
 
 
 % Vorhandenes Schub-Gewichts-Verhaeltnis
@@ -108,6 +120,7 @@ S_S0_KF_j_CR = S_S0_KF_j(specs.Drosselgrad(1,3), rho_rho0_H, Ma_j, p_p0_H, specs
 S_S0_KF_j_CL = S_S0_KF_j(specs.Drosselgrad(1,2), rho_rho0_H, Ma_j_CL, p_p0_H, specs.bypass);
 S_S0_KF_j_DEC = S_S0_KF_j(specs.Drosselgrad(1,3), rho_rho0_H, Ma_j_DEC, p_p0_H, specs.bypass);
 
+S_S0_KF_j_CL_ALT = S_S0_KF_j(specs.Drosselgrad(1,2), rho_rho0_H, Ma_j_CL_ALT, p_p0_H, specs.bypass);
 
 
 % Einlaufverluste PS7 S3 Formel 13
@@ -120,6 +133,7 @@ S_S0_j = S_S0_KF_j_CR .* S_S0_E;
 S_S0_j_CL = S_S0_KF_j_CL .* S_S0_E;
 S_S0_j_DEC = S_S0_KF_j_DEC .* S_S0_E;
 
+S_S0_j_CL_ALT = S_S0_KF_j_CL_ALT .* S_S0_E;
 
 % PS7 S4 Formel 15
 
@@ -127,12 +141,14 @@ S_G_vorh_j = S_S0_j .* S0_GTO .* GTO_G_ICA;
 S_G_vorh_j_CL = S_S0_j_CL .* S0_GTO .* GTO_G_CL;
 S_G_vorh_j_DEC = S_S0_j_DEC .* S0_GTO .* GTO_G_DEC;
 
+S_G_vorh_j_CL_ALT = S_S0_j_CL_ALT .* S0_GTO .* GTO_G_CL_ALT;
+
 % SFC
 [sfc_daNh_CR,  sfc_1PERh_CR, sfc_1PERs_Horizontalflug] = SFC_vec(hoehe_m, Ma_j, specs.bypass);
 [sfc_daNh_CL,  sfc_1PERh_CL, sfc_1PERs_Horizontalflug_CL] = SFC_vec(hoehe_m, Ma_j_CL, specs.bypass);
 [sfc_daNh_DEC, sfc_1PERh_DEC, sfc_1PERs_Horizontalflug_DEC] = SFC_vec(hoehe_m, Ma_j_DEC, specs.bypass);
 
-
+[sfc_daNh_CL_ALT,  sfc_1PERh_CL_ALT, sfc_1PERs_Horizontalflug_CL_ALT] = SFC_vec(hoehe_m, Ma_j_CL_ALT, specs.bypass);
 
 
 
@@ -170,6 +186,7 @@ delta_c_WM(n_datensatz, :)= Transsonischer_W(Ma_j(n_datensatz,:), c_A_F_j);
 delta_c_WM_CL(n_datensatz, :) = Transsonischer_W(Ma_j_CL(n_datensatz,:), c_A_F_j);
 delta_c_WM_DEC(n_datensatz, :) = Transsonischer_W(Ma_j_DEC(n_datensatz,:), c_A_F_j);
 
+delta_c_WM_CL_ALT(n_datensatz, :) = Transsonischer_W(Ma_j_CL_ALT(n_datensatz,:), c_A_F_j);
 
 
 % Gesamtwiderstansbeiwert PS7 S3 Formel 10
@@ -177,16 +194,21 @@ c_W_j(n_datensatz, :) = c_W_inkomp_j + delta_c_WM(n_datensatz, :);
 c_W_j_CL(n_datensatz, :) = c_W_inkomp_j + delta_c_WM_CL(n_datensatz, :);
 c_W_j_DEC(n_datensatz, :) = c_W_inkomp_j + delta_c_WM_DEC(n_datensatz, :);
 
+c_W_j_CL_ALT(n_datensatz, :) = c_W_inkomp_j + delta_c_WM_CL_ALT(n_datensatz, :);
+
 
 % PS7 S3 Formel 11 Gleitzahl kompressibel
 eps_kompr_j(n_datensatz, :) = c_W_j(n_datensatz, :) ./ c_A_j; % eps_kompr_j = (S/G)_erf_j
 eps_kompr_j_CL(n_datensatz, :) = c_W_j_CL(n_datensatz, :) ./ c_A_j;
 eps_kompr_j_DEC(n_datensatz, :) = c_W_j_DEC(n_datensatz, :) ./ c_A_j;
 
+eps_kompr_j_CL_ALT(n_datensatz, :) = c_W_j_CL_ALT(n_datensatz, :) ./ c_A_j;
+
 S_G_erf_j(n_datensatz, :) = c_W_j(n_datensatz, :) ./ c_A_j;
 S_G_erf_j_CL(n_datensatz, :) = c_W_j_CL(n_datensatz, :) ./ c_A_j;
 S_G_erf_j_DEC(n_datensatz, :) = c_W_j_DEC(n_datensatz, :) ./ c_A_j;
 
+S_G_erf_j_CL_ALT(n_datensatz, :) = c_W_j_CL_ALT(n_datensatz, :) ./ c_A_j;
 
 
 
@@ -223,6 +245,12 @@ TAS_SEP_H_CL_vec(n_datensatz,:) = [v_TAS_j_CL(n_datensatz, Hochpunkte.SEP_CL_x(n
 SEP_DEC(n_datensatz, :) = v_TAS_j_DEC(n_datensatz, :) .* (S_G_vorh_j_DEC(n_datensatz, :) - eps_kompr_j_DEC(n_datensatz, :));
 [Hochpunkte.SEP_DEC_y(n_datensatz,:), Hochpunkte.SEP_DEC_x(n_datensatz,:)] = max(SEP_DEC(n_datensatz,:));
 TAS_SEP_H_DEC_vec(n_datensatz,:) = [v_TAS_j_DEC(n_datensatz, Hochpunkte.SEP_DEC_x(n_datensatz,1)), Hochpunkte.SEP_DEC_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
+
+% fuer Ausweichflug ALT
+SEP_CL_ALT(n_datensatz, :) = v_TAS_j_CL_ALT(n_datensatz, :) .* (S_G_vorh_j_CL_ALT(n_datensatz, :) - eps_kompr_j_CL_ALT(n_datensatz, :));
+[Hochpunkte.SEP_CL_ALT_y(n_datensatz,:), Hochpunkte.SEP_CL_ALT_x(n_datensatz,:)] = max(SEP_CL_ALT(n_datensatz,:));
+TAS_SEP_H_CL_ALT_vec(n_datensatz,:) = [v_TAS_j_CL_ALT(n_datensatz, Hochpunkte.SEP_CL_ALT_x(n_datensatz,1)), Hochpunkte.SEP_CL_ALT_y(n_datensatz,1), hoehe_m(1,n_datensatz)];
+
 
 
 %% Spezifische Reichweite SR
@@ -407,16 +435,20 @@ Ergebnisse_Flugleistung_1.v_EAS_j_DEC = v_EAS_j_DEC;
 Ergebnisse_Flugleistung_1.v_TAS_j = v_TAS_j;
 Ergebnisse_Flugleistung_1.v_TAS_j_CL = v_TAS_j_CL;
 Ergebnisse_Flugleistung_1.v_TAS_j_DEC = v_TAS_j_DEC;
+Ergebnisse_Flugleistung_1.v_TAS_j_CL_ALT = v_TAS_j_CL_ALT;
 Ergebnisse_Flugleistung_1.Ma_j = Ma_j;
 Ergebnisse_Flugleistung_1.Ma_j_CL = Ma_j_CL;
 Ergebnisse_Flugleistung_1.Ma_J_DEC = Ma_j_DEC;
+Ergebnisse_Flugleistung_1.Ma_j_CL_ALT = Ma_j_CL_ALT;
 Ergebnisse_Flugleistung_1.S_S0_KF_j_CR = S_S0_KF_j_CR;
 Ergebnisse_Flugleistung_1.S_S0_KF_j_CL = S_S0_KF_j_CL;
 Ergebnisse_Flugleistung_1.S_S0_KF_j_DEC = S_S0_KF_j_DEC;
+Ergebnisse_Flugleistung_1.S_S0_KF_j_CL_ALT = S_S0_KF_j_CL_ALT;
 Ergebnisse_Flugleistung_1.S_S0_E = S_S0_E;
 Ergebnisse_Flugleistung_1.S_S0_j_CR = S_S0_j;
 Ergebnisse_Flugleistung_1.S_S0_j_CL = S_S0_j_CL;
 Ergebnisse_Flugleistung_1.S_S0_j_DEC = S_S0_j_DEC;
+Ergebnisse_Flugleistung_1.S_S0_j_CL_ALT = S_S0_j_CL_ALT;
 Ergebnisse_Flugleistung_1.S_G_vorh_j = S_G_vorh_j;
 Ergebnisse_Flugleistung_1.S_G_vorh_j_CL = S_G_vorh_j_CL;
 Ergebnisse_Flugleistung_1.S_G_vorh_j_DEC = S_G_vorh_j_DEC;
@@ -463,6 +495,8 @@ Ergebnisse_Flugleistung_1.v_TAS_HFD_DEC = v_TAS_HFD_DEC;
 Ergebnisse_Flugleistung_1.S_G_inter_HFD = S_G_inter_HFD;
 Ergebnisse_Flugleistung_1.S_G_inter_HFD_CL = S_G_inter_HFD_CL;
 Ergebnisse_Flugleistung_1.S_G_inter_HFD_DEC = S_G_inter_HFD_DEC;
+Ergebnisse_Flugleistung_1.SEP_CL_ALT = SEP_CL_ALT;
+Ergebnisse_Flugleistung_1.TAS_SEP_H_CL_ALT_vec = TAS_SEP_H_CL_ALT_vec;
 
 % fuer Flugbereichsdiagramm
         % CR

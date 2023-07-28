@@ -17,7 +17,7 @@ close all
 % wert zwischen 1 und 0 wählen 
 % 1 = wird displayed || 0 = wird nicht displayed
 
-Aufgabe_1 = 1;  % Horizontalflugdiagramme fuer CL, CR, DEC
+Aufgabe_1 = 0;  % Horizontalflugdiagramme fuer CL, CR, DEC
 Aufgabe_2 = 0;  % SET, SEP, SR, fuer CR
 Aufgabe_3 = 0;  % Optimalgeschwindigheiten CR
 Aufgabe_4 = 0;  % Spez Flugdauer SE fuer DEC

@@ -378,7 +378,9 @@ zaehler1 = 1;
 for z = 1 : length(TAS_SEP_H_vec)
     if TAS_SEP_H_vec(z,2) > 0.5
         zaehler1 = zaehler1 +1;
-    else
+    end
+    if zaehler1 >= length(TAS_SEP_H_vec);
+       zaehler1 = length(TAS_SEP_H_vec);
     end
 end
 H_Dienstgipfel_CR = hoehe_m(1,zaehler1);

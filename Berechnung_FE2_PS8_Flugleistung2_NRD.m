@@ -257,7 +257,7 @@ FFneu.mf6 = 1 - (Steigflug.m_F_CL_ALT)/(FFneu.m6_neu);
 % Holding
 [sfc_HLD_daNh, sfc_HLD_1PERh, sfc_HLD_1PERs] = SFC(hoehe_HLD, FF.Ma_HLD, specs.bypass);
 
-FFneu.mf9 = 1/(exp(specs.t_HLD * Ergebnisse_Widerstand_FE2.cW_cA_off_D * sfc_HLD_1PERs * specs.g)); % eventuell muss das g0 noch rausgekürtzt werden
+FFneu.mf9 = 1/(exp(specs.t_HLD * Ergebnisse_Widerstand_FE2.cW_cA_off_D * sfc_HLD_1PERs )); % eventuell muss das g0 noch rausgekürtzt werden
 
 
 
@@ -305,7 +305,7 @@ m_TO_B = Ergebnisse_Massen_FE2.M_TO;
 m_F_B = m_TO_B -Ergebnisse_Massen_FE2.M_OE - m_P_B;
 
 m_ZF_B = m_P_B + m_OE;
-mf4_B = (1.05 - m_F_B/m_TO)/(FF.mf2 * FF.mf3 * FF.mf5 * FF.mf6 * FF.mf7 * FF.mf8 * FF.mf9 + 0.05);
+mf4_B = mf4_fun(m_F_B);
 R_CR_B = v_CR / (FF.sfc_CR_1PERs * Ergebnisse_Widerstand_FE2.cW_cA_off_D * specs.g) * log(1/mf4_B);
 R_B = (Steigflug.R_CL + R_CR_B)/1000;
 
@@ -341,7 +341,7 @@ m_TO_C = m_TO;
 m_P_C = m_TO_C - (m_OE + m_F_C);
 
 m_ZF_C = m_OE + m_P_C;
-mf4_C = (1.05 - m_F_C/m_TO_C)/(FF.mf2 * FF.mf3 * FF.mf5 * FF.mf6 * FF.mf7 * FF.mf8 * FF.mf9 + 0.05);
+mf4_C = mf4_fun(m_F_C);
 R_CR_C = v_CR / (FF.sfc_CR_1PERs * Ergebnisse_Widerstand_FE2.cW_cA_off_D *specs.g) * log(1/mf4_C);
 R_C = (Steigflug.R_CL + R_CR_C)/1000;
 
@@ -377,7 +377,7 @@ m_F_D = m_fuel;
 m_P_D = 0;
 m_TO_D = m_OE + m_F_D ;
 m_ZF_D = m_OE + m_P_D;
-mf4_D = (1.05 - m_F_D / m_TO_D)/(FF.mf2 * FF.mf3* FF.mf5 * FF.mf6 * FF.mf7 * FF.mf8 * FF.mf9 + 0.05);
+mf4_D = mf4_fun(m_F_D);
 R_CR_D = v_CR / (FF.sfc_CR_1PERs * Ergebnisse_Widerstand_FE2.cW_cA_off_D *specs.g) * log(1/mf4_D);
 R_D = (Steigflug.R_CL + R_CR_D)/1000;
 
@@ -423,7 +423,7 @@ p1(6) = plot([0, 20000],[m_OE, m_OE], Color=[0.5 0.5 0.5], LineStyle="-.");
 
 title('Nutzlast-Reichweiten-Diagramm', 'FontSize',25)
 legend(p1(1:6),{'Nutzlast', 'Treibstoffmasse', 'Reisekraftstoffmasse', 'Reserve', 'M_{TO}', 'M_{OE}'},...
-     'Location','southwest','FontSize',25);
+     'Location','eastoutside','FontSize',25);
 xlabel('Reichweite in km','FontSize',20)
 ylabel('Masse in kg','FontSize',20)
 
@@ -431,12 +431,17 @@ ylabel('Masse in kg','FontSize',20)
 
 
 %% Speichern von Ergebnissen
+NRD.A = A;
+NRD.B = B;
+NRD.C = C;
+NRD.D = D;
 
 
 Ergebnisse_Flugleistung_2.Steigflug = Steigflug;
 Ergebnisse_Flugleistung_2.FFneu = FFneu;
+Ergebnisse_Flugleistung_2.NRD = NRD;
 
-save Ergebnisse_Flugleistung_2.mat Ergebnisse_Flugleistung_2 FFneu
+save Ergebnisse_Flugleistung_2.mat Ergebnisse_Flugleistung_2 FFneu NRD
 
 %% Funktionen
 
@@ -461,5 +466,21 @@ function [S_S0] = S_S0_KF_j(D, rho_rho0_H, Ma_j, p_p0, bypass)
     S_S0_E = 1 - (1.3 + 0.25 * bypass) * 0.02;
     S_S0 = S_S0_KF_j .* S_S0_E;
 end
+
+
+%% Funktion mf4
+function [mf4] = mf4_fun(m_F)
+    load Ergebnisse_Massen_FE2.mat;
+    mf4 = (1.05 - (m_F)/(Ergebnisse_Massen_FE2.M_TO))/(FF.mf2 * FF.mf3 * FF.mf5 *(FF.mf6 * FF.mf7 * FF.mf8* FF.mf9 * FF.mf10 + 0.05));
+end
+
+%% Funktion Reichweite NRD
+
+function R = R_NRD_fun(v, sfv, mf4)
+    load 
+    
+
+end
+
 
 

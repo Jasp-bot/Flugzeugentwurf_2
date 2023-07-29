@@ -13,9 +13,15 @@ load Ergebnisse_ISA_DATA.mat
 load Ergebnisse_Start_Landeanforderungen.mat
 load Ergebnisse_Widerstand.mat;
 
-P_oe=1.245;      %Price per Kilogramm aus PS 09 [€/kg]
+%NRD Reichweite,Payload,Fuel,Tripfuel,Reserve Fuel
+%Ist ein eigenes Struct in NRD
+load Ergebnisse_Flugleistung_2.mat
+
+
+
+P_oe=1245;      %Price per Kilogramm aus PS 09 [€/kg]
 f_ir=0.05;       %interest rate [%]  
-t_DEP=1/12;      %Depreciation Period [years]
+t_DEP=12;        %Depreciation Period [years]
 f__RV=0.15;      %Residual fuel factor [%]
 f_I=0.005;       %Insurance rate [%]
 S_FA=50000;      %Average salery flight attendendent [€]
@@ -31,6 +37,8 @@ C_B=2;           %cost burden[1]
 I_FR=0.2;        %Erlös [€/kg]
 I_PAX=[550,400]; %income per seat long haul [3 KLassen, all eco]
 n_pax=specs.n_pax;
+R_Std=9000;
+
 
 %Variabeln
 R= linspace(500, specs.max_range_basis_km, 20)     %Reichweite
@@ -51,11 +59,11 @@ v_h= v * 3.6;
 
 
 %%Rechnung
-alpha=f_ir*P_GES*((1-f__RV*(1/(1+f_ir))^t_DEP)/((1-(1/(1+f_ir))^t_DEP)));
+alpha=f_ir*P_GES*((1-f__RV*(1/(1+f_ir))^t_DEP)/((1-(1/(1+f_ir))^t_DEP)))
 
 C_cap=P_oe*Ergebnisse_Massen_FE2.M_OE*(alpha+f_I);        %Capital costs. M_OE ändert sich nie
 
-C_crew=n_crew*(S_FA*specs.n_crew*((Ergebnisse_Massen_FE2.M_ZF-Ergebnisse_Massen_FE2.M_OE)/5000)+S_FC(1)*specs.n_flight); %Kosten der Crew ca 24mio  %%Vielleicht noch anpassen wegen weniger Crew wegen weniger PAX
+C_crew=n_crew*(S_FA*((Ergebnisse_Massen_FE2.M_ZF-Ergebnisse_Massen_FE2.M_OE)/5000)+S_FC(1)*specs.n_flight); %Kosten der Crew ca 24mio  %%Vielleicht noch anpassen wegen weniger Crew wegen weniger PAX
 
 C1=C_cap+C_crew;    %C1 ist Routen unabhängige kosten
 
@@ -86,16 +94,16 @@ Fuel = Tripfuel(R)
 
 MAX_Fuel=fuel_range(specs.max_range_basis_km);
 
-C2 = FC_pa(1,end)*(P_F*Fuel+(nutzlast(R)).*P_H + P_LDG.*(Ergebnisse_Massen_FE2.M_OE+Fuel) + f_ATC(2).*R.*sqrt(((Ergebnisse_Massen_FE2.M_OE+Fuel)./1000)./50) + C_MRO); % PS09 Formel 4 Routen abhängige kosten
+C2 = FC_pa(1,end)*(P_F*Fuel+(nutzlast(R/1000)).*P_H + P_LDG.*(Ergebnisse_Massen_FE2.M_OE+Fuel) + f_ATC(2).*R.*sqrt(((Ergebnisse_Massen_FE2.M_OE+Fuel)./1000)./50) + C_MRO) % PS09 Formel 4 Routen abhängige kosten
 
 %Komponnenten zum Plotten       
-ko_1=P_F*Fuel(1,end);
-ko_2=(nutzlast(R))*P_H;
-ko_3=P_LDG*(Ergebnisse_Massen_FE2.M_OE+Fuel(1,end));
-ko_4=f_ATC(3)*(R(1,end))*sqrt(((Ergebnisse_Massen_FE2.M_OE+Fuel(1,end))/1000)/50);
+ko_1=P_F*Tripfuel(R_Std)+NRD.A(5,1);
+ko_2=(nutzlast(R_Std/1000))*P_H;
+ko_3=P_LDG*(Ergebnisse_Massen_FE2.M_OE+Tripfuel(R_Std/1000));
+ko_4=f_ATC(3)*(R(1,end))*sqrt(((Ergebnisse_Massen_FE2.M_OE+Tripfuel(R_Std/1000))/1000)/50);
 ko_5=C_MRO(1,end);
 
-SKO=R*1000*nutzlast(R)
+SKO=R.*1000.*nutzlast(R./1000)
 
    % for ZWW=1:length(R)
    %      if R(1,ZWW) < specs.max_range_basis_km
@@ -122,13 +130,9 @@ DOC_END=DOC(1,end)
 
 SMC = DOC./SKO;
 
-I_CAR = I_FR * (Ergebnisse_Massen_FE2.M_TO - Ergebnisse_Massen_FE2.M_ZF - (311 * 80));          %% Cargo correction
+I_CAR = I_FR * (TOM(R) - Ergebnisse_Massen_FE2.M_ZF - (311 * 80));          %% Cargo correction
 
 n_PAX_CAR = I_CAR / I_PAX(1);
-
-
-
-
 
 %Polution Pro Max langem Flug
 Fuel_P=fuel_range(specs.max_range_basis_km)/specs.n_pax;
@@ -161,7 +165,7 @@ labels = {'Fuel costs' , 'Handling fees' , 'Landing fees' , 'ATC costs' , 'Engin
 legend(labels)
 title('Routenabhängige Kosten')
 
-DOC_zuSKO_COR = (DOC./SKO) * (n_pax / (n_pax + n_PAX_CAR));
+DOC_zuSKO_COR = (DOC./SKO) .* (n_pax ./ (n_pax + n_PAX_CAR));
 
 figure(3)
 plot(R,SKO)   %Plot Flight Time per annum
@@ -207,12 +211,15 @@ grid on
 
 hold off
 
-%%%%
+%NRD Reichweite,Payload,Fuel,Tripfuel,Reserve Fuel
+%Ist ein eigenes Struct in NRD
 
 function [TOM] = TOM(Reichweite)        %%Lennis EIGENTUUUUM (hat er auch von Chat GPT :D)
-    
-    x = [NRD.A.R, NRD.B.R, NRD.C.R, NRD.D.R];                               %Reichweiten an den Punkten in NRD
-    y = [NRD.A.m_TO, NRD.B.m_TO_max, NRD.C.m_TO_max, NRD.D.m_TO];           %MTOM an den Punkten des NRD
+    load Ergebnisse_Flugleistung_2.mat
+    load Ergebnisse_Massen_FE2.mat
+    x = [NRD.A(1,1), NRD.B(1,1), NRD.C(1,1), NRD.D(1,1)];                               %Reichweiten an den Punkten in NRD
+    %%ZEILE VLT  NOCH ETWAS FALSCH
+    y = [Ergebnisse_Massen_FE2.M_OE+NRD.A(2,1)+NRD.A(3,1)+NRD.A(4,1), Ergebnisse_Massen_FE2.M_TO,  Ergebnisse_Massen_FE2.M_TO, Ergebnisse_Massen_FE2.M_OE+NRD.D(2,1)+NRD.D(3,1)+NRD.D(4,1)];           %MTOM an den Punkten des NRD GLAUBE DA FEHLEN NOCH EIN PAAR WERTE!!
 
     if Reichweite <= x(2)
         TOM = ((x(2) - Reichweite) / (x(2) - x(1))) * y(1) + ((Reichweite - x(1)) / (x(2) - x(1))) * y(2);
@@ -227,9 +234,9 @@ function [TOM] = TOM(Reichweite)        %%Lennis EIGENTUUUUM (hat er auch von Ch
 end
 
 function [PAX] = PAX(Reichweite)        %%Lennis EIgentum 
-    
-    x = [NRD.A.R, NRD.B.R, NRD.C.R, NRD.D.R];   %%Wieder die Reichweiten
-    y = [440, 440, 440*NRD.C.payload_perc, 0];  %%Prozent wie viel Payload noch drin ist
+    load Ergebnisse_Flugleistung_2.mat
+    x = [NRD.A(1,1), NRD.B(1,1), NRD.C(1,1), NRD.D(1,1)];   %%Wieder die Reichweiten
+    y = [440, 440, 440*(NRD.C(1,2)/(specs.m_pax+specs.m_cargo)), 0];  %%Prozent wie viel Payload noch drin ist
 
 
     if Reichweite <= x(2)
@@ -245,13 +252,13 @@ function [PAX] = PAX(Reichweite)        %%Lennis EIgentum
 end
 
 function [nutzlast] = nutzlast(Reichweite)      %%Lennis und so
-load NRD_funktion.mat
-    if Reichweite <= NRD.B.R
-        nutzlast = ((NRD.B.R - Reichweite) / (NRD.B.R - NRD.A.R)) * NRD.A.m_P_max + ((Reichweite - NRD.A.R) / (NRD.B.R - NRD.A.R)) * NRD.B.m_P_max;
-    elseif Reichweite <= NRD.C.R
-        nutzlast = ((NRD.C.R - Reichweite) / (NRD.C.R - NRD.B.R)) * NRD.B.m_P_max + ((Reichweite - NRD.B.R) / (NRD.C.R - NRD.B.R)) * NRD.C.m_P;
-    elseif Reichweite <= NRD.D.R
-        nutzlast = ((NRD.D.R - Reichweite) / (NRD.D.R - NRD.C.R)) * NRD.C.m_P + ((Reichweite - NRD.C.R) / (NRD.D.R - NRD.C.R)) * NRD.D.m_P;
+load Ergebnisse_Flugleistung_2.mat
+    if Reichweite <= NRD.B(1,1)
+        nutzlast = ((NRD.B(1,1) - Reichweite) / (NRD.B(1,1) - NRD.A(1,1))) * NRD.A(2,1) + ((Reichweite - NRD.A(1,1)) / (NRD.B(1,1) - NRD.A(1,1))) * NRD.B(2,1);
+    elseif Reichweite <= NRD.C(1,1)
+        nutzlast = ((NRD.C(1,1) - Reichweite) / (NRD.C(1,1) - NRD.B(1,1))) * NRD.B(2,1) + ((Reichweite - NRD.B(1,1)) / (NRD.C(1,1) - NRD.B(1,1))) * NRD.C(2,1);
+    elseif Reichweite <= NRD.D(1,1)
+        nutzlast = ((NRD.D(1,1) - Reichweite) / (NRD.D(1,1) - NRD.C(1,1))) * NRD.C(2,1) + ((Reichweite - NRD.C(1,1)) / (NRD.D(1,1) - NRD.C(1,1))) * NRD.D(2,1);
     else
         nutzlast = NaN; % Für Werte außerhalb des definierten Bereichs
     end
@@ -259,9 +266,9 @@ load NRD_funktion.mat
 end
 
 function [Tripfuel] = Tripfuel(Reichweite)      %%Irgendwie ist ja meine andere Funktion dann lost?
-    load NRD_funktion.mat
-    x = [NRD.A.R, NRD.B.R, NRD.C.R, NRD.D.R];
-    y = [NRD.A.m_F_CR, NRD.B.m_F_CR, NRD.C.m_F_CR, NRD.D.m_F_CR];
+    load Ergebnisse_Flugleistung_2.mat
+    x = [NRD.A(1,1), NRD.B(1,1), NRD.C(1,1), NRD.D(1,1)];
+    y = [NRD.A(4,1), NRD.B(4,1), NRD.C(4,1), NRD.D(4,1)];
     
     if Reichweite <= x(2)
             Tripfuel = ((x(2) - Reichweite) / (x(2) - x(1))) * y(1) + ((Reichweite - x(1)) / (x(2) - x(1))) * y(2);
@@ -276,9 +283,9 @@ function [Tripfuel] = Tripfuel(Reichweite)      %%Irgendwie ist ja meine andere 
 end
 
 function [Fracht] = Fracht(Reichweite)          %%Lennis
-    load NRD_funktion.mat
-    x = [NRD.A.R, NRD.B.R, NRD.C.R, NRD.D.R];
-    y = [14000, 14000, 14000*NRD.C.payload_perc, 0];
+    load Ergebnisse_Flugleistung_2.mat
+    x = [NRD.A(1,1), NRD.B(1,1), NRD.C(1,1), NRD.D(1,1)];
+    y = [14000, 14000, 14000*(NRD.C(1,2)/(specs.m_pax+specs.m_cargo)), 0];
     load NRD_funktion.mat
     % Stückweise definierte Funktion
     

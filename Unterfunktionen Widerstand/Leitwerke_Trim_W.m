@@ -24,7 +24,7 @@ c_A_H = (Annahmen.c_M_0_F + c_A_F .* Annahmen.dx_SP_lmue) ./ ...
 c_A_ges = c_A_F + c_A_H * Annahmen.qH_q * ((HLW.F)/(Ergebnisse_Fluegel.F));
 % c_A_ges_vec(Annahmen.zaehlvariabele_itt,1) = c_A_ges(1,n_iteration);
 
-Annahmen.zaehlvariabele_itt = Annahmen.zaehlvariabele_itt + 1;
+% Annahmen.zaehlvariabele_itt = Annahmen.zaehlvariabele_itt + 1;
 
 
 % PS4 S.4 Formel 15
@@ -35,6 +35,8 @@ tau_H = FUN.tau_fun(HLW.streckung_phi25, HLW.lambda); %1 - HLW.streckung_phi25 *
 %     ((1 + (5*10^(-6)) .* (abs(rad2deg(HLW.phi_25))).^3)./(tau_H)) .*...
 %     ((HLW.F)./(Ergebnisse_Fluegel.F));
 
-c_w_trim = ((c_A_H.^2)/(pi * HLW.streckung_phi25)) .* ((1 + 5*10^(-6) * (abs(rad2deg(HLW.phi_25))^3))./(tau_H)) .* (HLW.F/Ergebnisse_Fluegel.F); 
+c_w_trim = ((c_A_H.^2)/(pi * HLW.streckung_phi25)) .*...
+    ((1 + 5*10^(-6) * (abs(rad2deg(HLW.phi_25))^3))./(tau_H)) .*...
+    (HLW.F/Ergebnisse_Fluegel.F); 
 
 end

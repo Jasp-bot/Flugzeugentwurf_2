@@ -8,7 +8,7 @@ Berechnung_FE2_PS4_Widerstand;
 load Ergebnisse_stat_Flaechenbelastung_Fluegelflaeche.mat
 load Ergebnisse_Start_Landeanforderungen.mat;
 load Ergebnisse_Widerstand_FE2.mat; 
-
+load Getroffene_Annahmen_und_FUN.mat;
 
 
 %% Plot design

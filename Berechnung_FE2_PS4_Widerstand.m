@@ -57,7 +57,7 @@ Ma_off_D = linspace(0, 2, stuetzstellen).';
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %     Annahmen.x_SP_MAC = 1.5; %%%%%% Ein random wert angenommen!!!!!!!!!!!
 %     Annahmen.x_NP_MAC_oH = 0.5;
-    Faktor = 1; %%%% Achtung ist ein korrekturfsktor weil ich nicht weiter weiß, earum mein Rumpf/ TW Widerstand so klein sind
+    Faktor = -0.3; %% Achtung wert angepasst, muss nochmal mit leon drüber schauen (stand 28.07. 0Uhr)
     Annahmen.dx_SP_lmue =  Delta_CG_MAC_durch_lmue * Faktor ; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     Annahmen.z_abstand = StatStab.z_abstand; % Abstand zwischen Profilsehnen angenommen vergleiche Torenbeek s480
  
@@ -108,7 +108,7 @@ Annahmen.x_u_Py = specs.lh_TW * Annahmen.xu_l_Py;
         % Trimmwiderstand
 Annahmen.l_mue = Ergebnisse_Fluegel.l_mue;  
 
-Annahmen.qH_q = 0.85; % hat Kristof gesagt urspruenglich mit 0.95 angenommen
+Annahmen.qH_q = 0.85; % hat Kristof gesagt urspruenglich mit 0.95 angenommen 
 
     % Zusatzwidertsand
 

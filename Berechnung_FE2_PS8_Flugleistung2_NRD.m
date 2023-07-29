@@ -1,5 +1,13 @@
 %% Fluleistung 2 PS 8 Nutzlast Reichweiten Diagramm
 
+%% Kommentar
+% der Grund warum unsere Reichweite so großist, ist die gleitzahl. 
+% Mit Gleitzahlen um 1/17 bis 1/19 sind die Ergebnisse realistisch
+% => immer noch ein Fehler in Widerstand
+% (Ergebnisse_Widerstand_FE2.cW_cA_off_D)
+
+
+
 clc
 clear all
 close all
@@ -277,17 +285,17 @@ m_ZF = Ergebnisse_Massen_FE2.M_ZF;
 % m_3 = Ergebnisse_Massen_FE2.M_TO * FF.mf2;
 m_alt_u_HLD = (1 - FF.Mff_6_10) * Ergebnisse_Massen_FE2.M_TO;
 % mf3_neu = 1 - m_F_CL/m_3;
-m_P = specs.m_cargo + specs.m_pax;
+m_P_A = specs.m_cargo + specs.m_pax;
 
 
 % Punkt A--------------------------------
-m_TO_A = Ergebnisse_Massen_FE2.M_OE + m_P + m_alt_u_HLD;
+m_TO_A = Ergebnisse_Massen_FE2.M_OE + m_P_A + m_alt_u_HLD;
 m_F_HLD_A = (1 - FF.mf9) * m_TO_A;
 R_A = 0;
 m_RF_A = m_alt_u_HLD;
 m_F_A = m_RF_A;
 m_TF_A = 0;
-A = [0; m_P; m_F_A; m_TF_A; m_RF_A];
+A = [R_A; m_P_A; m_F_A; m_TF_A; m_RF_A];
 
 % m_TO_A = m_P + m_OE + Fuel.m_F_ALT + Fuel.m_F_HLD;
 % m_F_HLD_A = (1-Fuel.Fractions.m_f9) * m_TO_A;
@@ -300,13 +308,16 @@ A = [0; m_P; m_F_A; m_TF_A; m_RF_A];
 % B--------------------------------------
 
 
-m_P_B = m_P;
+
+[~,~,sfc_1PERs] = SFC_vec(hoehe_CR, specs.Ma_CR, specs.bypass);
+
+m_P_B = m_P_A;
 m_TO_B = Ergebnisse_Massen_FE2.M_TO;
 m_F_B = m_TO_B -Ergebnisse_Massen_FE2.M_OE - m_P_B;
 
 m_ZF_B = m_P_B + m_OE;
 mf4_B = mf4_fun(m_F_B);
-R_CR_B = v_CR / (FF.sfc_CR_1PERs * Ergebnisse_Widerstand_FE2.cW_cA_off_D * specs.g) * log(1/mf4_B);
+R_CR_B = R_NRD_fun(v_CR, sfc_1PERs, mf4_B); %v_CR / (FF.sfc_CR_1PERs * Ergebnisse_Widerstand_FE2.cW_cA_off_D * specs.g) * log(1/mf4_B);
 R_B = (Steigflug.R_CL + R_CR_B)/1000;
 
 m_F_C_B = 0.05 *(1 - (FF.mf2 * FF.mf3 * mf4_B * FF.mf5)) * m_TO_B;
@@ -342,7 +353,7 @@ m_P_C = m_TO_C - (m_OE + m_F_C);
 
 m_ZF_C = m_OE + m_P_C;
 mf4_C = mf4_fun(m_F_C);
-R_CR_C = v_CR / (FF.sfc_CR_1PERs * Ergebnisse_Widerstand_FE2.cW_cA_off_D *specs.g) * log(1/mf4_C);
+R_CR_C = R_NRD_fun(v_CR, sfc_1PERs, mf4_C);%v_CR / (FF.sfc_CR_1PERs * Ergebnisse_Widerstand_FE2.cW_cA_off_D *specs.g) * log(1/mf4_C);
 R_C = (Steigflug.R_CL + R_CR_C)/1000;
 
 
@@ -378,7 +389,7 @@ m_P_D = 0;
 m_TO_D = m_OE + m_F_D ;
 m_ZF_D = m_OE + m_P_D;
 mf4_D = mf4_fun(m_F_D);
-R_CR_D = v_CR / (FF.sfc_CR_1PERs * Ergebnisse_Widerstand_FE2.cW_cA_off_D *specs.g) * log(1/mf4_D);
+R_CR_D = R_NRD_fun(v_CR, sfc_1PERs, mf4_D); %v_CR / (FF.sfc_CR_1PERs * Ergebnisse_Widerstand_FE2.cW_cA_off_D *specs.g) * log(1/mf4_D);
 R_D = (Steigflug.R_CL + R_CR_D)/1000;
 
 % m_F_C_D = 0.05 *(1 - (FF.mf2 * FF.mf3 * mf4_D * FF.mf5)) * m_TO_D;
@@ -412,18 +423,18 @@ hold on
 grid on 
 ylim([100000 m_TO+10000])
 xlim([0 20000])
-
-p1(1) = plot([A(1) B(1) C(1) D(1)].*10,[A(2)+m_OE, B(2)+m_OE, C(2)+m_OE, D(2)+m_OE]);
-p1(2) = plot([A(1) B(1) C(1) D(1)].*10,[A(3)+m_ZF, B(3)+m_ZF, C(3)+m_ZF, D(3)+m_ZF]);
-p1(3) = plot([A(1) B(1) C(1) D(1)].*10,[A(4)+m_ZF, B(4)+m_ZF, C(4)+m_ZF, D(4)+m_ZF]);
-p1(4) = plot([A(1) B(1) C(1) D(1)].*10,[A(5)+m_ZF, B(5)+m_ZF, C(5)+m_ZF, D(5)+m_ZF]);
+% X = [Reichweite; Payload; Fuelmasse; Tripfuel; Reservefuel];
+p1(1) = plot([A(1) B(1) C(1) D(1)],[A(2), B(2), C(2), D(2)]+m_OE);
+p1(2) = plot([A(1) B(1) C(1) D(1)],[A(3), B(3), C(3), D(3)]+m_ZF);
+p1(3) = plot([A(1) B(1) C(1) D(1)],[A(4), B(4), C(4), D(4)]+m_ZF);
+p1(4) = plot([A(1) B(1) C(1) D(1)],[A(5), B(5), C(5), D(5)]+m_ZF);
 p1(5) = plot([0, 20000],[m_TO, m_TO], Color=[0.5 0.5 0.5], LineStyle="--");
 p1(6) = plot([0, 20000],[m_OE, m_OE], Color=[0.5 0.5 0.5], LineStyle="-.");
-% % plot(R_DP, m_P,'rx')
+% % % plot(R_DP, m_P,'rx')
 
 title('Nutzlast-Reichweiten-Diagramm', 'FontSize',25)
-legend(p1(1:6),{'Nutzlast', 'Treibstoffmasse', 'Reisekraftstoffmasse', 'Reserve', 'M_{TO}', 'M_{OE}'},...
-     'Location','eastoutside','FontSize',25);
+% legend(p1(1:6),{'Nutzlast', 'Treibstoffmasse', 'Reisekraftstoffmasse', 'Reserve', 'M_{TO}', 'M_{OE}'},...
+%      'Location','eastoutside','FontSize',25);
 xlabel('Reichweite in km','FontSize',20)
 ylabel('Masse in kg','FontSize',20)
 
@@ -435,6 +446,33 @@ NRD.A = A;
 NRD.B = B;
 NRD.C = C;
 NRD.D = D;
+
+NRD.R_A = R_A;
+NRD.R_B = R_B;
+NRD.R_C = R_C;
+NRD.R_D = R_D;
+
+NRD.m_P_A = m_P_A;
+NRD.m_P_B = m_P_B;
+NRD.m_P_C = m_P_C;
+NRD.m_P_D = m_P_D;
+
+NRD.m_F_A = m_F_A;
+NRD.m_F_B = m_F_B;
+NRD.m_F_C = m_F_C;
+NRD.m_F_D = m_F_D;
+
+NRD.m_TF_A = m_TF_A;
+NRD.m_TF_B = m_TF_B;
+NRD.m_TF_C = m_TF_C;
+NRD.m_TF_D = m_TF_D;
+
+NRD.m_RF_A = m_RF_A;
+NRD.m_RF_B = m_RF_B;
+NRD.m_RF_C = m_RF_C;
+NRD.m_RF_D = m_RF_D;
+
+
 
 
 Ergebnisse_Flugleistung_2.Steigflug = Steigflug;
@@ -476,9 +514,11 @@ end
 
 %% Funktion Reichweite NRD
 
-function R = R_NRD_fun(v, sfv, mf4)
-    load 
-    
+function R = R_NRD_fun(v_CR, sfc_1PERs, mf4)
+    load Ergebnisse_Widerstand_FE2.mat;
+    load Projekt_specs.mat;
+
+    R = (v_CR / (Ergebnisse_Widerstand_FE2.cW_cA_off_D * sfc_1PERs)) * log(1/ mf4);  % Ergebnisse_Widerstand_FE2.cW_cA_off_D
 
 end
 

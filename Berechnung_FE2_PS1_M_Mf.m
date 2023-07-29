@@ -1,6 +1,6 @@
 %% PS 1 2 Fuel Fraction und Erweiterte MAssenabschaetzung nach Toerenbeck
 
-function Berechnung_FE2_PS1_M_Mf;
+% function Berechnung_FE2_PS1_M_Mf
 clc
 clear all
 close all

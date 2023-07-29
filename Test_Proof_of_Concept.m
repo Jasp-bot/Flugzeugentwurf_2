@@ -188,3 +188,23 @@ close all
 
 
 
+
+R_CR = (v_CR / (Ergebnisse_Widerstand_FE2.cW_cA_off_D  * FF.sfc_CR_1PERs )) * log(1/ FFneu.mf4);  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -57,7 +57,7 @@ Ma_off_D = linspace(0, 2, stuetzstellen).';
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %     Annahmen.x_SP_MAC = 1.5; %%%%%% Ein random wert angenommen!!!!!!!!!!!
 %     Annahmen.x_NP_MAC_oH = 0.5;
-    Faktor = -0.3; %% Achtung wert angepasst, muss nochmal mit leon drüber schauen (stand 28.07. 0Uhr)
+    Faktor = 0.5; %% Achtung wert angepasst, muss nochmal mit leon drüber schauen (stand 28.07. 0Uhr)
     Annahmen.dx_SP_lmue =  Delta_CG_MAC_durch_lmue * Faktor ; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     Annahmen.z_abstand = StatStab.z_abstand; % Abstand zwischen Profilsehnen angenommen vergleiche Torenbeek s480
  
@@ -145,7 +145,7 @@ Annahmen.kappa = 1.4;
 
 
 %PS4 S.3, Formel 7
-FUN.Re_CR_fun = @(l_Re,v_Re) (l_Re .* v_Re) ./ ISA.kin_visk(Annahmen.hoehe_CR);
+FUN.Re_CR_fun = @(l_Re,v_Re) (l_Re .* v_Re) ./ (ISA.kin_visk(Annahmen.hoehe_CR));
 
 % PS4 S.2, Formel 6
 FUN.c_f_la_fun = @(Re) 1.328./(sqrt(Re));
@@ -227,9 +227,9 @@ c_w_TW_off_D = Triebwerkswiderstand(v_air_off_D, alpha_Rumpf_grad_off_D);
 
 % Profilwiderstand
 
-[c_w_p, c_w_p_min_Re] = Profilwiderstand(v_air,c_A_F);
+[c_w_p, c_w_p_min_Re, c_w_p_test] = Profilwiderstand(v_air,c_A_F);
 % c_w_p = c_w_p_interm; %trapz(c_w_p_interm.');
-[c_w_p_off_D, c_w_p_min_Re_off_D] = Profilwiderstand(v_air_off_D, c_A_F_off_D);
+[c_w_p_off_D, c_w_p_min_Re_off_D, c_w_p_test_off_D] = Profilwiderstand(v_air_off_D, c_A_F_off_D);
 % c_w_p_off_D = c_w_p_off_D_interm; %trapz(c_w_p_off_D_interm.');
 
 % Induzierter Widerstand

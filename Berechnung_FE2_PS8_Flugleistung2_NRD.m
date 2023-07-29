@@ -22,6 +22,7 @@ load Ergebnisse_Start_Landeanforderungen.mat;
 load Ergebnisse_Massen_FE2.mat;
 load Ergebnisse_Fluegel_Tank_NP.mat;
 load Ergebnisse_FLugleistung_1.mat;
+load Schwerpunkt.mat;
 addpath('Unterfunktionen Widerstand');
 
 
@@ -316,7 +317,7 @@ m_TO_B = Ergebnisse_Massen_FE2.M_TO;
 m_F_B = m_TO_B -Ergebnisse_Massen_FE2.M_OE - m_P_B;
 
 m_ZF_B = m_P_B + m_OE;
-mf4_B = mf4_fun(m_F_B);
+mf4_B = mf4_fun(m_F_B, 0);
 R_CR_B = R_NRD_fun(v_CR, sfc_1PERs, mf4_B); %v_CR / (FF.sfc_CR_1PERs * Ergebnisse_Widerstand_FE2.cW_cA_off_D * specs.g) * log(1/mf4_B);
 R_B = (Steigflug.R_CL + R_CR_B)/1000;
 
@@ -347,12 +348,16 @@ B = [R_B; m_P_B; m_F_B; m_TF_B; m_RF_B];
 
 % C --------------------------------------
 
-m_F_C = m_fuel;
+m_F_max = Betankung.Masse_Fuel_Aussen_Theoretisch + Betankung.Masse_Fuel_Innen;
+delta_mFmax_MF = m_F_max - m_fuel;
+
+
+m_F_C = m_F_max;
 m_TO_C = m_TO;
 m_P_C = m_TO_C - (m_OE + m_F_C);
 
 m_ZF_C = m_OE + m_P_C;
-mf4_C = mf4_fun(m_F_C);
+mf4_C = mf4_fun(m_F_C, 0);
 R_CR_C = R_NRD_fun(v_CR, sfc_1PERs, mf4_C);%v_CR / (FF.sfc_CR_1PERs * Ergebnisse_Widerstand_FE2.cW_cA_off_D *specs.g) * log(1/mf4_C);
 R_C = (Steigflug.R_CL + R_CR_C)/1000;
 
@@ -384,11 +389,12 @@ C = [R_C; m_P_C; m_F_C; m_TF_C; m_RF_C];
 
 % D --------------------------------------
 
-m_F_D = m_fuel;
+m_F_D = m_F_max;
 m_P_D = 0;
-m_TO_D = m_OE + m_F_D ;
+m_TO_D = m_OE + m_F_D;
 m_ZF_D = m_OE + m_P_D;
-mf4_D = mf4_fun(m_F_D);
+reduktion_M_TO_D = m_TO - m_TO_D; 
+mf4_D = mf4_fun(m_F_D, reduktion_M_TO_D);
 R_CR_D = R_NRD_fun(v_CR, sfc_1PERs, mf4_D); %v_CR / (FF.sfc_CR_1PERs * Ergebnisse_Widerstand_FE2.cW_cA_off_D *specs.g) * log(1/mf4_D);
 R_D = (Steigflug.R_CL + R_CR_D)/1000;
 
@@ -421,20 +427,20 @@ D = [R_D; m_P_D; m_F_D; m_TF_D; m_RF_D];
 figure(1) 
 hold on 
 grid on 
-ylim([100000 m_TO+10000])
-xlim([0 20000])
+% ylim([100000 m_TO+10000])
+xlim([0 16000])
 % X = [Reichweite; Payload; Fuelmasse; Tripfuel; Reservefuel];
-p1(1) = plot([A(1) B(1) C(1) D(1)],[A(2), B(2), C(2), D(2)]+m_OE);
-p1(2) = plot([A(1) B(1) C(1) D(1)],[A(3), B(3), C(3), D(3)]+m_ZF);
-p1(3) = plot([A(1) B(1) C(1) D(1)],[A(4), B(4), C(4), D(4)]+m_ZF);
-p1(4) = plot([A(1) B(1) C(1) D(1)],[A(5), B(5), C(5), D(5)]+m_ZF);
-p1(5) = plot([0, 20000],[m_TO, m_TO], Color=[0.5 0.5 0.5], LineStyle="--");
-p1(6) = plot([0, 20000],[m_OE, m_OE], Color=[0.5 0.5 0.5], LineStyle="-.");
+p1(1) = plot([A(1) B(1) C(1) D(1)],[A(2), B(2), C(2), D(2)]); % 
+p1(2) = plot([A(1) B(1) C(1) D(1)],[A(3), B(3), C(3), D(3)]); % +m_ZF-delta_mFmax_MF
+p1(3) = plot([A(1) B(1) C(1) D(1)],[A(4), B(4), C(4), D(4)]); % +m_ZF-delta_mFmax_MF
+p1(4) = plot([A(1) B(1) C(1) D(1)],[A(5), B(5), C(5), D(5)]); % +m_ZF-delta_mFmax_MF
+% p1(5) = plot([0, 20000],[m_TO, m_TO], Color=[0.5 0.5 0.5], LineStyle="--");
+% p1(6) = plot([0, 20000],[m_OE, m_OE], Color=[0.5 0.5 0.5], LineStyle="-.");
 % % % plot(R_DP, m_P,'rx')
 
 title('Nutzlast-Reichweiten-Diagramm', 'FontSize',25)
-% legend(p1(1:6),{'Nutzlast', 'Treibstoffmasse', 'Reisekraftstoffmasse', 'Reserve', 'M_{TO}', 'M_{OE}'},...
-%      'Location','eastoutside','FontSize',25);
+legend(p1(1:4),{'Nutzlast', 'Treibstoffmasse', 'Reisekraftstoffmasse', 'Reserve'},... % , 'M_{TO}', 'M_{OE}'
+     'Location','eastoutside','FontSize',25);
 xlabel('Reichweite in km','FontSize',20)
 ylabel('Masse in kg','FontSize',20)
 
@@ -507,9 +513,9 @@ end
 
 
 %% Funktion mf4
-function [mf4] = mf4_fun(m_F)
+function [mf4] = mf4_fun(m_F, M_TO_reduktion)
     load Ergebnisse_Massen_FE2.mat;
-    mf4 = (1.05 - (m_F)/(Ergebnisse_Massen_FE2.M_TO))/(FF.mf2 * FF.mf3 * FF.mf5 *(FF.mf6 * FF.mf7 * FF.mf8* FF.mf9 * FF.mf10 + 0.05));
+    mf4 = (1.05 - (m_F)/(Ergebnisse_Massen_FE2.M_TO - M_TO_reduktion))/(FF.mf2 * FF.mf3 * FF.mf5 *(FF.mf6 * FF.mf7 * FF.mf8* FF.mf9 * FF.mf10 + 0.05));
 end
 
 %% Funktion Reichweite NRD

@@ -673,8 +673,8 @@ Neutralpunkt=X_NP_durch_l_mue*Ergebnisse_Fluegel.l_mue+l_fn
 % NEUTRALPUNKTLAGE
 StatStab.CG_sigma_x = X_NP_durch_l_mue -0.05*NP.l_mue_ges;
 
-%%%%%%%% +- Man weiß es nicht %%%%%%%%
-Delta_CG_MAC_durch_lmue = abs(Wing_MAC.xSP_MAC_lmue - X_NP_OH_durch_l_mue);
+%%%%%%%% +- Man weiß es nicht %%%%%%%% ohen Betrag stand 29.07. 17Uhr
+Delta_CG_MAC_durch_lmue = (Wing_MAC.xSP_MAC_lmue - X_NP_OH_durch_l_mue);
 
 
 %% Speichern

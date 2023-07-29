@@ -65,7 +65,7 @@ hoehe_ALT = round(unitsratio('m','ft')*(specs.flight_level_ALT*10^2));
 % hoehe =round(unitsratio('m','ft')*Flughoehe);                     % in m
 
 schritte = 100;
-hoehe_plus = 37;
+hoehe_plus = 18;
 hoehe = (round(linspace(1500, ((specs.flight_level + hoehe_plus)*10^2), schritte))); % 1000: 3000: specs.flight_level*10^2;
 % hoehe = 1000: 1000: specs.flight_level*10^2;
 hoehe_m = round(unitsratio('m','ft').*hoehe);

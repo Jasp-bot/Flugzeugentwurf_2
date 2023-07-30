@@ -527,6 +527,7 @@ ylabel('Masse in kg','FontSize',20)
 
 
 %% Speichern von Ergebnissen
+
 NRD.A = A;
 NRD.B = B;
 NRD.C = C;

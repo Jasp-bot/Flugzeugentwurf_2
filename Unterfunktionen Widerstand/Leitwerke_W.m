@@ -1,6 +1,6 @@
 %% Funktion Leitwerkswiderstand
 
-function  [c_w_HLW_min, c_w_SLW_min] = Leitwerke_W(v_air)
+function  [c_w_HLW_min, c_w_SLW_min] = Leitwerke_W(v_air, hoehe)
 
 load Projekt_specs.mat;
 load Ergebnisse_ISA_DATA.mat;
@@ -12,11 +12,11 @@ load Getroffene_Annahmen_und_FUN.mat;
 %v_air = Ergebnisse_Widerstand_FE2.v_air;
 
 % PS4 S.3 Formel 7 angewendet auf Leitwerke
-Re_u_HLW = FUN.Re_CR_fun(Annahmen.x_u_HLW, v_air);  %Annahmen.x_u_HLW * v_air / ISA.kin_visk(Annahmen.hoehe_CR);
-Re_u_SLW = FUN.Re_CR_fun(Annahmen.x_u_SLW, v_air);  %Annahmen.x_u_SLW * v_air / ISA.kin_visk(Annahmen.hoehe_CR);
+Re_u_HLW = FUN.Re_H_fun(Annahmen.x_u_HLW, v_air, hoehe);  %Annahmen.x_u_HLW * v_air / ISA.kin_visk(Annahmen.hoehe_CR);
+Re_u_SLW = FUN.Re_H_fun(Annahmen.x_u_SLW, v_air, hoehe);  %Annahmen.x_u_SLW * v_air / ISA.kin_visk(Annahmen.hoehe_CR);
 
-Re_HLW = FUN.Re_CR_fun(HLW.Fluegeltiefen_eta_oR, v_air);    % HLW.Fluegeltiefen_eta_oR .* v_air ./ ISA.kin_visk(Annahmen.hoehe_CR);
-Re_SLW = FUN.Re_CR_fun(SLW.Fluegeltiefen_eta_oR, v_air);    % SLW.Fluegeltiefen_eta_oR .* v_air ./ ISA.kin_visk(Annahmen.hoehe_CR);
+Re_HLW = FUN.Re_H_fun(HLW.Fluegeltiefen_eta_oR, v_air, hoehe);    % HLW.Fluegeltiefen_eta_oR .* v_air ./ ISA.kin_visk(Annahmen.hoehe_CR);
+Re_SLW = FUN.Re_H_fun(SLW.Fluegeltiefen_eta_oR, v_air, hoehe);    % SLW.Fluegeltiefen_eta_oR .* v_air ./ ISA.kin_visk(Annahmen.hoehe_CR);
 
 
 % PS4 S.2 Formel 6 angewendet auf Leitwerke

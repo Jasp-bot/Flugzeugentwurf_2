@@ -1,5 +1,5 @@
 %% Funktion Profilwiderstand
- function [c_w_p, c_w_p_min_Re, c_w_p_test] = Profilwiderstand(v_gegeben,c_A_F)
+ function [c_w_p, c_w_p_min_Re, c_w_p_test] = Profilwiderstand(v_gegeben,c_A_F, hoehe)
 % clc
 % clear all
 % close all
@@ -27,8 +27,8 @@ load Ergebnisse_ISA_DATA.mat;
 k = 2.7 * specs.d_l + 100 * (specs.d_l)^4;
 
 %PS4 S.3, Formel 7
-Re_u = FUN.Re_CR_fun(Annahmen.x_u, v_gegeben);                                           %Annahmen.x_u * v_gegeben / ISA.kin_visk(Annahmen.hoehe_CR);
-Re_oR = FUN.Re_CR_fun(Ergebnisse_Fluegel.Fluegeltiefen_eta_oR, v_gegeben);       %Ergebnisse_Fluegel.Fluegeltiefen_eta_oR * v_gegeben / ISA.kin_visk(Annahmen.hoehe_CR);     % Annahme pleas confirm
+Re_u = FUN.Re_H_fun(Annahmen.x_u, v_gegeben, hoehe);                                           %Annahmen.x_u * v_gegeben / ISA.kin_visk(Annahmen.hoehe_CR);
+Re_oR = FUN.Re_H_fun(Ergebnisse_Fluegel.Fluegeltiefen_eta_oR, v_gegeben, hoehe);       %Ergebnisse_Fluegel.Fluegeltiefen_eta_oR * v_gegeben / ISA.kin_visk(Annahmen.hoehe_CR);     % Annahme pleas confirm
 
 % PS4 S.2, Formel 6
 c_f_la_xu = FUN.c_f_la_fun(Re_u);                               %1.328./(sqrt(Re_u));

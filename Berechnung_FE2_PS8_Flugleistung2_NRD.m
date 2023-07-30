@@ -515,10 +515,10 @@ p1(3) = plot([A_ECO(1) B_ECO(1) C_ECO(1) D_ECO(1)],[A_ECO(4), B_ECO(4), C_ECO(4)
 p1(4) = plot([A_ECO(1) B_ECO(1) C_ECO(1) D_ECO(1)],[A_ECO(5), B_ECO(5), C_ECO(5), D_ECO(5)]); % +m_ZF-delta_mFmax_MF
 % p1(5) = plot([0, 20000],[m_TO, m_TO], Color=[0.5 0.5 0.5], LineStyle="--");
 % p1(6) = plot([0, 20000],[m_OE, m_OE], Color=[0.5 0.5 0.5], LineStyle="-.");
-plot(specs.max_range_basis_km, m_P_A,'rx')
+p1(5) = plot(specs.max_range_basis_km, m_P_A,'rx');
 
-title('Nutzlast-Reichweiten-Diagramm', 'FontSize',25)
-legend(p1(1:4),{'Nutzlast', 'Treibstoffmasse', 'Reisekraftstoffmasse', 'Reserve'},... % , 'M_{TO}', 'M_{OE}'
+title('Nutzlast-Reichweiten-Diagramm für All-Eco', 'FontSize',25)
+legend(p1(1:5),{'Nutzlast', 'Treibstoffmasse', 'Reisekraftstoffmasse', 'Reservekraftstoff', 'DP'},... % , 'M_{TO}', 'M_{OE}'
      'Location','eastoutside','FontSize',25);
 xlabel('Reichweite in km','FontSize',20)
 ylabel('Masse in kg','FontSize',20)

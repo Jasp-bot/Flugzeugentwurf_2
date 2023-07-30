@@ -1,6 +1,6 @@
 %% Funktion Rumpfwiderstand
 
-function [c_w_R, alpha_Rumpf_grad, c_A_alpha] = Rumpfwiderstand(Machzahl, Abwindfaktor, c_A_ges, v_air)
+function [c_w_R, alpha_Rumpf_grad, c_A_alpha] = Rumpfwiderstand(Machzahl, Abwindfaktor, c_A_ges, v_air, hoehe)
 
 
 % clc
@@ -25,7 +25,7 @@ load Ergebnisse_ISA_DATA.mat;
 % v_air = Ergebnisse_Widerstand_FE2.v_air;
 
 %Re_Ru = (specs.l_rumpf * (specs.Ma_CR * ISA.a(Annahmen.hoehe_CR)))/(ISA.kin_visk(Annahmen.hoehe_CR));
-Re_Ru = FUN.Re_CR_fun(specs.l_rumpf, v_air);
+Re_Ru = FUN.Re_H_fun(specs.l_rumpf, v_air, hoehe);
 % Re_Ru = FUN.Re_CR_fun(73.8, v_air);
 % PS4 S.5 Formel 19
 c_f_tu_Ru = FUN.c_f_tu_fun(Re_Ru); %(0.455)/(log(Re_Ru)^(2.58));

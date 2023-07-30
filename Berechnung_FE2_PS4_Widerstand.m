@@ -40,8 +40,8 @@ addpath('Unterfunktionen Widerstand');
 Annahmen.Flughoehe_CR = specs.flight_level * 10^2 ;     % in ft
 Annahmen.hoehe_CR = round(unitsratio('m','ft')*Annahmen.Flughoehe_CR);
 
-stuetzstellen = 500;
-c_A_F = linspace(0, 1, stuetzstellen);
+stuetzstellen = 1000;
+c_A_F = linspace(0, 3, stuetzstellen);
 Ma_off_D = linspace(0, 2, stuetzstellen).';
 
 
@@ -145,7 +145,7 @@ Annahmen.kappa = 1.4;
 
 
 %PS4 S.3, Formel 7
-FUN.Re_CR_fun = @(l_Re,v_Re) (l_Re .* v_Re) ./ (ISA.kin_visk(Annahmen.hoehe_CR));
+FUN.Re_H_fun = @(l_Re,v_Re,hoehe) (l_Re .* v_Re) ./ (ISA.kin_visk(hoehe));
 
 % PS4 S.2, Formel 6
 FUN.c_f_la_fun = @(Re) 1.328./(sqrt(Re));
@@ -175,20 +175,20 @@ c_A_F_off_D = (((2)./(Annahmen.kappa .* ISA.p(Annahmen.hoehe_CR) .* Ma_off_D.^2)
 %% Berechnungen
 
 % Leitwerke
-[c_w_HLW_min, c_w_SLW_min] = Leitwerke_W(v_air);
+[c_w_HLW_min, c_w_SLW_min] = Leitwerke_W(v_air, Annahmen.hoehe_CR);
 
 c_W_HLW = trapz(c_w_HLW_min.').*10.^(-3);
 c_W_SLW = trapz(c_w_SLW_min.').*10.^(-3);
 
-[c_w_HLW_min_off_D, c_w_SLW_min_off_D] = Leitwerke_W(v_air_off_D);
+[c_w_HLW_min_off_D, c_w_SLW_min_off_D] = Leitwerke_W(v_air_off_D, Annahmen.hoehe_CR);
 
 c_W_HLW_off_D = trapz(c_w_HLW_min_off_D.').*10.^(-3);
 c_W_SLW_off_D = trapz(c_w_SLW_min_off_D.').*10.^(-3);
 
 % Interferenz
 
-c_w_int_fs = Interferenz_W(v_air).';
-c_w_int_fs_off_D = Interferenz_W(v_air_off_D).';
+c_w_int_fs = Interferenz_W(v_air, Annahmen.hoehe_CR).';
+c_w_int_fs_off_D = Interferenz_W(v_air_off_D, Annahmen.hoehe_CR).';
 
 % Leitwerk Trim
 
@@ -205,20 +205,20 @@ Abwindfaktor = 1.75 * (Annahmen.c_A_alpha_F/(pi * Ergebnisse_Fluegel.streckung_p
     (1+ (abs(Annahmen.z_abstand/(Ergebnisse_Fluegel.b/2))))));
 
 
-[c_w_R_interm, alpha_Rumpf_grad_interm, c_A_alpha] = Rumpfwiderstand(specs.Ma_CR, Abwindfaktor, c_A_ges, v_air);
+[c_w_R_interm, alpha_Rumpf_grad_interm, c_A_alpha] = Rumpfwiderstand(specs.Ma_CR, Abwindfaktor, c_A_ges, v_air, Annahmen.hoehe_CR);
 c_w_R = diag(c_w_R_interm).';
 alpha_Rumpf_grad = alpha_Rumpf_grad_interm;
 
 
 
-[c_w_R_off_D_interm, alpha_Rumpf_grad_off_D_interm, c_A_alpha_off_D] = Rumpfwiderstand(Ma_off_D, Abwindfaktor, c_A_ges_off_D, v_air_off_D);
+[c_w_R_off_D_interm, alpha_Rumpf_grad_off_D_interm, c_A_alpha_off_D] = Rumpfwiderstand(Ma_off_D, Abwindfaktor, c_A_ges_off_D, v_air_off_D, Annahmen.hoehe_CR);
 c_w_R_off_D = diag(c_w_R_off_D_interm).';
 alpha_Rumpf_grad_off_D = diag(alpha_Rumpf_grad_off_D_interm).';
 
 
 % Triebwerke
-c_w_TW = Triebwerkswiderstand(v_air, alpha_Rumpf_grad);
-c_w_TW_off_D = Triebwerkswiderstand(v_air_off_D, alpha_Rumpf_grad_off_D);
+c_w_TW = Triebwerkswiderstand(v_air, alpha_Rumpf_grad, Annahmen.hoehe_CR);
+c_w_TW_off_D = Triebwerkswiderstand(v_air_off_D, alpha_Rumpf_grad_off_D, Annahmen.hoehe_CR);
 
 % Zusatzwiderstand
 
@@ -227,9 +227,9 @@ c_w_TW_off_D = Triebwerkswiderstand(v_air_off_D, alpha_Rumpf_grad_off_D);
 
 % Profilwiderstand
 
-[c_w_p, c_w_p_min_Re, c_w_p_test] = Profilwiderstand(v_air,c_A_F);
+[c_w_p, c_w_p_min_Re, c_w_p_test] = Profilwiderstand(v_air,c_A_F, Annahmen.hoehe_CR);
 % c_w_p = c_w_p_interm; %trapz(c_w_p_interm.');
-[c_w_p_off_D, c_w_p_min_Re_off_D, c_w_p_test_off_D] = Profilwiderstand(v_air_off_D, c_A_F_off_D);
+[c_w_p_off_D, c_w_p_min_Re_off_D, c_w_p_test_off_D] = Profilwiderstand(v_air_off_D, c_A_F_off_D, Annahmen.hoehe_CR);
 % c_w_p_off_D = c_w_p_off_D_interm; %trapz(c_w_p_off_D_interm.');
 
 % Induzierter Widerstand
@@ -284,7 +284,7 @@ Gleitverhaeltnis_Des = c_A_F ./ x_vector_sum(numPlots,:);
 
 Gleitverhaeltnis_off_D = c_A_F_off_D ./ x_vector_sum_off_D(numPlots,:);
 
-
+[Landung_vec] = Landung()
 
 %% Ergebnisse speichern
 schnittpunkt_off_D_c_A_CR = InterX([x_vector_sum_off_D(numPlots,:); c_A_F_off_D], [[0, 1]; [Ergebnisse_stat_Flaechenbelastung.C_A_CR, Ergebnisse_stat_Flaechenbelastung.C_A_CR]]);

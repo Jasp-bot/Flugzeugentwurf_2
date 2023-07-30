@@ -1,10 +1,7 @@
 %% Fluleistung 2 PS 8 Nutzlast Reichweiten Diagramm
 
 %% Kommentar
-% der Grund warum unsere Reichweite so großist, ist die gleitzahl. 
-% Mit Gleitzahlen um 1/17 bis 1/19 sind die Ergebnisse realistisch
-% => immer noch ein Fehler in Widerstand
-% (Ergebnisse_Widerstand_FE2.cW_cA_off_D)
+% !!! Annahme, dass M_OE von ECO und 3 KLassen gleich ist
 
 
 
@@ -248,23 +245,22 @@ Steigflug.m_F_CL_ALT = Steigflug.m_F_CL1_ALT + Steigflug.m_F_beschl_ALT;
 %% Fuel Fraction neu
 
 
-% Climb auf CR
+% Climb auf CR 3 Klassen
 FFneu.m3_neu =Ergebnisse_Massen_FE2.M_TO * FF.mf2;
-
 FFneu.mf3 = 1 - (Steigflug.m_F_CL)/(FFneu.m3_neu);
 
 
-% Reichweite CR
+% Reichweite CR 3 Klassen
 FFneu.mf4 = (1.05 - (Ergebnisse_Massen_FE2.M_F)/(Ergebnisse_Massen_FE2.M_TO))/(FF.mf2 * FF.mf3 * FF.mf5 *(FF.mf6 * FF.mf7 * FF.mf8* FF.mf9 * FF.mf10 + 0.05));
 
-% sfc_1_s *1/g0
+% sfc_1_s *1/g0 3 Klassen
 R_CR = (v_CR / (Ergebnisse_Widerstand_FE2.cW_cA_off_D  * FF.sfc_CR_1PERs )) * log(1/ FFneu.mf4);  
 
-% CLimb alt
+% CLimb alt 3 Klassen
 FFneu.m6_neu = Ergebnisse_Massen_FE2.M_TO * FF.mf2 * FF.mf3 * FF.mf5 * FFneu.mf4;
 FFneu.mf6 = 1 - (Steigflug.m_F_CL_ALT)/(FFneu.m6_neu);
 
-% Holding
+% Holding 3 Klassen
 [sfc_HLD_daNh, sfc_HLD_1PERh, sfc_HLD_1PERs] = SFC(hoehe_HLD, FF.Ma_HLD, specs.bypass);
 
 FFneu.mf9 = 1/(exp(specs.t_HLD * Ergebnisse_Widerstand_FE2.cW_cA_off_D * sfc_HLD_1PERs )); % eventuell muss das g0 noch rausgekürtzt werden
@@ -292,12 +288,28 @@ m_P_A = specs.m_cargo + specs.m_pax;
 
 % Punkt A--------------------------------
 m_TO_A = Ergebnisse_Massen_FE2.M_OE + m_P_A + m_alt_u_HLD;
-m_F_HLD_A = (1 - FF.mf9) * m_TO_A;
+% m_F_HLD_A = (1 - FF.mf9) * m_TO_A;
 R_A = 0;
 m_RF_A = m_alt_u_HLD;
 m_F_A = m_RF_A;
 m_TF_A = 0;
 A = [R_A; m_P_A; m_F_A; m_TF_A; m_RF_A];
+
+    % All ECO
+
+
+R_A_ECO = 0;
+m_RF_A_ECO = m_alt_u_HLD;
+m_F_A_ECO = m_RF_A_ECO;
+m_TF_A_ECO = 0;
+m_P_A_ECO = specs.m_cargo + specs.m_pax_all_eco;
+
+delta_MP_MPeco = m_P_A_ECO - m_P_A; 
+m_fuel_ECO = m_fuel - delta_MP_MPeco;
+
+A_ECO = [R_A_ECO; m_P_A_ECO; m_F_A_ECO; m_TF_A_ECO; m_RF_A_ECO];
+
+
 
 % m_TO_A = m_P + m_OE + Fuel.m_F_ALT + Fuel.m_F_HLD;
 % m_F_HLD_A = (1-Fuel.Fractions.m_f9) * m_TO_A;
@@ -329,6 +341,29 @@ m_RF_B = m_RF_OC_B + m_F_C_B;
 m_TF_B = m_F_B - m_RF_B;
 
 B = [R_B; m_P_B; m_F_B; m_TF_B; m_RF_B];
+
+    % B ECO
+
+m_P_B_ECO = m_P_A_ECO;
+m_TO_B_ECO = Ergebnisse_Massen_FE2.M_TO;
+m_F_B_ECO = m_TO_B_ECO -Ergebnisse_Massen_FE2.M_OE - m_P_B_ECO;
+
+
+m_ZF_B_ECO = m_P_B_ECO + m_OE; % !!! Annahme, dass M_OE von ECO und 3 KLassen gleich ist
+mf4_B_ECO = mf4_fun(m_F_B_ECO, 0);
+R_CR_B_ECO = R_NRD_fun(v_CR, sfc_1PERs, mf4_B_ECO);
+R_B_ECO = (Steigflug.R_CL + R_CR_B_ECO)/1000;
+
+m_F_C_B_ECO = 0.05 *(1 - (FF.mf2 * FF.mf3 * mf4_B_ECO * FF.mf5)) * m_TO_B_ECO;
+m_RF_OC_B_ECO = m_ZF_B_ECO * (1/((1-m_F_C_B_ECO/m_ZF_B_ECO) * FF.mf6 * FF.mf7 * FF.mf8 * FF.mf9) -1);
+
+m_RF_B_ECO = m_RF_OC_B_ECO + m_F_C_B_ECO;
+m_TF_B_ECO = m_F_B_ECO - m_RF_B_ECO;
+
+
+B_ECO = [R_B_ECO; m_P_B_ECO; m_F_B_ECO; m_TF_B_ECO; m_RF_B_ECO];
+
+
 
 % m_P_B = m_P_alleco;
 
@@ -371,6 +406,30 @@ m_TF_C = m_F_C - m_RF_C;
 
 C = [R_C; m_P_C; m_F_C; m_TF_C; m_RF_C];
 
+
+    % C ECO
+m_F_max_ECO = Betankung.Masse_Fuel_Aussen_Theoretisch + Betankung.Masse_Fuel_Innen;
+delta_mFmax_MF_ECO = m_F_max_ECO - m_fuel_ECO;
+
+m_F_C_ECO = m_F_max_ECO;
+m_TO_C_ECO = m_TO;
+m_P_C_ECO = m_TO_C_ECO - (m_OE + m_F_C_ECO);
+
+m_ZF_C_ECO = m_OE + m_P_C_ECO;
+mf4_C_ECO = mf4_fun(m_F_C_ECO, 0);
+
+R_CR_C_ECO = R_NRD_fun(v_CR, sfc_1PERs, mf4_C_ECO);
+R_C_ECO = (Steigflug.R_CL + R_CR_C_ECO)/1000;
+
+m_F_C_C_ECO = 0.05 *(1 - (FF.mf2 * FF.mf3 * mf4_B_ECO * FF.mf5)) * m_TO_C_ECO;
+m_RF_OC_C_ECO = m_ZF_C_ECO * (1/((1-m_F_C_C_ECO/m_ZF_C_ECO) * FF.mf6 * FF.mf7 * FF.mf8 * FF.mf9) -1);
+m_RF_C_ECO = m_RF_OC_C_ECO + m_F_C_C_ECO;
+m_TF_C_ECO = m_F_C_ECO- m_RF_C_ECO;
+
+
+C_ECO = [R_C_ECO; m_P_C_ECO; m_F_C_ECO; m_TF_C_ECO; m_RF_C_ECO];
+
+
 % m_F_C = Fluegel.Tank.M_fuel;
 % m_TO_C = m_TO;
 % m_P_C = m_TO_C - (m_OE + m_F_C);
@@ -407,6 +466,25 @@ m_TF_D = m_F_D - m_RF_D;
  
 D = [R_D; m_P_D; m_F_D; m_TF_D; m_RF_D];
 
+    % D ECO
+
+m_F_D_ECO = m_F_max_ECO;
+m_P_D_ECO = 0;
+m_TO_D_ECO = m_OE + m_F_D_ECO + m_P_D_ECO;
+m_ZF_D_ECO = m_OE + m_P_D_ECO;
+reduktion_M_TO_D_ECO = m_TO - m_TO_D_ECO; 
+mf4_D_ECO = mf4_fun(m_F_D_ECO, reduktion_M_TO_D_ECO);
+R_CR_D_ECO = R_NRD_fun(v_CR, sfc_1PERs, mf4_D_ECO);
+R_D_ECO = (Steigflug.R_CL + R_CR_D_ECO)/1000;
+
+m_F_C_D_ECO = 0.05 *(1 - (FF.mf2 * FF.mf3 * mf4_B_ECO * FF.mf5)) * m_TO_D_ECO;
+m_RF_OC_D_ECO = m_ZF_D_ECO * (1/((1-m_F_C_D_ECO/m_ZF_D_ECO) * FF.mf6 * FF.mf7 * FF.mf8 * FF.mf9) -1);
+m_RF_D_ECO = m_RF_OC_D_ECO + m_F_C_D_ECO;
+m_TF_D_ECO = m_F_D_ECO - m_RF_D_ECO;
+ 
+D_ECO = [R_D_ECO; m_P_D_ECO; m_F_D_ECO; m_TF_D_ECO; m_RF_D_ECO];
+
+
 % m_F_D = Fluegel.Tank.M_fuel;
 % m_P_D = 0;
 % m_TO_D = m_OE + m_F_D ;
@@ -431,13 +509,13 @@ grid on
 % ylim([100000 m_TO+10000])
 xlim([0 16000])
 % X = [Reichweite; Payload; Fuelmasse; Tripfuel; Reservefuel];
-p1(1) = plot([A(1) B(1) C(1) D(1)],[A(2), B(2), C(2), D(2)]); % 
-p1(2) = plot([A(1) B(1) C(1) D(1)],[A(3), B(3), C(3), D(3)]); % +m_ZF-delta_mFmax_MF
-p1(3) = plot([A(1) B(1) C(1) D(1)],[A(4), B(4), C(4), D(4)]); % +m_ZF-delta_mFmax_MF
-p1(4) = plot([A(1) B(1) C(1) D(1)],[A(5), B(5), C(5), D(5)]); % +m_ZF-delta_mFmax_MF
+p1(1) = plot([A_ECO(1) B_ECO(1) C_ECO(1) D_ECO(1)],[A_ECO(2), B_ECO(2), C_ECO(2), D_ECO(2)]); % 
+p1(2) = plot([A_ECO(1) B_ECO(1) C_ECO(1) D_ECO(1)],[A_ECO(3), B_ECO(3), C_ECO(3), D_ECO(3)]); % +m_ZF-delta_mFmax_MF
+p1(3) = plot([A_ECO(1) B_ECO(1) C_ECO(1) D_ECO(1)],[A_ECO(4), B_ECO(4), C_ECO(4), D_ECO(4)]); % +m_ZF-delta_mFmax_MF
+p1(4) = plot([A_ECO(1) B_ECO(1) C_ECO(1) D_ECO(1)],[A_ECO(5), B_ECO(5), C_ECO(5), D_ECO(5)]); % +m_ZF-delta_mFmax_MF
 % p1(5) = plot([0, 20000],[m_TO, m_TO], Color=[0.5 0.5 0.5], LineStyle="--");
 % p1(6) = plot([0, 20000],[m_OE, m_OE], Color=[0.5 0.5 0.5], LineStyle="-.");
-% % % plot(R_DP, m_P,'rx')
+plot(specs.max_range_basis_km, m_P_A,'rx')
 
 title('Nutzlast-Reichweiten-Diagramm', 'FontSize',25)
 legend(p1(1:4),{'Nutzlast', 'Treibstoffmasse', 'Reisekraftstoffmasse', 'Reserve'},... % , 'M_{TO}', 'M_{OE}'
@@ -453,32 +531,58 @@ NRD.A = A;
 NRD.B = B;
 NRD.C = C;
 NRD.D = D;
+NRD.A_ECO = A_ECO;
+NRD.B_ECO = B_ECO;
+NRD.C_ECO = C_ECO;
+NRD.D_ECO = D_ECO;
 
 NRD.R_A = R_A;
 NRD.R_B = R_B;
 NRD.R_C = R_C;
 NRD.R_D = R_D;
+NRD.R_A_ECO = R_A_ECO;
+NRD.R_B_ECO = R_B_ECO;
+NRD.R_C_ECO = R_C_ECO;
+NRD.R_D_ECO = R_D_ECO;
+
 
 NRD.m_P_A = m_P_A;
 NRD.m_P_B = m_P_B;
 NRD.m_P_C = m_P_C;
 NRD.m_P_D = m_P_D;
+NRD.m_P_A_ECO = m_P_A_ECO;
+NRD.m_P_B_ECO = m_P_B_ECO;
+NRD.m_P_C_ECO = m_P_C_ECO;
+NRD.m_P_D_ECO = m_P_D_ECO;
+
 
 NRD.m_F_A = m_F_A;
 NRD.m_F_B = m_F_B;
 NRD.m_F_C = m_F_C;
 NRD.m_F_D = m_F_D;
+NRD.m_F_A_ECO = m_F_A_ECO;
+NRD.m_F_B_ECO = m_F_B_ECO;
+NRD.m_F_C_ECO = m_F_C_ECO;
+NRD.m_F_D_ECO = m_F_D_ECO;
 
 NRD.m_TF_A = m_TF_A;
 NRD.m_TF_B = m_TF_B;
 NRD.m_TF_C = m_TF_C;
 NRD.m_TF_D = m_TF_D;
+NRD.m_TF_A_ECO = m_TF_A_ECO;
+NRD.m_TF_B_ECO = m_TF_B_ECO;
+NRD.m_TF_C_ECO = m_TF_C_ECO;
+NRD.m_TF_D_ECO = m_TF_D_ECO;
+
 
 NRD.m_RF_A = m_RF_A;
 NRD.m_RF_B = m_RF_B;
 NRD.m_RF_C = m_RF_C;
 NRD.m_RF_D = m_RF_D;
-
+NRD.m_RF_A_ECO = m_RF_A_ECO;
+NRD.m_RF_B_ECO = m_RF_B_ECO;
+NRD.m_RF_C_ECO = m_RF_C_ECO;
+NRD.m_RF_D_ECO = m_RF_D_ECO;
 
 
 

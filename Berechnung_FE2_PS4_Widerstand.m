@@ -284,7 +284,7 @@ Gleitverhaeltnis_Des = c_A_F ./ x_vector_sum(numPlots,:);
 
 Gleitverhaeltnis_off_D = c_A_F_off_D ./ x_vector_sum_off_D(numPlots,:);
 
-[Landung_vec] = Landung()
+
 
 %% Ergebnisse speichern
 schnittpunkt_off_D_c_A_CR = InterX([x_vector_sum_off_D(numPlots,:); c_A_F_off_D], [[0, 1]; [Ergebnisse_stat_Flaechenbelastung.C_A_CR, Ergebnisse_stat_Flaechenbelastung.C_A_CR]]);

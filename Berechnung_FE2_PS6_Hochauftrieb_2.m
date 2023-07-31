@@ -579,6 +579,17 @@ HA2.F_Fowler = 2 * (Area_innen + Area_aussen);
 % F_FOWLER = 2 * ((Ergebnisse_Fluegel.b/2)*trapz(X_FOWLER,Fluegel_FOWLER));
 
 
+
+
+%% Ausgabe für Jasper
+HA2.CW_max_TO = HA2.TO_CW(end);
+HA2.CA_max_TO = HA2.c_A_F_TO(end);
+
+HA2.CW_max_ldg_fw = HA2.LDG_CW_FW(end);
+HA2.CA_max_ldg_fw = HA2.c_A_F_LDG_FW(end);
+
+
+
 %% Speichern
 save Ergebnisse_Hochauftrieb_2.mat HA2 spannweite_flaps Flaps_begin flap_length_LDG
 

@@ -1,4 +1,5 @@
 %% PS2 Schwerpunktberechnung
+function Berechnung_FE2_PS2_Schwerpunkt
 
 clc
 clear all
@@ -655,7 +656,7 @@ d_F1_X_NP_durch_l_mue=(-1.8/StatStab.c_A_alpha_F)*(specs.D_rumpf*specs.h_rumpf *
 d_F2_X_NP_durch_l_mue = tan(DT.phi_VK_max)*(0.273/(1+Ergebnisse_Fluegel.lambda))*((specs.D_rumpf*Ergebnisse_Fluegel.l_m*(specs.D_rumpf+Ergebnisse_Fluegel.b))/((Ergebnisse_Fluegel.l_mue^2)*(Ergebnisse_Fluegel.b+2.15*specs.D_rumpf)));
 d_TW_X_NP_durch_l_mue = -4*(specs.Dn_TW^2 *specs.l_TW)/(Ergebnisse_Fluegel.F*Ergebnisse_Fluegel.l_mue*StatStab.c_A_alpha_F); %Einfluss Triebwerk auf NP Formel 30 PS02
 
-l_i_Mitte = DT.l_i_I+(tan(Ergebnisse_Fluegel.phi_VK_max)*DT.s_R)    %Ausrechnen von tiefe des Fluges imagin�r IM rumpf     
+l_i_Mitte = DT.l_i_I+(tan(Ergebnisse_Fluegel.phi_VK_max)*DT.s_R);    %Ausrechnen von tiefe des Fluges imagin�r IM rumpf     
 Flaeche_im_Rumpf_oberes_dreieck = tan(Ergebnisse_Fluegel.phi_VK_max)*DT.s_R*DT.s_R;
 %Gesamte Fluegelflaeche mit dem Dreieck im Rumpf
 F_ges_Fluegel_MAC=Flaeche_im_Rumpf_oberes_dreieck+Ergebnisse_Fluegel.F;
@@ -664,11 +665,11 @@ Streckung_ges=(Ergebnisse_Fluegel.b^2)/F_ges_Fluegel_MAC;
 
 %%NP des Fl�gels berechnen Formel 24 PS02
 X_NP_F = tan(DT.phi_VK_max)*(DT.s_A+DT.s_I+DT.s_R) + DT.l_a - NP.x_NP_ges;
-X_NP_F_MAC = 0.5*NP.l_mue_ges -(CG_Data_Wing.Fluegel(2)-X_NP_F)
+X_NP_F_MAC = 0.5*NP.l_mue_ges -(CG_Data_Wing.Fluegel(2)-X_NP_F);
 
 X_NP_OH_durch_l_mue = (X_NP_F_MAC/Ergebnisse_Fluegel.l_mue) + d_F1_X_NP_durch_l_mue + d_F2_X_NP_durch_l_mue + d_TW_X_NP_durch_l_mue;
-X_NP_durch_l_mue = X_NP_OH_durch_l_mue +((r_H/Ergebnisse_Fluegel.l_mue)*0.85*(HLW.F/Ergebnisse_Fluegel.F)*(c_A_alpha_H/c_A_alpha)*(1-Abwindfaktor))
-Neutralpunkt=X_NP_durch_l_mue*Ergebnisse_Fluegel.l_mue+l_fn
+X_NP_durch_l_mue = X_NP_OH_durch_l_mue +((r_H/Ergebnisse_Fluegel.l_mue)*0.85*(HLW.F/Ergebnisse_Fluegel.F)*(c_A_alpha_H/c_A_alpha)*(1-Abwindfaktor));
+Neutralpunkt = X_NP_durch_l_mue*Ergebnisse_Fluegel.l_mue+l_fn;
 
 % NEUTRALPUNKTLAGE
 StatStab.CG_sigma_x = X_NP_durch_l_mue -0.05*NP.l_mue_ges;

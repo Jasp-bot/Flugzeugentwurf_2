@@ -1,6 +1,6 @@
 % PS9 Ergebnisse Auftriebsverteilung, Momentenbeiwert, Leitwerke
 
-% function Berechnung_PS9_Auftrieb_Momente
+function Berechnung_PS9_Auftrieb_Momente
 
 clc
 clear all

@@ -1,4 +1,5 @@
 %% Fluleistung 2 PS 8 Nutzlast Reichweiten Diagramm
+function Berechnung_FE2_PS8_Fluglseistung2_NRD
 
 %% Kommentar
 % !!! Annahme, dass M_OE von ECO und 3 KLassen gleich ist
@@ -503,25 +504,6 @@ D_ECO = [R_D_ECO; m_P_D_ECO; m_F_D_ECO; m_TF_D_ECO; m_RF_D_ECO];
 
 
 
-figure(1) 
-hold on 
-grid on 
-% ylim([100000 m_TO+10000])
-xlim([0 16000])
-% X = [Reichweite; Payload; Fuelmasse; Tripfuel; Reservefuel];
-p1(1) = plot([A_ECO(1) B_ECO(1) C_ECO(1) D_ECO(1)],[A_ECO(2), B_ECO(2), C_ECO(2), D_ECO(2)]); % 
-p1(2) = plot([A_ECO(1) B_ECO(1) C_ECO(1) D_ECO(1)],[A_ECO(3), B_ECO(3), C_ECO(3), D_ECO(3)]); % +m_ZF-delta_mFmax_MF
-p1(3) = plot([A_ECO(1) B_ECO(1) C_ECO(1) D_ECO(1)],[A_ECO(4), B_ECO(4), C_ECO(4), D_ECO(4)]); % +m_ZF-delta_mFmax_MF
-p1(4) = plot([A_ECO(1) B_ECO(1) C_ECO(1) D_ECO(1)],[A_ECO(5), B_ECO(5), C_ECO(5), D_ECO(5)]); % +m_ZF-delta_mFmax_MF
-% p1(5) = plot([0, 20000],[m_TO, m_TO], Color=[0.5 0.5 0.5], LineStyle="--");
-% p1(6) = plot([0, 20000],[m_OE, m_OE], Color=[0.5 0.5 0.5], LineStyle="-.");
-p1(5) = plot(specs.max_range_basis_km, m_P_A,'rx');
-
-title('Nutzlast-Reichweiten-Diagramm für All-Eco', 'FontSize',25)
-legend(p1(1:5),{'Nutzlast', 'Treibstoffmasse', 'Reisekraftstoffmasse', 'Reservekraftstoff', 'DP'},... % , 'M_{TO}', 'M_{OE}'
-     'Location','eastoutside','FontSize',25);
-xlabel('Reichweite in km','FontSize',20)
-ylabel('Masse in kg','FontSize',20)
 
 
 
@@ -593,7 +575,7 @@ Ergebnisse_Flugleistung_2.FFneu = FFneu;
 Ergebnisse_Flugleistung_2.NRD = NRD;
 
 save Ergebnisse_Flugleistung_2.mat Ergebnisse_Flugleistung_2 FFneu NRD
-
+end
 %% Funktionen
 
 

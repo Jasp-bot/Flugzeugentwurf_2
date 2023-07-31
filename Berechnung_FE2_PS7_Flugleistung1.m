@@ -19,6 +19,17 @@ addpath('Unterfunktionen Widerstand');
 
 %% Annahmen
 
+% Bitte noch verändern
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+c_A_max = 3.58; %%%%%%%%%%%%%%% Achtung random wert, bitte von mac geben lassen
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
 % Achtung noch Hardcodet!!!!!!!!!!!!!!!!!!!!!!!!!
  % stand 12uhr 03.07.23: annahme das es sich um eine Laufvariabele handelt
 
@@ -48,12 +59,10 @@ GTO_G_CL_ALT = G_TO / Momentane_Masse_CL_ALT;
 S0 = k_CR * G_TO * (1/schub_CR.Eta) / (schub_CR.S_S0_CR * schub_CR.S_S0_E);
 S0_GTO = S0/G_TO;
 
-
+G = Momentane_Masse_ICA; %%%%%%%%%%%%%%%%%%% ACHTUNG
 
 % Annahmen fuer Flugbereichsdiagramm
 
-c_A_max = 3.58; %%%%%%%%%%%%%%% Achtung random wert, bitte von mac geben lassen
-G = Momentane_Masse_ICA; %%%%%%%%%%%%%%%%%%% ACHTUNG
 
 
 hoehe_CR = round(unitsratio('m','ft')*(specs.flight_level*10^2));

@@ -3,7 +3,7 @@ clear all
 close all
 %% Import durch Funktion
 
-Berechnung_PS4_basis_stat_Massen;
+Berechnung_PS4_basis_stat_Massen(0);
 
 %% Laden von Daten
 

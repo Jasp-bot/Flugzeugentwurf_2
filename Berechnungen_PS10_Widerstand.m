@@ -1,6 +1,6 @@
 % Berechnungen für den Widerstand
 
-function [Startwerte_Iteration] = Berechnungen_PS10_Widerstand
+function [Startwerte_Iteration] = Berechnungen_PS10_Widerstand(Eingabewert_Iteration)
 
 clc
 clear all
@@ -180,17 +180,32 @@ end
 
 %%%%%%%%%%%%%%%% REZIPROKE GLEITZAHLEN! 
 
+if Eingabewert_Iteration == 0
+    % E = CA / CW
+    GZ.CA_CW_Clean = Widerstand.y_CR./Widerstand.C_w_clean_all;
+    GZ.CA_CW_LR = Widerstand.y_CR./Widerstand.C_w_LR_all;
+    GZ.CA_CW_HS = Widerstand.y_CR./Widerstand.C_w_HS_all;
+    GZ.CA_CW_TO_Clean = Widerstand.y_to./Widerstand.C_w_TO_clean_all;
+    GZ.CA_CW_TO = Widerstand.y_to./Widerstand.C_w_TO_all;
+    GZ.CA_CW_LDG_Clean = Widerstand.y./Widerstand.C_w_LDG_clean_all;
+    GZ.CA_CW_LDG = Widerstand.y./Widerstand.C_w_LDG_all;
 
-% E = CA / CW
-GZ.CA_CW_Clean = Widerstand.y_CR./Widerstand.C_w_clean_all;
-GZ.CA_CW_LR = Widerstand.y_CR./Widerstand.C_w_LR_all;
-GZ.CA_CW_HS = Widerstand.y_CR./Widerstand.C_w_HS_all;
-GZ.CA_CW_TO_Clean = Widerstand.y_to./Widerstand.C_w_TO_clean_all;
-GZ.CA_CW_TO = Widerstand.y_to./Widerstand.C_w_TO_all;
-GZ.CA_CW_LDG_Clean = Widerstand.y./Widerstand.C_w_LDG_clean_all;
-GZ.CA_CW_LDG = Widerstand.y./Widerstand.C_w_LDG_all;
+elseif Eingabewert_Iteration == 1 
+    load Ergebnisse_Widerstand_FE2.mat;
+
+    GZ.CA_CW_Clean =  %Widerstand.y_CR./Widerstand.C_w_clean_all;
+    GZ.CA_CW_LR = %Widerstand.y_CR./Widerstand.C_w_LR_all;
+    GZ.CA_CW_HS = %Widerstand.y_CR./Widerstand.C_w_HS_all;
+    GZ.CA_CW_TO_Clean = %Widerstand.y_to./Widerstand.C_w_TO_clean_all;
+    GZ.CA_CW_TO = %Widerstand.y_to./Widerstand.C_w_TO_all;
+    GZ.CA_CW_LDG_Clean = %Widerstand.y./Widerstand.C_w_LDG_clean_all;
+    GZ.CA_CW_LDG = %Widerstand.y./Widerstand.C_w_LDG_all;
+
+end
+
 
 %% Definition der startwerte für Iteration nach E
+
 Startwerte_Iteration.CA_CW_LR = GZ.CA_CW_LR(1, round(Ergebnisse_stat_Flaechenbelastung.C_A_CR * 10^3));
 Startwerte_Iteration.CA_CW_TO = GZ.CA_CW_TO(1, round(startschub.c_A_max_thrust_match * 10^3));
 Startwerte_Iteration.CA_CW_LDG = GZ.CA_CW_LDG(1,round(landeanvorderung.c_A_max_LDG * 10^3)) ;

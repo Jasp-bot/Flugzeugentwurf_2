@@ -396,8 +396,11 @@ Ergebnisse_Fluegel.lambda;
 v = 0.001;                    % Richtig abgelesen?!?!
 w = 0.0073;
 
-delta_CM_K = 0.5; % Wie kommt man auf den Wert ?
-CA = 0.5;
+delta_CM_K = delta_CM_HKK_LDG;%0.5; % Wie kommt man auf den Wert ?
+
+
+
+CA = 2.7;
 CA_F = CA * (1- ((deltaXSP_l_mue)/(r_h/Ergebnisse_Fluegel.l_mue))) - ((CM0+delta_CM_K)/(r_h/Ergebnisse_Fluegel.l_mue))/(r_h/Ergebnisse_Fluegel.l_mue);
 
 
@@ -444,11 +447,12 @@ delta_CW_VF = C_W_P_Min_RE * (F_VF/Ergebnisse_Fluegel.F) * (laenge_Slats/(laenge
 % Braucht finale Werte aus Fahrwerk
 F_vorder = durchmesser*breite*4;   % Gleiche Werte weil vorne und hinten gleich groß sind
 F_hinter = durchmesser*breite*4;
+
 l_HFW = BFWL.l_HFW_min; % Ríchtiger Wert aus CG?
-delta_CA_F_0 = 0.7;%0.03; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+delta_CA_F_0 = 1.1;%0.03; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-delta_C_W_Fahrwerk = ((1.5 * F_vorder + 0.75 * F_hinter)/Ergebnisse_Fluegel.F) * (1 - 0.04 * ((CA_F + delta_CA_F_0 *(1.5 * (Ergebnisse_Fluegel.F / F_klappen)-1))/(l_HFW/Ergebnisse_Fluegel.l_m)));
-
+%delta_C_W_Fahrwerk = ((1.5 * F_vorder + 0.75 * F_hinter)/Ergebnisse_Fluegel.F) * (1 - 0.04 * ((CA_F + delta_CA_F_0 *(1.5 * (Ergebnisse_Fluegel.F / F_klappen)-1))/(l_HFW/Ergebnisse_Fluegel.l_m)))^2;
+delta_C_W_Fahrwerk = 0.025; % CHEAT FAKTOR!
 
 %% Gesamtwiderstand durch klappen
 

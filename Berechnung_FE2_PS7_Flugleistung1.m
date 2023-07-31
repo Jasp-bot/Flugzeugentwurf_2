@@ -15,6 +15,8 @@ load Ergebnisse_stat_Flaechenbelastung_Fluegelflaeche.mat;
 load Ergebnisse_Start_Landeanforderungen.mat;
 load Ergebnisse_Massen_FE2.mat;
 load Ergebnisse_Fluegel_Tank_NP.mat;
+load Ergebnisse_Hochauftrieb_1.mat;
+load Ergebnisse_Hochauftrieb_2.mat;
 addpath('Unterfunktionen Widerstand');
 
 %% Annahmen
@@ -22,7 +24,9 @@ addpath('Unterfunktionen Widerstand');
 % Bitte noch verändern
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-c_A_max = 3.58; %%%%%%%%%%%%%%% Achtung random wert, bitte von mac geben lassen
+c_A_max = Ergebnisse_stat_Flaechenbelastung.C_A_CR; %%%%%%%%%%%%%%% Achtung random wert, bitte von mac geben lassen
+c_A_max_LDG = HA2.CA_MAX_LDG;
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -348,7 +352,7 @@ v_max_HFD = v_TAS_HFD(:,2);
 % Physikalische Grenzen
 
 % Formel 27 S10
-v_s_1g_DEC = sqrt((2./(rho_H .* c_A_max)) .* (Momentane_Masse_DEC ./ Ergebnisse_Fluegel.F));
+v_s_1g_DEC = sqrt((2./(rho_H .* c_A_max_LDG)) .* (Momentane_Masse_DEC ./ Ergebnisse_Fluegel.F));
 v_s_min_DEC = 0.94 .* v_s_1g_DEC;
 
 

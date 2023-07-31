@@ -63,16 +63,14 @@ while abs(dX) > 0.0001
     % FE2 PS2 Schwepunkt
     Berechnung_FE2_PS2_Schwerpunkt
     
-    % FE2 PS3 Fahrwerk
-    
     % FE2 PS4 Widerstand
     Berechnung_FE2_PS4_Widerstand;
 
     % FE2 PS5 Hochauftrieb 1
-    
+    Berechnung_FE2_PS5_Hochauftrieb_1;
 
     % FE2 PS6 Hochauftrieb 2
-
+    Berechnung_FE2_PS6_Hochauftrieb_2
 
     % FE2 PS7 Flugleistung 1
     Berechnung_FE2_PS7_Flugleistung1;
@@ -96,5 +94,9 @@ while abs(dX) > 0.0001
 end
 
 
+    % FE2 PS3 Fahrwerk
+    Berechnung_FE2_PS3_Fahrwerk;
+
+    
 
 

@@ -1,6 +1,8 @@
+function Berechnung_FE2_PS6_Hochauftrieb_2
+
 clc
-clear
-close
+clear all
+close all
 
 %% Aus FE 2
 

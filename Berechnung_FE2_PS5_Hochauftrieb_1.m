@@ -1,6 +1,8 @@
+function Berechnung_FE2_PS5_Hochauftrieb_1
+
 clc
-clear
-close
+clear all
+close all
 
 load Projekt_specs.mat
 load Ergebnisse_Auftrieb_Momente.mat
@@ -10,6 +12,7 @@ load Ergebnisse_Leitwerke.mat
 load Ergebnisse_Start_Landeanforderungen.mat
 load Zwischenergebnisse_PS5_Fluegelflaechen.mat
 load Ergebnisse_Widerstand_FE2.mat
+load Ergebnisse_ISA_DATA.mat
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Feste Variablen
@@ -22,8 +25,8 @@ CAalpha_F = (pi * Ergebnisse_Fluegel.streckung_phi25_max) / (1+sqrt(1 + ((Ergebn
 %CAalpha_F = Ergebnisse_Auftriebsverteilung.VWA.c_AF_anstieg;    % Altes CA alpha aus FE1 über Diederich?
 % Welcher Wert
 
-[~,a,~,~,~] = atmosisa(convlength(50,'ft','m'));
-M = (landeanvorderung.v_50) / a;
+% [~,a,~,~,~] = atmosisa(convlength(50,'ft','m'));
+M = (landeanvorderung.v_50) / ISA.a(round(convlength(50,'ft','m')));
 %M = 0.3;
 % CA F CR UND CA_H bestimmen über Machzahl
 

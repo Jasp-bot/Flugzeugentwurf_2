@@ -62,8 +62,8 @@ c_w_ind = Induzierter_W(c_A_F);
 
 [delta_c_WM_mat, delta_Ma] = Transsonischer_W(Machzahl, c_A_F);
 delta_c_WM = diag(delta_c_WM_mat).';
-% Anzahl der Plots festlegen
-x_vector = [c_W_SLW; c_W_HLW; c_w_int_fs; c_w_R; c_w_TW; c_w_trim; delta_c_w_H; c_w_p; c_w_ind; delta_c_WM];
+% Anzahl der Plots festlegen                                                   %c_w_p;
+x_vector = [c_W_SLW; c_W_HLW; c_w_int_fs; c_w_R; c_w_TW; c_w_trim; delta_c_w_H;  c_w_ind; delta_c_WM];
 
 sz = size(x_vector);
 numPlots = sz(1,1); %6;     % muss veraendert werden um off Design noch zu plotten

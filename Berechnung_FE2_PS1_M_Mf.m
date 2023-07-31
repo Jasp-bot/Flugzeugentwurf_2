@@ -375,34 +375,34 @@ while abs(delta_M_to) > 0.0001
     area_HK_lift_div = ((area3 + area4) - (area5 + area6)) * (1-pauschaler_Wert_HK);
     
     %%%%%%%%%%%%%%%%%%%
-    % Neue Berechnung 
+    % Berechnung basierend auf Klappenfläüche aus HA2/PS06
     load Ergebnisse_Hochauftrieb_2.mat
     load Ergebnisse_Start_Landeanforderungen.mat
-    %NR_M_Fluegel.W_tef = 
+    
 
     kf1 = 1.3; % Double Slotted Fowler
     kf2 = 1.25; % Double Slotted flaps with variable Geometry
-
     k_f = kf1 * kf2;
 
     
-    S_f = F_FOWLER;%(spannweite_flaps * (Ergebnisse_Fluegel.b/2)) * Ergebnisse_Fluegel.l_m;  % Fläche Klappen über mittlere Flügeltiefe
+    S_f = HA2.F_Fowler; %(spannweite_flaps * (Ergebnisse_Fluegel.b/2)) * Ergebnisse_Fluegel.l_m;  % Fläche Klappen über mittlere Flügeltiefe
     b_fs = spannweite_flaps * (Ergebnisse_Fluegel.b); % Spannweite Klappen
     V_lf = landeanvorderung.v_50;
-    beta = deg2rad(45);% % Vorgegeben als Optimum PS 6
+    beta = deg2rad(45); % Vorgegeben als Optimum PS 6
     pfeilung = (Ergebnisse_Fluegel.phi_25_max); 
-    t_c = specs.d_l;
-    %rad oder degree?
-    formel = 2.706 * k_f * ((S_f * b_fs)^(3/16)) * ((V_lf/100)^2 * ((sin(beta) * cos(pfeilung))/(t_c)))^(3/4) * S_f;
+    t_c = specs.d_l; % Dickenverhältnis
 
-    
+                    %Const.
+    Masse_fowler = 2.706 * k_f * ((S_f * b_fs)^(3/16)) * ((V_lf/100)^2 * ((sin(beta) * cos(pfeilung))/(t_c)))^(3/4) * S_f;
+
+        
     
     %%%%%%%%%%%%%%%%%%%
     
     % % masse trailing edge flap und leading edge flap
     NR_M_Fluegel.S_f_tef = area_HK_lift_div;
     NR_M_Fluegel.S_f_lef = area_VK_lift_div;
-    NR_M_Fluegel.W_tef = formel; %Data_High_lift.Spec_Weight_I_slot_splitflap * NR_M_Fluegel.S_f_tef;
+    NR_M_Fluegel.W_tef = Masse_fowler; %Data_High_lift.Spec_Weight_I_slot_splitflap * NR_M_Fluegel.S_f_tef;
     NR_M_Fluegel.W_lef = Data_High_lift.Spec_Weight_Slats * NR_M_Fluegel.S_f_lef;
     
     % Formel Torenbeek S 454 c-8

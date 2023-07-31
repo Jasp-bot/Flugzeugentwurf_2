@@ -4,6 +4,7 @@ close
 
 load Ergebnisse_Hochauftrieb_1.mat
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 plot(HA1.alphas,HA1.CAs,'blue','LineWidth',1.5)
@@ -52,4 +53,6 @@ plot(x, y,"blue--",'LineWidth',1.5)
 plot(h, k, 'bx','LineWidth',1.5)
 ylim([-0.2, 1.6])
 xlim([-7, 20])
+
+
 

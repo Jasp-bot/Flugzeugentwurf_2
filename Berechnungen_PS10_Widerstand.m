@@ -2,9 +2,7 @@
 
 function [Startwerte_Iteration] = Berechnungen_PS10_Widerstand(Eingabewert_Iteration)
 
-clc
-clear all
-close all
+
 
 %% Laden der Werte
 
@@ -190,16 +188,16 @@ if Eingabewert_Iteration == 0
     GZ.CA_CW_LDG_Clean = Widerstand.y./Widerstand.C_w_LDG_clean_all;
     GZ.CA_CW_LDG = Widerstand.y./Widerstand.C_w_LDG_all;
 
-elseif Eingabewert_Iteration == 1 
-    load Ergebnisse_Widerstand_FE2.mat;
-
-    GZ.CA_CW_Clean =  %Widerstand.y_CR./Widerstand.C_w_clean_all;
-    GZ.CA_CW_LR = %Widerstand.y_CR./Widerstand.C_w_LR_all;
-    GZ.CA_CW_HS = %Widerstand.y_CR./Widerstand.C_w_HS_all;
-    GZ.CA_CW_TO_Clean = %Widerstand.y_to./Widerstand.C_w_TO_clean_all;
-    GZ.CA_CW_TO = %Widerstand.y_to./Widerstand.C_w_TO_all;
-    GZ.CA_CW_LDG_Clean = %Widerstand.y./Widerstand.C_w_LDG_clean_all;
-    GZ.CA_CW_LDG = %Widerstand.y./Widerstand.C_w_LDG_all;
+% elseif Eingabewert_Iteration == 1 
+%     load Ergebnisse_Widerstand_FE2.mat;
+% 
+%     GZ.CA_CW_Clean =  %Widerstand.y_CR./Widerstand.C_w_clean_all;
+%     GZ.CA_CW_LR = %Widerstand.y_CR./Widerstand.C_w_LR_all;
+%     GZ.CA_CW_HS = %Widerstand.y_CR./Widerstand.C_w_HS_all;
+%     GZ.CA_CW_TO_Clean = %Widerstand.y_to./Widerstand.C_w_TO_clean_all;
+%     GZ.CA_CW_TO = %Widerstand.y_to./Widerstand.C_w_TO_all;
+%     GZ.CA_CW_LDG_Clean = %Widerstand.y./Widerstand.C_w_LDG_clean_all;
+%     GZ.CA_CW_LDG = %Widerstand.y./Widerstand.C_w_LDG_all;
 
 end
 

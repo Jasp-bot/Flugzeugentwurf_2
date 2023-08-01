@@ -99,7 +99,7 @@ s3 = -1*(-2600:1:-1);
 % Iteration
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 startschub.Eta_To = [1/8; 1/9; 1/Startwerte_Iteration.CA_CW_TO ];%10.558;];% 1/11; 1/12];
-stratschub.Eta_To_thustmatch = 1/Startwerte_Iteration.CA_CW_TO %10.558;
+startschub.Eta_To_thustmatch = 1/Startwerte_Iteration.CA_CW_TO %10.558;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 startschub.Eta_To_inv = 1./(startschub.Eta_To); % fuer legende
 %c_A_max = [1.8; 1.9; 2;] % 2.1; 2.2; 2.25]; % Vector für verschiedenne CA max

@@ -4,7 +4,8 @@ clc
 clear all
 close all
 
-Startwerte_Iteration = Berechnungen_PS10_Widerstand;
+x=0;
+Startwerte_Iteration = Berechnungen_PS10_Widerstand(x);
 
 %% Vorbereitung / Veranschaulichung
 
@@ -22,8 +23,8 @@ while abs(dX) > 0.0001
     Berechnung_PS8_Fluegel_Tank;
     Berechnung_PS9_Auftrieb_Momente;
     Berechnung_PS9_Leitwerke;
-    Startwerte_Iteration = Berechnungen_PS10_Widerstand;
-    Endwerte_Iteration = Berechnungen_PS10_Widerstand;
+    Startwerte_Iteration = Berechnungen_PS10_Widerstand(x);
+    Endwerte_Iteration = Berechnungen_PS10_Widerstand(x);
     % Vergleiche
     load Ergebnisse_Start_Landeanforderungen.mat;
     dX_CR = Endwerte_Iteration.CA_CW_LR - schub_CR.Eta;
@@ -36,7 +37,7 @@ while abs(dX) > 0.0001
 
 end
 
-Endwerte_Iteration = Berechnungen_PS10_Widerstand;
+Endwerte_Iteration = Berechnungen_PS10_Widerstand(x);
 
 
 save Ergebnisse_Endwerte_Iteration_V1.mat Endwerte_Iteration

@@ -41,7 +41,7 @@ R_Std=9000;
 
 
 %Variabeln
-R= linspace(500, specs.max_range_basis_km, 20)     %Reichweite
+R= linspace(1000, specs.max_range_basis_km+5000, 20)     %Reichweite
 %R=5000;
 
 
@@ -103,7 +103,7 @@ ko_3=P_LDG*(Ergebnisse_Massen_FE2.M_OE+Tripfuel(R_Std/1000));
 ko_4=f_ATC(3)*(R(1,end))*sqrt(((Ergebnisse_Massen_FE2.M_OE+Tripfuel(R_Std/1000))/1000)/50);
 ko_5=C_MRO(1,end);
 
-SKO=R.*1000.*nutzlast(R./1000)
+SKO=R.*nutzlast(R);
 
    % for ZWW=1:length(R)
    %      if R(1,ZWW) < specs.max_range_basis_km
@@ -169,9 +169,12 @@ DOC_zuSKO_COR = (DOC./SKO) .* (n_pax ./ (n_pax + n_PAX_CAR));
 
 figure(3)
 plot(R,SKO)   %Plot Flight Time per annum
+plot(R,DOC_zuSKO_COR)
 title('Kosten pro Kilometer')
 xlabel('km')
 ylabel('Kosten in €')
+hold on
+
 
 figure(2)
 plot(R,SMC)
@@ -209,7 +212,7 @@ grid on
 % xlabel('Monate')
  %ylabel('Preis pro kg in €')
 
-hold off
+%hold off
 
 %NRD Reichweite,Payload,Fuel,Tripfuel,Reserve Fuel
 %Ist ein eigenes Struct in NRD

@@ -401,8 +401,12 @@ delta_CM_K = delta_CM_HKK_LDG;%0.5; % Wie kommt man auf den Wert ?
 delta_CM_K_TO = delta_CM_HKK_TO;
 
 
-CA = HA2.CA_MAX_LDG;
-CA_TO = HA2.CA_MAX_TO;
+%CA = HA2.CA_MAX_LDG;
+%CA_TO = HA2.CA_MAX_TO;
+
+
+CA = startschub.c_A_max_thrust_match;
+CA_TO = landeanvorderung.c_A_max_LDG;
 
 CA_F = CA * (1- ((deltaXSP_l_mue)/(r_h/Ergebnisse_Fluegel.l_mue))) - ((CM0+delta_CM_K)/(r_h/Ergebnisse_Fluegel.l_mue))/(r_h/Ergebnisse_Fluegel.l_mue);
 
@@ -452,14 +456,17 @@ delta_CW_VF = C_W_P_Min_RE * (F_VF/Ergebnisse_Fluegel.F) * (laenge_Slats/(laenge
 F_vorder = durchmesser*breite*4;   % Gleiche Werte weil vorne und hinten gleich groß sind
 F_hinter = durchmesser*breite*4;
 
-l_HFW = BFWL.l_HFW_min; % Ríchtiger Wert aus CG?
-delta_CA_F_0_LDG = -0.7;    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-delta_CA_F_0_TO = -1;       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ALEX NOCHMAL FRAGEN ODER KROISTOF %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+l_HFW = 5; % Ríchtiger Wert aus CG?
+delta_CA_F_0_LDG = 0.9;    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+delta_CA_F_0_TO = 0.5;       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ALEX NOCHMAL FRAGEN ODER KROISTOF %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-delta_C_W_Fahrwerk_TO = ((1.5 * F_vorder + 0.75 * F_hinter)/Ergebnisse_Fluegel.F) * (1 - 0.04 * ((CA_F_TO + delta_CA_F_0_TO *(1.5 * (Ergebnisse_Fluegel.F / F_klappen)-1))/(l_HFW/Ergebnisse_Fluegel.l_m)))^2;
+%((1.5 * F_vorder + 0.75 * F_hinter)/Ergebnisse_Fluegel.F) *
 
-delta_C_W_Fahrwerk_LDG = ((1.5 * F_vorder + 0.75 * F_hinter)/Ergebnisse_Fluegel.F) * (1 - 0.04 * ((CA_F + delta_CA_F_0_LDG *(1.5 * (Ergebnisse_Fluegel.F / F_klappen)-1))/(l_HFW/Ergebnisse_Fluegel.l_m)))^2;
+
+delta_C_W_Fahrwerk_TO =  (7*10^-4 * ((Ergebnisse_Massen_FE2.M_TO^0.785)/Ergebnisse_Fluegel.F)) *(1 - 0.04 * ((CA_F_TO + delta_CA_F_0_TO *(1.5 * (Ergebnisse_Fluegel.F / F_klappen)-1))/(l_HFW/Ergebnisse_Fluegel.l_m)))^2;
+
+delta_C_W_Fahrwerk_LDG = (7*10^-4 * ((Ergebnisse_Massen_FE2.M_TO^0.785)/Ergebnisse_Fluegel.F)) * (1 - 0.04 * ((CA_F + delta_CA_F_0_LDG *(1.5 * (Ergebnisse_Fluegel.F / F_klappen)-1))/(l_HFW/Ergebnisse_Fluegel.l_m)))^2;
 
 %delta_C_W_Fahrwerk = 0.017; % CHEAT FAKTOR!
 

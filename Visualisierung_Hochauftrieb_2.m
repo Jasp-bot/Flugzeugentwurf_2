@@ -170,15 +170,19 @@ plot(HA2.c_A_F_LDG_FW,(HA2.c_A_F_LDG_FW./HA2.LDG_CW_FW),'green--','LineWidth',1.
 
 ylim([0, 20])
 xlim([0,3])
-legend("Clean Konfiguration im Cruise Zustand","Takeoff mit 20° Klappenausschlag","Takeoff mit 20° Klappenausschlag und Fahrwerk","Landing mit 45° Klappenausschlag","Landing mit 45° Klappenausschlag und Fahrwerk",'Location', 'southeast')
+
 
 title("Reziproke Gleitzahl")
 ylabel("Gleitzahl E = C_{A}/C_W in [-]","FontWeight","bold")
 xlabel("Auftriebsbeiwert des Flügels C_{A} in [-]","FontWeight","bold")
 
+% PLotten der Gleitzahlen
+plot(startschub.c_A_max_thrust_match,startschub.Eta_To_inv(3),'redo','LineWidth',2)
+
+% Check ob lande CA erreicht
+plot(landeanvorderung.c_A_max_LDG, (1/landeanvorderung.Eta_LDG),'greeno','LineWidth',2)
 
 
 
-
-
+legend("Clean Konfiguration im Cruise Zustand","Takeoff mit 20° Klappenausschlag","Takeoff mit 20° Klappenausschlag und Fahrwerk","Landing mit 45° Klappenausschlag","Landing mit 45° Klappenausschlag und Fahrwerk","Gleitzahlvorgabe aus der Startanforderung","Gleitzahlvorgabe aus der Landeanforderung",'Location', 'southeast')
 

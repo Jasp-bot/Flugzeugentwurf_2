@@ -50,7 +50,7 @@ BO.c_A_Bo_plot = BO.c_A_Bo(1,1);
 
 % Berechnung Ma_BO
 
-BO.wert = linspace(0.65, 0.85);        % Wert in dem sich ca Ma_BO bewegt
+BO.wert = linspace(0.5, 0.85);        % Wert in dem sich ca Ma_BO bewegt
 BO.f = @(x) (1459.9 .* x.^4 - 4203.5 .* x.^3 + 4483.4 .* x.^2 - 2100.9 .*x + 366.16);      % Funktion zu erstellung der BO-Kurve
 
 BO.vec_1 = [BO.wert; BO.f(BO.wert)];

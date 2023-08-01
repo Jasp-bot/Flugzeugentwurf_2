@@ -1,6 +1,6 @@
 % berechnungen fuer Startschub und Landeanforderung
 
-function Berechnung_PS6_Startschub_Landeanforderung(Startwerte_Iteration)
+function Berechnung_PS6_Startschub_Landeanforderung(Startwerte_Iteration, Eingabewert_Iteration)
 
 clc
 %clear all
@@ -28,10 +28,38 @@ G_To = Ergebnis_basis_m.m_To * specs.g;
 
 D = [1; 0.95; 0.9; 0.8];                                        % Drosselgrad TW
 
-% Dieser wert wird itteriert in PS10
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-schub_CR.Eta = Startwerte_Iteration.CA_CW_LR; %17.35;                               %[18; 19; 20; 21];       % mittlere erwartete Gelitzahl %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Itteraion
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if Eingabewert_Iteration == 0
+    load Ergebnisse_Widerstand.mat;
+    % Dieser wert wird itteriert in PS10
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    schub_CR.Eta = Startwerte_Iteration.CA_CW_LR; %17.35;                               %[18; 19; 20; 21];       % mittlere erwartete Gelitzahl %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Itteraion
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Iteration
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    startschub.Eta_To = [1/8; 1/9; 1/Startwerte_Iteration.CA_CW_TO ];%10.558;];% 1/11; 1/12];
+    startschub.Eta_To_thustmatch = 1/Startwerte_Iteration.CA_CW_TO; %10.558;
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Iteration 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Eta_LDG_vec = [1/6; 1/7.43; 1/8]; % gleitberhaeltnisse für LDG [3x1]
+    Eta_LDG_vec = [1/6; 1/Startwerte_Iteration.CA_CW_LDG; 1/8];
+    landeanvorderung.Eta_LDG = Eta_LDG_vec(2,1); % E = 7
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+elseif Eingabewert_Iteration == 1
+    clear Startwerte_Iteration;
+    load Ergebnisse_Widerstand_FE2.mat;
+    load Ergebnisse_Hochauftrieb_1.mat;
+    load Ergebnisse_Hochauftrieb_2.mat;
+
+    % CR
+    schub_CR.Eta = 1/ Ergebnisse_Widerstand_FE2.cW_cA_off_D;
+    % TO
+    startschub.Eta_To_thustmatch = 1 / (HA2.CA_max_TO/ HA2.CW_max_TO);
+    startschub.Eta_To = [1/8; 1/9; startschub.Eta_To_thustmatch];%10.558;];% 1/11; 1/12];
+    % LDG
+    landeanvorderung.Eta_LDG = 1/ (HA2.CA_max_ldg_fw/ HA2.CW_max_ldg_fw); % E = 7
+    Eta_LDG_vec = [1/6; landeanvorderung.Eta_LDG; 1/8];
+end
 
 k_CR = 0.98;                                        % G_ICA / G_To
 
@@ -96,11 +124,7 @@ startschub.S0_GTo_To = term1 .* term2; % Zusammensetzung der Formel um Startschu
 %% Steigstrecke s3
 
 s3 = -1*(-2600:1:-1);
-% Iteration
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-startschub.Eta_To = [1/8; 1/9; 1/Startwerte_Iteration.CA_CW_TO ];%10.558;];% 1/11; 1/12];
-startschub.Eta_To_thustmatch = 1/Startwerte_Iteration.CA_CW_TO %10.558;
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 startschub.Eta_To_inv = 1./(startschub.Eta_To); % fuer legende
 %c_A_max = [1.8; 1.9; 2;] % 2.1; 2.2; 2.25]; % Vector für verschiedenne CA max
 h_2 = unitsratio('m','ft')*35;            % zu überfliegendes Hindernis (hoehe)
@@ -131,12 +155,7 @@ landeanvorderung.b_m = b_m_vec(1,11); % = -3.9227   Bremsverzögerung
 c_A_max_LDG_vec = (2.2:0.1:2.8).'; % Spaltenvektor mit Werten für c_A_max_LDG [9x1]
 
 landeanvorderung.c_A_max_LDG = c_A_max_LDG_vec(3,1); % c_A_max_LDG 2.3
-% Iteration 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Eta_LDG_vec = [1/6; 1/7.43; 1/8]; % gleitberhaeltnisse für LDG [3x1]
-Eta_LDG_vec = [1/6; 1/Startwerte_Iteration.CA_CW_LDG; 1/8];
-landeanvorderung.Eta_LDG = Eta_LDG_vec(2,1); % E = 7
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 rho_LDG = ISA.rho(1,1); % rho_B(round(h_50),1); wenn man genau sein will, Unterschied ist aber maginal
 
 %% max Landeflaechenbelastung PS07 formel 24

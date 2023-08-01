@@ -6,7 +6,7 @@ close all
 
 %% Ausfuerung des Programms
 load Ergebnisse_Endwerte_Iteration_V1.mat
- Berechnung_PS6_Startschub_Landeanforderung(Endwerte_Iteration);
+ Berechnung_PS6_Startschub_Landeanforderung(Endwerte_Iteration,0);
 
 %% Laden der Dateien
 load Ergebnisse_Start_Landeanforderungen.mat

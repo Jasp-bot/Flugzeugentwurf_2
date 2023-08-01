@@ -178,7 +178,7 @@ end
 
 %%%%%%%%%%%%%%%% REZIPROKE GLEITZAHLEN! 
 
-if Eingabewert_Iteration == 0
+
     % E = CA / CW
     GZ.CA_CW_Clean = Widerstand.y_CR./Widerstand.C_w_clean_all;
     GZ.CA_CW_LR = Widerstand.y_CR./Widerstand.C_w_LR_all;
@@ -188,31 +188,30 @@ if Eingabewert_Iteration == 0
     GZ.CA_CW_LDG_Clean = Widerstand.y./Widerstand.C_w_LDG_clean_all;
     GZ.CA_CW_LDG = Widerstand.y./Widerstand.C_w_LDG_all;
 
-% elseif Eingabewert_Iteration == 1 
-%     load Ergebnisse_Widerstand_FE2.mat;
-% 
-%     GZ.CA_CW_Clean =  %Widerstand.y_CR./Widerstand.C_w_clean_all;
-%     GZ.CA_CW_LR = %Widerstand.y_CR./Widerstand.C_w_LR_all;
-%     GZ.CA_CW_HS = %Widerstand.y_CR./Widerstand.C_w_HS_all;
-%     GZ.CA_CW_TO_Clean = %Widerstand.y_to./Widerstand.C_w_TO_clean_all;
-%     GZ.CA_CW_TO = %Widerstand.y_to./Widerstand.C_w_TO_all;
-%     GZ.CA_CW_LDG_Clean = %Widerstand.y./Widerstand.C_w_LDG_clean_all;
-%     GZ.CA_CW_LDG = %Widerstand.y./Widerstand.C_w_LDG_all;
+
+if Eingabewert_Iteration == 0
+    %% Definition der startwerte für Iteration nach E
+    
+    Startwerte_Iteration.CA_CW_LR = GZ.CA_CW_LR(1, round(Ergebnisse_stat_Flaechenbelastung.C_A_CR * 10^3));
+    Startwerte_Iteration.CA_CW_TO = GZ.CA_CW_TO(1, round(startschub.c_A_max_thrust_match * 10^3));
+    Startwerte_Iteration.CA_CW_LDG = GZ.CA_CW_LDG(1,round(landeanvorderung.c_A_max_LDG * 10^3)) ;
+    Startwerte_Iteration.CA_CW_Clean = GZ.CA_CW_Clean(1, round(Ergebnisse_stat_Flaechenbelastung.C_A_CR * 10^3));
+
+
+elseif Eingabewert_Iteration == 1 
+    load Ergebnisse_Widerstand_FE2.mat;
+    load Ergebnisse_Hochauftrieb_2.mat;
+
+
+    Startwerte_Iteration.CA_CW_LR = 1 / Ergebnisse_Widerstand_FE2.cW_cA_off_D;
+    Startwerte_Iteration.CA_CW_TO = 1 / (HA2.CA_max_TO/ HA2.CW_max_TO);
+    Startwerte_Iteration.CA_CW_LDG = 1 / (HA2.CA_max_ldg_fw/ HA2.CW_max_ldg_fw);
+    Startwerte_Iteration.CA_CW_Clean = 1/ Ergebnisse_Widerstand_FE2.cW_cA_off_D;
+
 
 end
 
-
-%% Definition der startwerte für Iteration nach E
-
-Startwerte_Iteration.CA_CW_LR = GZ.CA_CW_LR(1, round(Ergebnisse_stat_Flaechenbelastung.C_A_CR * 10^3));
-Startwerte_Iteration.CA_CW_TO = GZ.CA_CW_TO(1, round(startschub.c_A_max_thrust_match * 10^3));
-Startwerte_Iteration.CA_CW_LDG = GZ.CA_CW_LDG(1,round(landeanvorderung.c_A_max_LDG * 10^3)) ;
-
-Startwerte_Iteration.CA_CW_Clean = GZ.CA_CW_Clean(1, round(Ergebnisse_stat_Flaechenbelastung.C_A_CR * 10^3));
-
-
-
-save Ergebnisse_Widerstand.mat GZ Widerstand N_W Ind_W 
+save Ergebnisse_Widerstand.mat GZ Widerstand N_W Ind_W Startwerte_Iteration
 
 
 

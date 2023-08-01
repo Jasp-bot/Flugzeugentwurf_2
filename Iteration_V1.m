@@ -1,11 +1,11 @@
-%% Iteration
+%% Iteration v1
 
 clc
 clear all
 close all
 
 x=0;
-Startwerte_Iteration = Berechnungen_PS10_Widerstand(x);
+
 
 %% Vorbereitung / Veranschaulichung
 
@@ -16,10 +16,22 @@ Startwerte_Iteration = Berechnungen_PS10_Widerstand(x);
 %% Beginn der Iteration
 
 dX = 1;
-%zaehlvariabele_test = 0; 
+zaehlvariabele_test = 0; 
 
+ % Beginn mit FE1 PS 3 Massenabschaetzung
+    Berechnung_PS4_basis_stat_Massen(0); % eingabewert iteration entscheidet ob die WERTE  von FE1 oder FE2 verwendet werden
+        % Eingabewert_Iteration =1 (Werte FE2) | Eingabewert_Iteration =0 (Werte FE1) 
+    
+    % FE1 PS4 Flaechenbelastung 
+    
+    Berechnung_PS5_Flaechenbelastung; 
+        % hier kann die Flaechenbelastung und das c_A vom Flugzeug angepasst werden
+    
+    % FE1 PS5 Familienbildung, hier nicht sicher ob nötig
+    Berechnung_PS5_familie_stat_Massen;
+Startwerte_Iteration = Berechnungen_PS10_Widerstand(x);
 while abs(dX) > 0.0001
-    Berechnung_PS6_Startschub_Landeanforderung(Startwerte_Iteration);
+    Berechnung_PS6_Startschub_Landeanforderung(Startwerte_Iteration,x);
     Berechnung_PS8_Fluegel_Tank;
     Berechnung_PS9_Auftrieb_Momente;
     Berechnung_PS9_Leitwerke;
@@ -32,7 +44,7 @@ while abs(dX) > 0.0001
     dX_LDG = Endwerte_Iteration.CA_CW_LDG - (1/landeanvorderung.Eta_LDG);
 
     dX = dX_CR + dX_TO + dX_LDG;
-    %zaehlvariabele_test = zaehlvariabele_test +1;
+    zaehlvariabele_test = zaehlvariabele_test +1;
 
 
 end

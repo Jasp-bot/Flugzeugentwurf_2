@@ -26,12 +26,14 @@ addpath('Unterfunktionen Widerstand');
 
 c_A_max = Ergebnisse_stat_Flaechenbelastung.C_A_CR; %%%%%%%%%%%%%%% Achtung random wert, bitte von mac geben lassen
 c_A_max_LDG = HA2.CA_MAX_LDG;
-
+Testfaktor = 1.4;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
+hoehe_CR = round(unitsratio('m','ft')*(specs.flight_level*10^2));
+hoehe_ALT = round(unitsratio('m','ft')*(specs.flight_level_ALT*10^2));
 
 
 % Achtung noch Hardcodet!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -46,7 +48,7 @@ j = Ergebnisse_Widerstand_FE2.Annahmen.stuetzstellen;
 
 % Annahmen fuer Schub !!!!!!!!!!!!!!!!!!!!!!!! nachfragen nicht sicher
 TO_Masse =  Ergebnisse_Massen_FE2.M_TO;
-G_TO = TO_Masse * specs.g;
+G_TO = TO_Masse * specs.g ;
 k_CR = 0.98;
 Momentane_Masse_ICA = TO_Masse * 0.98 * specs.g;
 Momentane_Masse_DEC = (Ergebnisse_Massen_FE2.M_TO - Ergebnisse_Massen_FE2.M_Z_Tripfuel)*specs.g;
@@ -55,13 +57,16 @@ Momentane_Masse_CL_ALT = (Ergebnisse_Massen_FE2.M_TO - Ergebnisse_Massen_FE2.M_Z
 Masse_ICA = TO_Masse * 0.98;
 Masse_CL = TO_Masse;
 Masse_DEC = (Ergebnisse_Massen_FE2.M_TO - Ergebnisse_Massen_FE2.M_Z_Tripfuel);
-Masse_CL_ALT = (Ergebnisse_Massen_FE2.M_TO - Ergebnisse_Massen_FE2.M_Z_Tripfuel)
+Masse_CL_ALT = (Ergebnisse_Massen_FE2.M_TO - Ergebnisse_Massen_FE2.M_Z_Tripfuel);
 GTO_G_ICA = G_TO / Momentane_Masse_ICA;
 GTO_G_CL = 1;
 GTO_G_DEC = G_TO / Momentane_Masse_DEC;
 GTO_G_CL_ALT = G_TO / Momentane_Masse_CL_ALT;
-S0 = k_CR * G_TO * (1/schub_CR.Eta) / (schub_CR.S_S0_CR * schub_CR.S_S0_E);
-S0_GTO = S0/G_TO;
+dp_p0 = 0.02;
+S_S0_E = 1 - (1.3 + 0.25 * specs.bypass) * dp_p0; % % Einlaufverluste PS7 S3 Formel 13
+s_s0_H_CR = S_S0_KF_j(specs.Drosselgrad(1,3), (ISA.rho(hoehe_CR)/ISA.rho_0), specs.Ma_CR, (ISA.p(hoehe_CR)/ISA.p0), specs.bypass);
+S0 = Testfaktor * k_CR * G_TO * (Ergebnisse_Widerstand_FE2.cW_cA_off_D) /(s_s0_H_CR * S_S0_E) ;
+S0_GTO = S0/(G_TO);
 
 G = Momentane_Masse_ICA; %%%%%%%%%%%%%%%%%%% ACHTUNG
 
@@ -69,8 +74,6 @@ G = Momentane_Masse_ICA; %%%%%%%%%%%%%%%%%%% ACHTUNG
 
 
 
-hoehe_CR = round(unitsratio('m','ft')*(specs.flight_level*10^2));
-hoehe_ALT = round(unitsratio('m','ft')*(specs.flight_level_ALT*10^2));
 
 %% Horizontalflugdiagramm
 
@@ -78,7 +81,7 @@ hoehe_ALT = round(unitsratio('m','ft')*(specs.flight_level_ALT*10^2));
 % hoehe =round(unitsratio('m','ft')*Flughoehe);                     % in m
 
 schritte = 100;
-hoehe_plus = 18;
+hoehe_plus = 40;
 hoehe = (round(linspace(1500, ((specs.flight_level + hoehe_plus)*10^2), schritte))); % 1000: 3000: specs.flight_level*10^2;
 % hoehe = 1000: 1000: specs.flight_level*10^2;
 hoehe_m = round(unitsratio('m','ft').*hoehe);
@@ -136,9 +139,6 @@ S_S0_KF_j_DEC = S_S0_KF_j(specs.Drosselgrad(1,3), rho_rho0_H, Ma_j_DEC, p_p0_H, 
 S_S0_KF_j_CL_ALT = S_S0_KF_j(specs.Drosselgrad(1,2), rho_rho0_H, Ma_j_CL_ALT, p_p0_H, specs.bypass);
 
 
-% Einlaufverluste PS7 S3 Formel 13
-dp_p0 = 0.02;
-S_S0_E = 1 - (1.3 + 0.25 * specs.bypass) * dp_p0; 
 
  
 % PS7 S4 Formel 14
@@ -319,7 +319,9 @@ v_TAS_HFD_DEC(n_datensatz,:) = intersection_DEC(1,:) ./ sqrt(rho_rho0_H(n_datens
 S_G_inter_HFD_DEC(n_datensatz,:) = intersection_DEC(2,:);
 
 
-end
+
+
+end % End for-Schleife
 
 
 
@@ -358,10 +360,12 @@ v_s_min_DEC = 0.94 .* v_s_1g_DEC;
 
 % Dienstgipfelhoehe: Bedingung SEP < 0.5 [m/s]
 zaehler2 = 1;
-for z = 1 : length(TAS_SEP_H_DEC_vec)
-    if TAS_SEP_H_DEC_vec(z,2) > 0.5
-        zaehler2 = z;
-    else
+for z1 = 1 : length(TAS_SEP_H_DEC_vec)
+    if TAS_SEP_H_DEC_vec(z1,2) > 0.5
+        zaehler2 = zaehler2  +1;
+    end
+    if zaehler2 >= length(TAS_SEP_H_DEC_vec)
+       zaehler2 = length(TAS_SEP_H_DEC_vec);
     end
 end
 H_Dienstgipfel_DEC= hoehe_m(1,zaehler2);
@@ -388,11 +392,11 @@ v_max_HFD_DEC = v_TAS_HFD_DEC(:,2);
 %nachtrag Flugbereichsdiagramm CR
 % Dienstgipfelhoehe: Bedingung SEP < 0.5 [m/s]
 zaehler1 = 1;
-for z = 1 : length(TAS_SEP_H_vec)
-    if TAS_SEP_H_vec(z,2) > 0.5
+for z2 = 1 : length(TAS_SEP_H_vec)
+    if TAS_SEP_H_vec(z2,2) > 0.5
         zaehler1 = zaehler1 +1;
     end
-    if zaehler1 >= length(TAS_SEP_H_vec);
+    if zaehler1 >= length(TAS_SEP_H_vec)
        zaehler1 = length(TAS_SEP_H_vec);
     end
 end
@@ -401,39 +405,6 @@ H_Dienstgipfel_CR = hoehe_m(1,zaehler1);
 % liegen
 H_Kabienendruck_CR = H_Dienstgipfel_DEC + (unitsratio('m','ft').* 1500); 
 
-
-
-
-
-% figure(7)
-% hold on
-% grid on
-% 
-% title('Flugbereichsdiagramm', FontSize=25)
-% xlabel('v_{TAS} in m/s', FontSize=20);
-% ylabel('H in m', FontSize=20);
-% 
-% pl(1) = plot(v_s_1g, hoehe_m, '--b');
-% pl(2) = plot(v_s_min, hoehe_m, 'k');
-% pl(3) = plot(v_BO, hoehe_m, 'r');
-% 
-% pl(4) = plot(TAS_SR_H_vec(:,1), TAS_SR_H_vec(:,3),'.-k');
-% pl(5) = plot(TAS_SEP_H_vec(:,1), TAS_SEP_H_vec(:,3),'.-b');
-% pl(6) = plot(TAS_SET_H_vec(:,1), TAS_SET_H_vec(:,3),'.-r');
-% pl(7) = plot(TAS_SE_H_vec(:,1), TAS_SE_H_vec(:,3),'.-m');
-% 
-% pl(8) = plot(v_MO, hoehe_m, 'g');
-% 
-% % 
-% pl(9) = plot(v_min_HFD, hoehe_m.', '.-g');
-% pl(10) = plot(v_max_HFD, hoehe_m, '.-k');
-% 
-% pl(11) = plot(specs.Ma_CR * ISA.a(hoehe_CR), hoehe_CR, '*r'); % Design point
-% 
-% legend('v_s_{1g}', 'v_s_{min}', 'Ma_{BO}', 'SR_{max}', 'SEP_{max}', 'SET_{max}', 'SE_{max}', 'v_{MO}', 'DP', 'FontSize',15 ,Location='eastoutside');
-
-% 
-% 
 
 
 %% Speichern von Ergebnissen
@@ -535,7 +506,7 @@ Ergebnisse_Flugleistung_1.v_min_HFD_DEC = v_min_HFD_DEC;
 Ergebnisse_Flugleistung_1.v_max_HFD_DEC = v_max_HFD_DEC;
 Ergebnisse_Flugleistung_1.H_Dienstgipfel_DEC = H_Dienstgipfel_CR;
 Ergebnisse_Flugleistung_1.H_Kabienendruck_DEC = H_Kabienendruck_DEC;
-
+% 
 
 
 save Ergebnisse_FLugleistung_1.mat Ergebnisse_Flugleistung_1

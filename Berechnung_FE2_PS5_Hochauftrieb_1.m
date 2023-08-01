@@ -104,7 +104,7 @@ psi_sym_inst_deg = rad2deg(psi_sym_inst);
 
 %eta_root = length(Ergebnisse_Fluegel.Fluegeltiefen_eta_Ru);
 %delta_epsilon_root = dEps_dEta * eta_root
-Delta_epsilon_root = VWA.epsilon_eta_Ru(1,93);
+Delta_epsilon_root = VWA.epsilon_eta_Ru(1,end);
 deltaEpsRoot_deg = rad2deg(Delta_epsilon_root);
 
 psi_root = psi_sym_inst + Delta_epsilon_root;

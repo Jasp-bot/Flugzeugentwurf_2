@@ -1,9 +1,9 @@
 %% PS 1 2 Fuel Fraction und Erweiterte MAssenabschaetzung nach Toerenbeck
 
-% function Berechnung_FE2_PS1_M_Mf
-clc
-clear all
-close all
+function Berechnung_FE2_PS1_M_Mf
+% clc
+% clear all
+% close all
 
 
 
@@ -99,7 +99,7 @@ Technologiefaktor_ALU_CFK = 0.5 * 0.4;
 
 
 
-while abs(delta_M_to) > 0.0001
+% while abs(delta_M_to) > 0.000001
     
    
     
@@ -848,7 +848,7 @@ while abs(delta_M_to) > 0.0001
     %M_Airframe_Structur.HLW
    
     Zaehlvariabele = Zaehlvariabele + 1; % test
-end     % Ende der Iteration
+% end     % Ende der Iteration
 
 %% Speichern der Daten
 

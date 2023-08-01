@@ -177,6 +177,7 @@ if Eingabewert_Iteration == 0
 elseif Eingabewert_Iteration == 1
     load Ergebnisse_Massen_FE2.mat;
     load Ergebnisse_Basis_stat_m.mat
+    load Projekt_specs.mat;
 
     Ergebnis_basis_m.gamma_DP = (specs.m_pax + specs.m_cargo)./ Ergebnisse_Massen_FE2.M_TO;
     Ergebnis_basis_m.kapap_DP = Ergebnisse_Massen_FE2.M_F / Ergebnisse_Massen_FE2.M_TO;

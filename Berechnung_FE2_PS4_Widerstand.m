@@ -40,8 +40,8 @@ addpath('Unterfunktionen Widerstand');
 Annahmen.Flughoehe_CR = specs.flight_level * 10^2 ;     % in ft
 Annahmen.hoehe_CR = round(unitsratio('m','ft')*Annahmen.Flughoehe_CR);
 
-stuetzstellen = 1000;
-c_A_F = linspace(0, 3, stuetzstellen);
+stuetzstellen = 500;
+c_A_F = linspace(0, 1, stuetzstellen);
 Ma_off_D = linspace(0, 2, stuetzstellen).';
 
 
@@ -57,7 +57,7 @@ Ma_off_D = linspace(0, 2, stuetzstellen).';
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %     Annahmen.x_SP_MAC = 1.5; %%%%%% Ein random wert angenommen!!!!!!!!!!!
 %     Annahmen.x_NP_MAC_oH = 0.5;
-    Faktor = 0.5; %% Achtung wert angepasst, muss nochmal mit leon drüber schauen (stand 28.07. 0Uhr)
+    Faktor = 0.5; %% Achtung wert angepasst, muss nochmal mit leon drüber schauen (stand 28.07. 0Uhr) 0.5
     Annahmen.dx_SP_lmue =  Delta_CG_MAC_durch_lmue * Faktor ; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     Annahmen.z_abstand = StatStab.z_abstand; % Abstand zwischen Profilsehnen angenommen vergleiche Torenbeek s480
  

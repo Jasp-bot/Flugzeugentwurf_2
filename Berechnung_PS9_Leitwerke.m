@@ -75,8 +75,8 @@ HLW.F_et = ((HLW.l_i_et + ((HLW.b/2)*tan(HLW.phi_HK_et)))*(HLW.b/2)...
 
 % Itteration der Fluegelrumpfflaeche
 
-l_i_HLW_high = 8;
-l_i_HLW_low = 0.5;
+l_i_HLW_high = 15;
+l_i_HLW_low = 0.3;
 dF_HLW = 1;
 %phi_HK_HLW_lokal = phi_HK_HLW_et;
 % specs.coanlaenge = 15;

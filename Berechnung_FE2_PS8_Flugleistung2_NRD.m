@@ -55,14 +55,18 @@ S0 = k_CR * G_TO * (Ergebnisse_Widerstand_FE2.cW_cA_off_D) / (schub_CR.S_S0_CR *
 for zv1 = 1 : length(hoehe_m)
     if hoehe_m(1,zv1) <= hoehe_CR
         punkt_H_CR = zv1 + 1;
-    else
+    end
+    if punkt_H_CR >= 100
+        punkt_H_CR = 100;
     end
 end
 
 for zv3 = 1 : length(hoehe_m)
     if hoehe_m(1,zv3) <= hoehe_ALT
         punkt_H_ALT = zv3 + 1;
-    else
+    end
+    if punkt_H_ALT >= 100
+        punkt_H_ALT = 100;
     end
 end
 

@@ -18,6 +18,7 @@ load Ergebnisse_CG.mat
 load Schwerpunkt.mat
 load Ergebnisse_Widerstand_FE2.mat
 load Fahrwerk.mat
+load Ergebnisse_Massen_FE2.mat
 
 %% Aus FE 1 -> Für Widerstand
 
@@ -79,9 +80,9 @@ CM0 = FM.c_M_NP_F0;%
 
 % CW_REYNOLDS_MIN -> Über trapz summieren!
 CA_index = round(Ergebnisse_Widerstand_FE2.stuetzstellen * 0.207);
-CWPMIN_temp = Ergebnisse_Widerstand_FE2.c_w_p_min_Re_off_D(2,:);
+CWPMIN_temp = Ergebnisse_Widerstand_FE2.c_w_p_min_Re_off_D(20,:);       % Hier 20 weil es dann am Ende passt !
 C_W_P_Min_RE = trapz(CWPMIN_temp)* 10^-3; % Zwei mal wegen zwei Wings?!
-
+%C_W_P_Min_RE = 0.009
 
 
 % Reifen -> Aus PS Fahrwerk in m
@@ -379,7 +380,7 @@ landeanforderun = landeanvorderung.c_A_max_LDG < CA_MAX_LDG
 
 
 % Profilwiderstand % Unterschiedlich bei TO /LDG
-delta_C_W_P_phi = 0.081;    %Abbildung + Abhängig von Ausdchlag delta_k
+delta_C_W_P_phi = 0.081;    %Abbildung + Abhängig von Auschlag delta_k
 delta_C_W_P_phi_TO = 0.015;
 
 delta_C_W_P = delta_C_W_P_phi * (F_klappen/Ergebnisse_Fluegel.F) * cos(Ergebnisse_Fluegel.phi_25_max);
@@ -397,16 +398,19 @@ v = 0.001;                    % Richtig abgelesen?!?!
 w = 0.0073;
 
 delta_CM_K = delta_CM_HKK_LDG;%0.5; % Wie kommt man auf den Wert ?
+delta_CM_K_TO = delta_CM_HKK_TO;
 
 
+CA = HA2.CA_MAX_LDG;
+CA_TO = HA2.CA_MAX_TO;
 
-CA = 2.7;
 CA_F = CA * (1- ((deltaXSP_l_mue)/(r_h/Ergebnisse_Fluegel.l_mue))) - ((CM0+delta_CM_K)/(r_h/Ergebnisse_Fluegel.l_mue))/(r_h/Ergebnisse_Fluegel.l_mue);
 
+CA_F_TO = CA_TO * (1- ((deltaXSP_l_mue)/(r_h/Ergebnisse_Fluegel.l_mue))) - ((CM0+delta_CM_K_TO)/(r_h/Ergebnisse_Fluegel.l_mue))/(r_h/Ergebnisse_Fluegel.l_mue);
 
-delta_C_W_Ind = CA_F * delta_C_a_FK * v + delta_Ca_max_SF_phi^2 *w;
+delta_C_W_Ind = CA_F * delta_C_a_FK * v + (delta_Ca_max_SF_phi^2) *w;
 
-delta_C_W_Ind_TO = CA_F * delta_C_a_FK * v + delta_Ca_max_SF_phi_TO^2 *w;
+delta_C_W_Ind_TO = CA_F_TO * delta_C_a_FK * v + (delta_Ca_max_SF_phi_TO^2) *w;
 
 
 % Inteferenzwiderstand % Unterschiedlich bei TO/LDG
@@ -429,7 +433,7 @@ X_VF = linspace(0,Slat_spannweite,Slat_spannweite*1000);
 % Slat tiefen!
 Fluegel_VF = Slats_pos .* Ergebnisse_Fluegel.Fluegeltiefen_eta(1,1:(Slat_spannweite*1000));
 % Fläche Slats
-F_VF = (Ergebnisse_Fluegel.b/2)*trapz(X_VF,Fluegel_VF)+10;
+F_VF = ((Ergebnisse_Fluegel.b/2)*trapz(X_VF,Fluegel_VF))*2;
 
 
 laenge_Fluegel = Ergebnisse_Fluegel.b; %Ohne Rumpf?
@@ -449,18 +453,23 @@ F_vorder = durchmesser*breite*4;   % Gleiche Werte weil vorne und hinten gleich 
 F_hinter = durchmesser*breite*4;
 
 l_HFW = BFWL.l_HFW_min; % Ríchtiger Wert aus CG?
-delta_CA_F_0 = 1.1;%0.03; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+delta_CA_F_0_LDG = -0.7;    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+delta_CA_F_0_TO = -1;       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ALEX NOCHMAL FRAGEN ODER KROISTOF %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%delta_C_W_Fahrwerk = ((1.5 * F_vorder + 0.75 * F_hinter)/Ergebnisse_Fluegel.F) * (1 - 0.04 * ((CA_F + delta_CA_F_0 *(1.5 * (Ergebnisse_Fluegel.F / F_klappen)-1))/(l_HFW/Ergebnisse_Fluegel.l_m)))^2;
-delta_C_W_Fahrwerk = 0.025; % CHEAT FAKTOR!
+
+delta_C_W_Fahrwerk_TO = ((1.5 * F_vorder + 0.75 * F_hinter)/Ergebnisse_Fluegel.F) * (1 - 0.04 * ((CA_F_TO + delta_CA_F_0_TO *(1.5 * (Ergebnisse_Fluegel.F / F_klappen)-1))/(l_HFW/Ergebnisse_Fluegel.l_m)))^2;
+
+delta_C_W_Fahrwerk_LDG = ((1.5 * F_vorder + 0.75 * F_hinter)/Ergebnisse_Fluegel.F) * (1 - 0.04 * ((CA_F + delta_CA_F_0_LDG *(1.5 * (Ergebnisse_Fluegel.F / F_klappen)-1))/(l_HFW/Ergebnisse_Fluegel.l_m)))^2;
+
+%delta_C_W_Fahrwerk = 0.017; % CHEAT FAKTOR!
 
 %% Gesamtwiderstand durch klappen
 
 delta_CW_klappen_LDG = delta_CW_VF + delta_C_W_Ind + delta_C_W_Inf + delta_C_W_P;
 delta_CW_klappen_TO = delta_CW_VF + delta_C_W_Ind_TO + delta_C_W_Inf_TO + delta_C_W_P_TO;
 
-delta_CW_klappen_LDG_fahrwerk = delta_CW_VF + delta_C_W_Ind + delta_C_W_Inf + delta_C_W_P + delta_C_W_Fahrwerk;
-delta_CW_klappen_TO_fahrwerk = delta_CW_VF + delta_C_W_Ind_TO + delta_C_W_Inf_TO + delta_C_W_P_TO + delta_C_W_Fahrwerk;
+delta_CW_klappen_LDG_fahrwerk = delta_CW_VF + delta_C_W_Ind + delta_C_W_Inf + delta_C_W_P + delta_C_W_Fahrwerk_LDG;
+delta_CW_klappen_TO_fahrwerk = delta_CW_VF + delta_C_W_Ind_TO + delta_C_W_Inf_TO + delta_C_W_P_TO + delta_C_W_Fahrwerk_TO;
 
 
 % Speichern
@@ -471,7 +480,7 @@ HA2.delta_CW_klappen_TO = delta_CW_klappen_TO;
 
 HA2.delta_CW_klappen_LDG_fahrwerk = delta_CW_klappen_LDG_fahrwerk;
 
-Ha2.delta_CW_klappen_TO_fahrwerk = delta_CW_klappen_TO_fahrwerk;
+HA2.delta_CW_klappen_TO_fahrwerk = delta_CW_klappen_TO_fahrwerk;
 
 
 %% Widerstanddeltas zu realem Widerstand addieren

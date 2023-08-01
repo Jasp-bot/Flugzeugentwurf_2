@@ -177,7 +177,7 @@ ylabel("Gleitzahl E = C_{A}/C_W in [-]","FontWeight","bold")
 xlabel("Auftriebsbeiwert des Flügels C_{A} in [-]","FontWeight","bold")
 
 % PLotten der Gleitzahlen
-plot(startschub.c_A_max_thrust_match,startschub.Eta_To_inv(3),'redo','LineWidth',2)
+plot(startschub.c_A_max_thrust_match,(1/startschub.Eta_To_thustmatch),'redo','LineWidth',2)
 
 % Check ob lande CA erreicht
 plot(landeanvorderung.c_A_max_LDG, (1/landeanvorderung.Eta_LDG),'greeno','LineWidth',2)

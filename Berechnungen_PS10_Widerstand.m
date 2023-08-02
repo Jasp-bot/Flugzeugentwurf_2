@@ -151,7 +151,7 @@ d_cW_compr_TO = 0.02; % 0.01 bis 0.02
 
 d_cW_compr_GD = 0.0115; % 0.0115 - 0.025
 
-for x = 1 : length(Widerstand.y_to)       %TO CLEAN ohne Fahrwerk
+for x = 1 : length(Widerstand.y_to)       %TO CLEAN oC_w_clean_allhne Fahrwerk
     
     Widerstand.C_w_TO_clean = N_W.Cw0 + ((Widerstand.y_to(x)^2)/(pi * Ergebnisse_Fluegel.streckung_phi25_max * oswald_comp_TO)) + d_cW_compr_TO;
     Widerstand.C_w_TO_clean_all(x) = Widerstand.C_w_TO_clean;
@@ -204,8 +204,8 @@ elseif Eingabewert_Iteration == 1
 
 
     Startwerte_Iteration.CA_CW_LR = 1 / Ergebnisse_Widerstand_FE2.cW_cA_off_D;
-    Startwerte_Iteration.CA_CW_TO = 1 / (HA2.CA_max_TO/ HA2.CW_max_TO);
-    Startwerte_Iteration.CA_CW_LDG = 1 / (HA2.CA_max_ldg_fw/ HA2.CW_max_ldg_fw);
+    Startwerte_Iteration.CA_CW_TO = (HA2.CA_max_TO/ HA2.CW_max_TO);
+    Startwerte_Iteration.CA_CW_LDG =(HA2.CA_max_ldg_fw/ HA2.CW_max_ldg_fw);
     Startwerte_Iteration.CA_CW_Clean = 1/ Ergebnisse_Widerstand_FE2.cW_cA_off_D;
 
 

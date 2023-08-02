@@ -4,9 +4,6 @@ clc
 clear all
 close all
 
-x=0;
-
-
 %% Vorbereitung / Veranschaulichung
 
 % E_CR = Startwerte_Iteration.CA_CW_LR;
@@ -15,11 +12,12 @@ x=0;
 
 %% Beginn der Iteration
 
+x=1;
 dX = 1;
 zaehlvariabele_test = 0; 
 
  % Beginn mit FE1 PS 3 Massenabschaetzung
-    Berechnung_PS4_basis_stat_Massen(0); % eingabewert iteration entscheidet ob die WERTE  von FE1 oder FE2 verwendet werden
+    Berechnung_PS4_basis_stat_Massen(1); % eingabewert iteration entscheidet ob die WERTE  von FE1 oder FE2 verwendet werden
         % Eingabewert_Iteration =1 (Werte FE2) | Eingabewert_Iteration =0 (Werte FE1) 
     
     % FE1 PS4 Flaechenbelastung 
@@ -29,8 +27,12 @@ zaehlvariabele_test = 0;
     
     % FE1 PS5 Familienbildung, hier nicht sicher ob nötig
     Berechnung_PS5_familie_stat_Massen;
-Startwerte_Iteration = Berechnungen_PS10_Widerstand(x);
-while abs(dX) > 0.0001
+% Startwerte_Iteration = Berechnungen_PS10_Widerstand(x);
+Startwerte_Iteration.CA_CW_LR = 17.3;
+Startwerte_Iteration.CA_CW_TO = 10.5;
+Startwerte_Iteration.CA_CW_LDG = 7.4;
+
+% while abs(dX) > 0.0001
     Berechnung_PS6_Startschub_Landeanforderung(Startwerte_Iteration,x);
     Berechnung_PS8_Fluegel_Tank;
     Berechnung_PS9_Auftrieb_Momente;
@@ -43,7 +45,7 @@ while abs(dX) > 0.0001
     dX_TO = Endwerte_Iteration.CA_CW_TO - startschub.Eta_To_inv(3,1);
     dX_LDG = Endwerte_Iteration.CA_CW_LDG - (1/landeanvorderung.Eta_LDG);
 
-    dX = dX_CR + dX_TO + dX_LDG;
+    dX = dX_CR + dX_TO + dX_LDG
     zaehlvariabele_test = zaehlvariabele_test +1;
 
 

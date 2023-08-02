@@ -18,19 +18,21 @@ load('Ergebnisse_Hochauftrieb_2.mat', 'HA2');
 
 dX = 1; % fuer die while schlefe, als Anfangsbedingung
 zaehlvariabele = 0; % um zu wissen, wie oft die Schleife durchlaufen wird
-dx_FE2 = 1;
 zaehlvar_FE2 = 0;
 % 
-Startwerte_Iteration.CA_CW_LR = 1 ./ Ergebnisse_Widerstand_FE2.cW_cA_off_D;
-Startwerte_Iteration.CA_CW_TO = 1 / (HA2.CA_max_TO/ HA2.CW_max_TO);          % Werte von Mac
-Startwerte_Iteration.CA_CW_LDG = 1/ (HA2.CA_max_ldg_fw/ HA2.CW_max_ldg_fw);         % Werte von Mac
+% Startwerte_Iteration.CA_CW_LR = 1 ./ Ergebnisse_Widerstand_FE2.cW_cA_off_D;
+% Startwerte_Iteration.CA_CW_TO = 1 / (HA2.CA_max_TO/ HA2.CW_max_TO);          % Werte von Mac
+% Startwerte_Iteration.CA_CW_LDG = 1/ (HA2.CA_max_ldg_fw/ HA2.CW_max_ldg_fw);         % Werte von Mac
 
+Startwerte_Iteration.CA_CW_LR = 17.3;
+Startwerte_Iteration.CA_CW_TO = 10.5;
+Startwerte_Iteration.CA_CW_LDG = 7.4;
 
 
 Eingabewert_Iteration = 0; % Startwert
 
-while abs(dX) > 0.00001
 % FE1 Iteration
+   
     % Beginn mit FE1 PS 3 Massenabschaetzung
     Berechnung_PS4_basis_stat_Massen(Eingabewert_Iteration); % eingabewert iteration entscheidet ob die WERTE  von FE1 oder FE2 verwendet werden
         % Eingabewert_Iteration =1 (Werte FE2) | Eingabewert_Iteration =0 (Werte FE1) 
@@ -57,8 +59,10 @@ while abs(dX) > 0.00001
     [Startwerte_Iteration_FE1] = Berechnungen_PS10_Widerstand(Eingabewert_Iteration);
     
     % FE2 Ieration
-    % for var = 1:2;    
-    while dx_FE2 > 0.00001
+    % for var = 1:2; 
+    for jbiwsvber = 1:1
+    dx_FE2 = 1;
+    while dx_FE2 > 0.0000001
         zaehlvar_FE2 = zaehlvar_FE2 + 1;
         % FE2 PS1 Neue Massenabschaetzung
         Berechnung_FE2_PS1_M_Mf;
@@ -88,25 +92,46 @@ while abs(dX) > 0.00001
         dx_FE2 = abs(FF.mf4 - FFneu.mf4);
         
     end
+Eingabewert_Iteration = 1;
+% Beginn mit FE1 PS 3 Massenabschaetzung
+    Berechnung_PS4_basis_stat_Massen(Eingabewert_Iteration); % eingabewert iteration entscheidet ob die WERTE  von FE1 oder FE2 verwendet werden
+        % Eingabewert_Iteration =1 (Werte FE2) | Eingabewert_Iteration =0 (Werte FE1) 
     
-
-    load('Ergebnisse_Basis_stat_m.mat','Ergebnis_basis_m' );
-    load('Ergebnisse_Massen_FE2.mat', 'Ergebnisse_Massen_FE2');
-
-    dX = abs(Ergebnisse_Massen_FE2.M_TO - Ergebnis_basis_m.m_To)
-
-%     zaehlvariabele = zaehlvariabele +1;
-    Eingabewert_Iteration = 1;
+    % FE1 PS4 Flaechenbelastung 
     
-end
+    Berechnung_PS5_Flaechenbelastung; 
+        % hier kann die Flaechenbelastung und das c_A vom Flugzeug angepasst werden
+    
+    % FE1 PS5 Familienbildung, hier nicht sicher ob nötig
+    Berechnung_PS5_familie_stat_Massen;
 
+    % FE1 PS6 Schubanforderung
+    Berechnung_PS6_Startschub_Landeanforderung(Startwerte_Iteration, Eingabewert_Iteration); % Startwerte_Iteration ist ein Struct
 
-% load Ergebnisse_Massen_FE2.mat
-% load Ergebnisse_Widerstand_FE2.mat
+    
+    % FE1 PS7 Fluegel/Tank
+    Berechnung_PS8_Fluegel_Tank;
+    % FE1 PS8 Auftriebsverteilung
+    Berechnung_PS9_Auftrieb_Momente;
+    % FE1 PS8 Leitwerke
+    Berechnung_PS9_Leitwerke;
+    % FE1 PS9 Widerstand
+    [Startwerte_Iteration_FE1] = Berechnungen_PS10_Widerstand(Eingabewert_Iteration);
+    end
 
+   
 
-    % FE2 PS3 Fahrwerk
-Berechnung_FE2_PS3_Fahrwerk;
+    
+    
+    
+    
+    
+    
+    
+    
+    
+     % FE2 PS3 Fahrwerk
+%     Berechnung_FE2_PS3_Fahrwerk;
     
     
 

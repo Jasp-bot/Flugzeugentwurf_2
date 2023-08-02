@@ -1,4 +1,4 @@
-%% PS 1 2 Fuel Fraction und Erweiterte MAssenabschaetzung nach Toerenbeck
+%% PS 1 2 Fuel Fraction und Erweiterte Massenabschaetzung nach Toerenbeck
 
 function Berechnung_FE2_PS1_M_Mf
 % clc
@@ -88,7 +88,7 @@ load Ergebnisse_Flugleistung_2.mat;
 
 M_TO_initial = Ergebnis_basis_m.m_To;
 M_OE_initial = Ergebnis_basis_m.m_OE;
-M_del_empty_initial = 140000; % Annahme die sehr nahe am ersten Schleifenduchlauf liegt
+M_del_empty_initial = Ergebnis_basis_m.m_OE * 0.8; % Annahme die sehr nahe am ersten Schleifenduchlauf liegt
 M_Zero_Fuel_initial = Ergebnis_basis_m.m_OE + specs.m_pax_all_eco + specs.m_cargo; % Annahme für all Eco Version nicht ACHTUNG
 % Kappa_initial = 0.3064; % initiale annahme aus erstem Schleifenduchlauf
 Zaehlvariabele = 0;
@@ -99,7 +99,7 @@ Technologiefaktor_ALU_CFK = 0.5 * 0.4;
 
 
 
-% while abs(delta_M_to) > 0.000001
+while abs(delta_M_to) > 0.000001
     
    
     
@@ -848,7 +848,7 @@ Technologiefaktor_ALU_CFK = 0.5 * 0.4;
     %M_Airframe_Structur.HLW
    
     Zaehlvariabele = Zaehlvariabele + 1; % test
-% end     % Ende der Iteration
+end     % Ende der Iteration
 
 %% Speichern der Daten
 

@@ -38,7 +38,7 @@ load Schwerpunkt.mat;
 HLW.c = 0.95; % wert aus Datenblatt abgeschätzt
 
 % betimmung der Hoehenleitwerksflaeche
-HLW.r = r_H;        %(0.5:0.01:0.55);
+HLW.r = real(r_H);        %(0.5:0.01:0.55);
 
 HLW.F = (HLW.c .* Ergebnisse_stat_Flaechenbelastung.F .* NP.l_mue_ges)./ HLW.r;
 
@@ -76,7 +76,7 @@ HLW.F_et = ((HLW.l_i_et + ((HLW.b/2)*tan(HLW.phi_HK_et)))*(HLW.b/2)...
 % Itteration der Fluegelrumpfflaeche
 
 l_i_HLW_high = 15;
-l_i_HLW_low = 0.3;
+l_i_HLW_low = 0.2;
 dF_HLW = 1;
 %phi_HK_HLW_lokal = phi_HK_HLW_et;
 % specs.coanlaenge = 15;

@@ -29,7 +29,7 @@ G_To = Ergebnis_basis_m.m_To * specs.g;
 D = [1; 0.95; 0.9; 0.8];                                        % Drosselgrad TW
 
 if Eingabewert_Iteration == 0
-    load Ergebnisse_Widerstand.mat;
+%     load Ergebnisse_Widerstand.mat;
     % Dieser wert wird itteriert in PS10
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     schub_CR.Eta = Startwerte_Iteration.CA_CW_LR; %17.35;                               %[18; 19; 20; 21];       % mittlere erwartete Gelitzahl %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Itteraion

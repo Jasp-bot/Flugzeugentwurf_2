@@ -24,8 +24,8 @@ addpath('Unterfunktionen Widerstand');
 % Bitte noch verändern
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-c_A_max = Ergebnisse_stat_Flaechenbelastung.C_A_CR; %%%%%%%%%%%%%%% Achtung random wert, bitte von mac geben lassen
-c_A_max_LDG = HA2.CA_MAX_LDG;
+% c_A_max = Ergebnisse_stat_Flaechenbelastung.C_A_CR; %%%%%%%%%%%%%%% Achtung random wert, bitte von mac geben lassen
+% c_A_max_LDG = HA2.CA_MAX_LDG;
 Testfaktor = 1.4;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -332,7 +332,23 @@ end % End for-Schleife
 
 % Physikalische Grenzen
 
+% bestimmen von position 6096m hoehe in hoehe_m
+zaehler_ALT = 1;
+for z3 = 1 : length(hoehe_m)
+    if hoehe_m(z3) < hoehe_ALT
+        zaehler_ALT = z3;
+    end
+    if zaehler_ALT > length(hoehe_m)
+        zaehler_ALT = 100;
+    end
+end
+
+
 % Formel 27 S10
+
+c_A_max = ((2)/(ISA.rho(hoehe_ALT) * v_TAS_HFD(zaehler_ALT,1)^2)) * (G ./ Ergebnisse_Fluegel.F);
+
+
 v_s_1g = sqrt((2./(rho_H .* c_A_max)) .* (G ./ Ergebnisse_Fluegel.F));
 v_s_min_DEV = 0.94 .* v_s_1g;
 
@@ -355,7 +371,12 @@ v_max_HFD = v_TAS_HFD(:,2);
 
 % Physikalische Grenzen
 
+
+
+
+
 % Formel 27 S10
+c_A_max_LDG = ((2)/(ISA.rho(hoehe_ALT) * v_TAS_HFD_DEC(zaehler_ALT,1)^2)) * (Momentane_Masse_DEC ./ Ergebnisse_Fluegel.F);
 v_s_1g_DEC = sqrt((2./(rho_H .* c_A_max_LDG)) .* (Momentane_Masse_DEC ./ Ergebnisse_Fluegel.F));
 v_s_min_DEC = 0.94 .* v_s_1g_DEC;
 

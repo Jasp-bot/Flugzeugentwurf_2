@@ -22,7 +22,7 @@ Aufgabe_1 = 1;  % Horizontalflugdiagramme fuer CL, CR, DEC
 Aufgabe_2 = 0;  % SET, SEP, SR, fuer CR
 Aufgabe_3 = 0;  % Optimalgeschwindigheiten CR
 Aufgabe_4 = 0;  % Spez Flugdauer SE fuer DEC
-Aufgabe_5 = 0;  % Flugbereichsdiagramme fuer CR, DEC
+Aufgabe_5 = 1;  % Flugbereichsdiagramme fuer CR, DEC
 
 Disp_vec = [Aufgabe_1, Aufgabe_2, Aufgabe_3, Aufgabe_4, Aufgabe_5];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -1,5 +1,4 @@
 %% PS 1 2 Fuel Fraction und Erweiterte Massenabschaetzung nach Toerenbeck
-
 function Berechnung_FE2_PS1_M_Mf
 % clc
 % clear all
@@ -318,7 +317,7 @@ while abs(delta_M_to) > 0.000001
     
     NR_M_Fluegel.k_uc = 1; % for wing mounted undercarriage or 0.95 for not Wingmounted undercarriage %%%%%%%% Nicht sicher !!!!!
     
-    NR_M_Fluegel.Lambda_50 = tan((DT.s_A)/(NP.versatz_HK + DT.l_i_A/2)); % Annahme Pfeilung von Außenfluegel
+    NR_M_Fluegel.Lambda_50 = tan((NP.versatz_HK + DT.l_i_I/2 - DT.l_a/2)/(DT.s_A + DT.s_I)); %tan((DT.s_A)/(NP.versatz_HK + DT.l_i_A/2)); % Annahme Pfeilung von Außenfluegel
     
     
     NR_M_Fluegel.W_des = M_Zero_Fuel_initial;
@@ -848,6 +847,7 @@ while abs(delta_M_to) > 0.000001
     %M_Airframe_Structur.HLW
    
     Zaehlvariabele = Zaehlvariabele + 1; % test
+
 end     % Ende der Iteration
 
 %% Speichern der Daten

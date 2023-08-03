@@ -34,14 +34,15 @@ f_ATC=[1,0.7,0.6,0.5];  %Domestic Europe, transatlantic flights, far east flight
 BT_avg=1.83;     %avarage block time supplement [h]
 f_lr=50;         %Labor rate [€/h]
 C_B=2;           %cost burden[1]
-I_FR=0.2;        %Erlös [€/kg]
+I_FR=0.0005;        %Erlös [€/kg]       %%Lenni
 I_PAX=[550,400]; %income per seat long haul [3 KLassen, all eco]
 n_pax=specs.n_pax;
 R_Std=9000;
 
 
+
 %Variabeln
-R= linspace(1000, specs.max_range_basis_km+5000, 20)     %Reichweite
+R= linspace(400, specs.max_range_basis_km+5000, 40)     %Reichweite
 %R=5000;
 
 
@@ -103,7 +104,7 @@ ko_3=P_LDG*(Ergebnisse_Massen_FE2.M_OE+Tripfuel(R_Std/1000));
 ko_4=f_ATC(3)*(R(1,end))*sqrt(((Ergebnisse_Massen_FE2.M_OE+Tripfuel(R_Std/1000))/1000)/50);
 ko_5=C_MRO(1,end);
 
-SKO=R.*nutzlast(R);
+SKO=R.*2.*nutzlast(R);
 
    % for ZWW=1:length(R)
    %      if R(1,ZWW) < specs.max_range_basis_km
@@ -130,9 +131,12 @@ DOC_END=DOC(1,end)
 
 SMC = DOC./SKO;
 
-I_CAR = I_FR * (TOM(R) - Ergebnisse_Massen_FE2.M_ZF - (311 * 80));          %% Cargo correction
+I_CAR =R.* I_FR.*(Fracht(R));          %% Cargo correction normalerweise hinter ERGEBNISS MASSEN ZF: " - (311 * 80) "
 
 n_PAX_CAR = I_CAR / I_PAX(1);
+
+LENNI=14000*10000*0.0005
+
 
 %Polution Pro Max langem Flug
 Fuel_P=fuel_range(specs.max_range_basis_km)/specs.n_pax;
@@ -168,20 +172,22 @@ title('Routenabhängige Kosten')
 DOC_zuSKO_COR = (DOC./SKO) .* (n_pax ./ (n_pax + n_PAX_CAR));
 
 figure(3)
-plot(R,SKO)   %Plot Flight Time per annum
-plot(R,DOC_zuSKO_COR)
+plot(R,DOC)   %Plot Flight Time per annum
+
 title('Kosten pro Kilometer')
 xlabel('km')
 ylabel('Kosten in €')
-hold on
+
 
 
 figure(2)
-plot(R,SMC)
+plot(R,SMC,R,DOC_zuSKO_COR)
+labels ={'SMC','Cargo correction'}
+legend(labels)
 title('Sitzkilometerkosten')
 xlabel('Reichweite in km')
 ylabel('€/km')
-
+hold on
 xlim([0,15000])
 grid on
 % Noch zweite Funktion plotten !
@@ -287,9 +293,12 @@ end
 
 function [Fracht] = Fracht(Reichweite)          %%Lennis
     load Ergebnisse_Flugleistung_2.mat
+    load Projekt_specs.mat
+    load Ergebnisse_Massen_FE2.mat
+   
     x = [NRD.A(1,1), NRD.B(1,1), NRD.C(1,1), NRD.D(1,1)];
-    y = [14000, 14000, 14000*(NRD.C(1,2)/(specs.m_pax+specs.m_cargo)), 0];
-    load NRD_funktion.mat
+    y = [14000, 14000, 14000*(NRD.C(2,1)/(specs.m_pax+specs.m_cargo)), 0];
+    
     % Stückweise definierte Funktion
     
     if Reichweite <= x(2)

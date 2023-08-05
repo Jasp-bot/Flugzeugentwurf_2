@@ -29,7 +29,7 @@ Startwerte_Iteration.CA_CW_TO = 10.5;
 Startwerte_Iteration.CA_CW_LDG = 7.4;
 
 
-Eingabewert_Iteration = 0; % Startwert
+Eingabewert_Iteration = 1; % Startwert
 
 % FE1 Iteration
    

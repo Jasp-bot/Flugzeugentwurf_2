@@ -123,9 +123,11 @@ while abs(delta_M_to) > 0.000001
     % Berechnungen für FuelFraction Methde nach Roskamp
     
     % Formel 9 PS1
-    FF.S_S0_KF_CL = 0.9 * (ISA.rho(hoehe_CL)/ISA.rho_0) * ...
-        exp(-0.35 * specs.Ma_CR*(2/3) * (ISA.p(hoehe_CL)/ISA.p0) * sqrt(specs.bypass));
-    
+%     FF.S_S0_KF_CL = 0.9 * (ISA.rho(hoehe_CL)/ISA.rho_0) * ...
+%         exp(-0.35 * specs.Ma_CR*(2/3) * (ISA.p(hoehe_CL)/ISA.p0) * sqrt(specs.bypass));
+    FF.S_S0_KF_CL = S_S0_KF_j(0.9, (ISA.rho(hoehe_CL)/ISA.rho_0), specs.Ma_CR*(2/3), (ISA.p(hoehe_CL)/ISA.p0), sqrt(specs.bypass));
+
+
     % Fromel 11 PS1
     FF.S_S0_CL = FF.S_S0_KF_CL * schub_CR.S_S0_E;
     
@@ -163,9 +165,10 @@ while abs(delta_M_to) > 0.000001
     
     % Climb
     
-    FF.S_S0_KF_CL_ALT = 0.9 * (ISA.rho(hoehe_CL_ALT)/ISA.rho_0) * ...
-        exp(-0.35 * specs.Ma_CR*(2/3) * (ISA.p(hoehe_CL_ALT)/ISA.p0) * sqrt(specs.bypass));     %%%%%%%%%%% Nicht sicher ob richtige Machzahl
-    
+%     FF.S_S0_KF_CL_ALT = 0.9 * (ISA.rho(hoehe_CL_ALT)/ISA.rho_0) * ...
+%         exp(-0.35 * specs.Ma_CR*(2/3) * (ISA.p(hoehe_CL_ALT)/ISA.p0) * sqrt(specs.bypass));     %%%%%%%%%%% Nicht sicher ob richtige Machzahl
+    FF.S_S0_KF_CL_ALT = S_S0_KF_j(0.9, (ISA.rho(hoehe_CL_ALT)/ISA.rho_0), specs.Ma_CR*(2/3), (ISA.p(hoehe_CL_ALT)/ISA.p0), sqrt(specs.bypass));
+
     FF.S_S0_CL_ALT = FF.S_S0_KF_CL_ALT * schub_CR.S_S0_E;
     
     FF.S_G_CL_ALT = FF.S_S0_CL_ALT * schub_CR.S0_GTo_CR *0.99;          %%%%%%%%%% schub_CR.S0_GTo_CR !!!!!!!!!!!!!!!!!! nicht sicher

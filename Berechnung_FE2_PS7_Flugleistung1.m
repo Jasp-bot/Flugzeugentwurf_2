@@ -26,7 +26,7 @@ addpath('Unterfunktionen Widerstand');
 
 % c_A_max = Ergebnisse_stat_Flaechenbelastung.C_A_CR; %%%%%%%%%%%%%%% Achtung random wert, bitte von mac geben lassen
 % c_A_max_LDG = HA2.CA_MAX_LDG;
-Testfaktor = 1.4;
+Testfaktor = 1; % 1.4;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -65,7 +65,7 @@ GTO_G_CL_ALT = G_TO / Momentane_Masse_CL_ALT;
 dp_p0 = 0.02;
 S_S0_E = 1 - (1.3 + 0.25 * specs.bypass) * dp_p0; % % Einlaufverluste PS7 S3 Formel 13
 s_s0_H_CR = S_S0_KF_j(specs.Drosselgrad(1,3), (ISA.rho(hoehe_CR)/ISA.rho_0), specs.Ma_CR, (ISA.p(hoehe_CR)/ISA.p0), specs.bypass);
-S0 = Testfaktor * k_CR * G_TO * (Ergebnisse_Widerstand_FE2.cW_cA_off_D) /(s_s0_H_CR * S_S0_E) ;
+S0 = schub_CR.S_CR; %Testfaktor * k_CR * G_TO * (Ergebnisse_Widerstand_FE2.cW_cA_off_D) /(schub_CR.S_S0_CR * S_S0_E) ;
 S0_GTO = S0/(G_TO);
 
 G = Momentane_Masse_ICA; %%%%%%%%%%%%%%%%%%% ACHTUNG
@@ -81,7 +81,7 @@ G = Momentane_Masse_ICA; %%%%%%%%%%%%%%%%%%% ACHTUNG
 % hoehe =round(unitsratio('m','ft')*Flughoehe);                     % in m
 
 schritte = 100;
-hoehe_plus = 40;
+hoehe_plus = 30;
 hoehe = (round(linspace(1500, ((specs.flight_level + hoehe_plus)*10^2), schritte))); % 1000: 3000: specs.flight_level*10^2;
 % hoehe = 1000: 1000: specs.flight_level*10^2;
 hoehe_m = round(unitsratio('m','ft').*hoehe);
@@ -309,19 +309,19 @@ TAS_SE_H_DEC_vec(n_datensatz,:) = [v_TAS_j_DEC(n_datensatz, Hochpunkte.SE_DEC_x(
 intersection_ICA = InterX([v_EAS_j(1,:); S_G_erf_j(n_datensatz,:)],[v_EAS_j(1,:); S_G_vorh_j(n_datensatz,:)]);
 v_TAS_HFD(n_datensatz,:) = intersection_ICA(1,:) ./ sqrt(rho_rho0_H(n_datensatz,:));
 S_G_inter_HFD(n_datensatz,:) = intersection_ICA(2,:);
-clear intersection_ICA
+% clear intersection_ICA
 
 intersection_CL = InterX([v_EAS_j_CL(1,:); S_G_erf_j_CL(n_datensatz,:)],[v_EAS_j_CL(1,:); S_G_vorh_j_CL(n_datensatz,:)]);
 v_TAS_HFD_CL(n_datensatz,:) = intersection_CL(1,:) ./ sqrt(rho_rho0_H(n_datensatz,:));
 S_G_inter_HFD_CL(n_datensatz,:) = intersection_CL(2,:);
-clear intersection_CL
+% clear intersection_CL
 
 intersection_DEC = InterX([v_EAS_j(1,:); S_G_erf_j(n_datensatz,:)],[v_EAS_j(1,:); S_G_vorh_j(n_datensatz,:)]);
 v_TAS_HFD_DEC(n_datensatz,:) = intersection_DEC(1,:) ./ sqrt(rho_rho0_H(n_datensatz,:));
 S_G_inter_HFD_DEC(n_datensatz,:) = intersection_DEC(2,:);
-clear intersection_DEC
+% clear intersection_DEC
 
-
+n_datensatz;
 
 end % End for-Schleife
 
@@ -530,7 +530,8 @@ Ergebnisse_Flugleistung_1.v_max_HFD_DEC = v_max_HFD_DEC;
 Ergebnisse_Flugleistung_1.H_Dienstgipfel_DEC = H_Dienstgipfel_CR;
 Ergebnisse_Flugleistung_1.H_Kabienendruck_DEC = H_Kabienendruck_DEC;
 % 
-
+Ergebnisse_Flugleistung_1.S0 = S0;
+Ergebnisse_Flugleistung_1.S0_GTO = S0_GTO;
 
 save Ergebnisse_FLugleistung_1.mat Ergebnisse_Flugleistung_1
 
@@ -553,15 +554,6 @@ function [rho_rho0_H, T_H, a_H, p_p0_H, rho] = Atmos_H(hoehe_m)
 end
 
 
-
-%% Funktion zur berechnung von Gleichung 12 PS7 s.3 
-function [S_S0_KF_j] = S_S0_KF_j(D, rho_rho0_H, Ma_j, p_p0, bypass)
-    
-    S_S0_KF_j = D .* rho_rho0_H .* exp(-0.35 .* Ma_j .* p_p0 .* sqrt(bypass));
-end
-
-
-%% 
 
 %% PLOTS
 

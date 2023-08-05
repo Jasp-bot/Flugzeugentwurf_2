@@ -13,7 +13,7 @@ load Ergebnisse_Basis_stat_m.mat;
 load Ergebnisse_ISA_DATA.mat
 load Ergebnisse_stat_Flaechenbelastung_Fluegelflaeche.mat
 load Ergebnisse_Endwerte_Iteration_V1.mat
-
+addpath('Unterfunktionen Widerstand');
 
 %% Berechnungen
 
@@ -77,13 +77,13 @@ schub_CR.S_S0_E = 1 - (1.3 + 0.25 * specs.bypass) * 0.02;
 
 
 % Schubverhaeltnis Reiseflug
-schub_CR.S_S0_CR = D(4,1) .* (rho_CR_B/ISA.rho_0) .* exp(-0.35 * specs.Ma_CR * (p_CR_B/ISA.p0) * sqrt(specs.bypass));
-
+% schub_CR.S_S0_CR = D(4,1) .* (rho_CR_B/ISA.rho_0) .* exp(-0.35 * specs.Ma_CR * (p_CR_B/ISA.p0) * sqrt(specs.bypass));
+schub_CR.S_S0_CR = S_S0_KF_j(D(4,1), (rho_CR_B/ISA.rho_0), specs.Ma_CR, (p_CR_B/ISA.p0), specs.bypass);
 % Gesamtschubverhaeltnis
-schub_CR.S0_GTo_CR = (k_CR .* 1./schub_CR.Eta)./(schub_CR.S_S0_CR .* schub_CR.S_S0_E);                                        % realistisch
+schub_CR.S0_GTo_CR =specs.Schubfaktor .* (k_CR .* 1./schub_CR.Eta)./(schub_CR.S_S0_CR .* schub_CR.S_S0_E);                                        % realistisch
 
 % erforderlicher Gesamtschub
-schub_CR.S_CR = G_To .* (k_CR * 1/schub_CR.Eta)./(schub_CR.S_S0_CR * schub_CR.S_S0_E);
+schub_CR.S_CR = G_To .* (k_CR * 1/schub_CR.Eta)./(schub_CR.S_S0_CR * schub_CR.S_S0_E) .* specs.Schubfaktor;
 
 
 %% Rechnung für Startstrecke PS7
@@ -111,14 +111,14 @@ startschub.v_LOF = 1.15 .* startschub.v_s;
 startschub.Ma_To = (0.71 * startschub.v_LOF)/ a0; % Machzahl auf Meereshoehe bei ISA+15 für Startvorgang aus  PS Startstrecke und Landestrecke
 
 % Startschubverhaeltnis fuer Takeoff
-startschub.S_S0_TO = D(1,1) .* (rho_To /ISA.rho_0) .* exp(-0.35 * startschub.Ma_To * (p_To/ISA.p0) * sqrt(specs.bypass)); 
-
+% startschub.S_S0_TO = D(1,1) .* (rho_To /ISA.rho_0) .* exp(-0.35 * startschub.Ma_To * (p_To/ISA.p0) * sqrt(specs.bypass)); 
+startschub.S_S0_TO = S_S0_KF_j(D(1,1), (rho_To /ISA.rho_0), startschub.Ma_To, (p_To/ISA.p0), specs.bypass);
 
 % Startschub/Gewichts verhaeltnis mit Startstrecke s1 (Formel 9)
 
 term1 = 1.32 ./(specs.g .* rho_To .* (1 - 1./(2 .*specs.n_TW)) .*startschub.s1 .* startschub.c_A_max);
 term2 = 1/((1-reibung_boden) * startschub.S_S0_TO * schub_CR.S_S0_E) * (m_To_Flugzeug_thrust_match * specs.g)/Ergebnisse_stat_Flaechenbelastung.F;
-startschub.S0_GTo_To = term1 .* term2; % Zusammensetzung der Formel um Startschubanforderung zu berechnen
+startschub.S0_GTo_To = term1 .* term2 .* specs.Schubfaktor; % Zusammensetzung der Formel um Startschubanforderung zu berechnen
 % Ergebnis 6x2600 matrix zusammengesetzt aus s1 und c_A_max Werten
 
 %% Steigstrecke s3
@@ -133,10 +133,11 @@ startschub.v_2 = 1.2 * startschub.v_s;
 startschub.v_CL = (startschub.v_LOF + startschub.v_2) / 2; % mittlere Geschwindigkeit bei 35ft hoehe
 
 startschub.Ma_CL = startschub.v_CL / a0; % mit der Annahme, dass in 35ft hoehe die gleichen bedingungen hersdchen wie bei h = 1m, sonst a(h_2)
-startschub.S_S0_CL = D(3,1) * (rho_To/ISA.rho_0) * exp(-0.35 * startschub.Ma_CL * (p_To/ISA.p0) * sqrt(specs.bypass)); % Verhaeltnis Schub zu Startschub Climb
+% startschub.S_S0_CL = D(3,1) * (rho_To/ISA.rho_0) * exp(-0.35 * startschub.Ma_CL * (p_To/ISA.p0) * sqrt(specs.bypass)); % Verhaeltnis Schub zu Startschub Climb
+startschub.S_S0_CL = S_S0_KF_j(D(3,1), (rho_To/ISA.rho_0), startschub.Ma_CL, (p_To/ISA.p0), specs.bypass);
 
 % Ergebnis 5x2600 = s3 x Eta_To (Formel 14)
-startschub.S0_GTo_CL = (sin(atan(h_2 ./ s3)) + startschub.Eta_To )./((1 - 1./specs.n_TW) .* startschub.S_S0_CL .* schub_CR.S_S0_E);
+startschub.S0_GTo_CL = (sin(atan(h_2 ./ s3)) + startschub.Eta_To )./((1 - 1./specs.n_TW) .* startschub.S_S0_CL .* schub_CR.S_S0_E) .* specs.Schubfaktor;
 
 
 %Startstrecke

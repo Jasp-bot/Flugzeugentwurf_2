@@ -42,7 +42,7 @@ v_ALT = specs.Ma_CR * ISA.a(hoehe_ALT);
 TO_Masse =  Ergebnisse_Massen_FE2.M_TO;
 G_TO = TO_Masse * specs.g;
 k_CR = 0.98;
-S0 = k_CR * G_TO * (Ergebnisse_Widerstand_FE2.cW_cA_off_D) / (schub_CR.S_S0_CR * schub_CR.S_S0_E);
+S0 = schub_CR.S_CR; %k_CR * G_TO * (Ergebnisse_Widerstand_FE2.cW_cA_off_D) / (schub_CR.S_S0_CR * schub_CR.S_S0_E);
 
 
 
@@ -195,8 +195,8 @@ b_s_CL_beschl = b_s_CL_1_s_beschl .* (1/specs.g);
 %b_s_CL_ = b_s_CL(:,1);
 % b_s_CL_kg_Ns_vec(9,1) = b_s_CL_kg_Ns(length(b_s_CL_kg_Ns),1);
 
-[S_S0_CL] = S_S0_KF_j(0.9, rho_rho0_H, Ma_h_CL, p_p0_H, specs.bypass);
-[S_S0_CL_beschl] = S_S0_KF_j(0.9, rho_rho0_H(punkt_H_CR), Ma_h_CL_beschl, p_p0_H(punkt_H_CR), specs.bypass);
+[S_S0_CL] = S_S0_KF_j_lok(0.9, rho_rho0_H, Ma_h_CL, p_p0_H, specs.bypass);
+[S_S0_CL_beschl] = S_S0_KF_j_lok(0.9, rho_rho0_H(punkt_H_CR), Ma_h_CL_beschl, p_p0_H(punkt_H_CR), specs.bypass);
 S_S0_CL_vec = S_S0_CL(:,1);
 S_S0_CL_vec_beschl = S_S0_CL_beschl(:,1);
 % S_S0_CL_vec = S_S0_CL(length(S_S0_CL),1);
@@ -225,8 +225,8 @@ b_s_CL_ALT = b_s_CL_ALT_1_s .* (1/specs.g);
 b_s_CL_ALT_beschl = b_s_CL_ALT_1_s_beschl .* (1/specs.g);
 
 
-[S_S0_CL_ALT] = S_S0_KF_j(0.9, rho_rho0_H_ALT, Ma_h_CL_ALT, p_p0_H_ALT, specs.bypass);
-[S_S0_CL_ALT_beschl] = S_S0_KF_j(0.9, rho_rho0_H_ALT(punkt_H_ALT), Ma_h_CL_ALT_beschl, p_p0_H_ALT(punkt_H_ALT), specs.bypass);
+[S_S0_CL_ALT] = S_S0_KF_j_lok(0.9, rho_rho0_H_ALT, Ma_h_CL_ALT, p_p0_H_ALT, specs.bypass);
+[S_S0_CL_ALT_beschl] = S_S0_KF_j_lok(0.9, rho_rho0_H_ALT(punkt_H_ALT), Ma_h_CL_ALT_beschl, p_p0_H_ALT(punkt_H_ALT), specs.bypass);
 S_S0_CL_ALT_vec = S_S0_CL_ALT(:,1);
 S_S0_CL_ALT_vec_beschl = S_S0_CL_ALT_beschl(:,1);
 
@@ -597,11 +597,13 @@ end
 
 
 %% Funktion zur berechnung von Gleichung 12 PS7 s.3 
-function [S_S0] = S_S0_KF_j(D, rho_rho0_H, Ma_j, p_p0, bypass)
+function [S_S0] = S_S0_KF_j_lok(D, rho_rho0_H, Ma_j, p_p0, bypass)
     load Ergebnisse_FLugleistung_1.mat
-    S_S0_KF_j = D .* rho_rho0_H .* exp(-0.35 .* Ma_j .* p_p0 .* sqrt(bypass));
+    
+%     S_S0_KF_j_x = D .* rho_rho0_H .* exp(-0.35 .* Ma_j .* p_p0 .* sqrt(bypass));
+    S_S0_KF_j_x = S_S0_KF_j(D, rho_rho0_H, Ma_j, p_p0, bypass); 
     S_S0_E = 1 - (1.3 + 0.25 * bypass) * 0.02;
-    S_S0 = S_S0_KF_j .* S_S0_E;
+    S_S0 = S_S0_KF_j_x .* S_S0_E;
 end
 
 

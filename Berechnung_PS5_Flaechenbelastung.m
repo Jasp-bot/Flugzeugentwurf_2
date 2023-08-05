@@ -36,7 +36,7 @@ zwischenergebnis_ps5.B_F = zwischenergebnis_ps5.coeffizienten_F(1,2);
 zwischenergebnis_ps5.Fluegelflaeche_FZ_regression = zwischenergebnis_ps5.A_F .* Ergebnis_basis_m.m_To .^ zwischenergebnis_ps5.B_F; %%%%%%%%%%%%%%%%%% wert ist zu klein um eine gute Faechenbalastung zu bekommen...
 % deswegen wird die Fluegelflaeche erhoeht bei constantem Ergebnis_basis_m.m_To
 
-Ergebnisse_stat_Flaechenbelastung.F = 435;
+Ergebnisse_stat_Flaechenbelastung.F = 410; % 435
 
 
 

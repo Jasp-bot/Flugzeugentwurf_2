@@ -41,13 +41,15 @@ specs.k_vOE = 0.5;                                  % Rüstmassenfaktor [1]
 
 % Aerodynamik
 
-specs.kappa_luft = 1.4;
+specs.kappa_luft = 1.3;
 specs.Ma_CR = 0.82;
 specs.Ma_MO = 0.84;
 specs.flight_level = 340;
 
 % Triebwerksdaten 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+specs.Schubfaktor = 1.4;       % Muss veraendert werden um schub anzuheben (zur veraenderung desn schub-gewichtsverhaeltnisses)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 specs.bypass = 10;                                  % Bypassverhaeltnis 
 specs.n_TW = 2;      % Anzahl Triebwerke
 m_TW = 7549;   % Quelle: https://www.easa.europa.eu/sites/default/files/dfu/EASA%20E111%20TCDS%20issue%2012_Trent%20XWB.pdf

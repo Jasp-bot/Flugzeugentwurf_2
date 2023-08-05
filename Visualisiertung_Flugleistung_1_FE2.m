@@ -6,7 +6,7 @@
 % v_S_1g und v_min schneiden sich noch nocht im Flugbereichsdiagramm
 
 
-Berechnung_FE2_PS7_Flugleistung1
+% Berechnung_FE2_PS7_Flugleistung1
 
 clc
 clear all

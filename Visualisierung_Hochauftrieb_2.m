@@ -183,6 +183,12 @@ plot(startschub.c_A_max_thrust_match,(1/startschub.Eta_To_thustmatch),'redo','Li
 plot(landeanvorderung.c_A_max_LDG, (1/landeanvorderung.Eta_LDG),'greeno','LineWidth',2)
 
 
+%% Plotten der Gleitzahlen 
 
-legend("Clean Konfiguration im Cruise Zustand","Takeoff mit 20° Klappenausschlag","Takeoff mit 20° Klappenausschlag und Fahrwerk","Landing mit 45° Klappenausschlag","Landing mit 45° Klappenausschlag und Fahrwerk","Gleitzahlvorgabe aus der Startanforderung","Gleitzahlvorgabe aus der Landeanforderung",'Location', 'southeast')
 
+plot(HA2.c_A_F_TO_FW(HA2.index),HA2.gleitzahl_TO_FW,'redx')
+plot(HA2.c_A_F_LDG_FW(HA2.index2),HA2.gleitzahl_LDG_FW,'greenx')
+
+
+
+legend("Clean Konfiguration im Cruise Zustand","Takeoff mit 20° Klappenausschlag","Takeoff mit 20° Klappenausschlag und Fahrwerk","Landing mit 45° Klappenausschlag","Landing mit 45° Klappenausschlag und Fahrwerk","Gleitzahlvorgabe aus der Startanforderung","Gleitzahlvorgabe aus der Landeanforderung","Gleitzahl mit Klappensystem und Fahrwerk TO","Gleitzahl mit Klappensystem und Fahrwerk LDG",'Location', 'southeast')

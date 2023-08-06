@@ -116,7 +116,7 @@ F_rumpf_Ecken = 2 * ((Ergebnisse_Fluegel.b)/2)*trapz(X2,Fluegel2);  % Rumpf Ecke
 
 F_rumpf_dreieck = Flaeche_im_Rumpf_oberes_dreieck;              % Dreieck im Rumpf aus CG von Ole
 
-F_rumpf = F_rumpf_Ecken + F_rumpf_rechteck %+F_rumpf_dreieck ;   % CHANGE: Dreieck entfernt, weil in den Flügel etas fällt das dreieck eh -> Fläche vergrößert -> Lunch for free!
+F_rumpf = F_rumpf_Ecken + F_rumpf_rechteck; %+F_rumpf_dreieck ;   % CHANGE: Dreieck entfernt, weil in den Flügel etas fällt das dreieck eh -> Fläche vergrößert -> Lunch for free!
 
 % Somit F_k - F Rumpf = Klappenfläche
 
@@ -458,11 +458,11 @@ F_hinter = durchmesser*breite*4;
 
 l_HFW = 5; % Ríchtiger Wert aus CG?
 delta_CA_F_0_LDG = 0.9;    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-delta_CA_F_0_TO = 0.5;       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ALEX NOCHMAL FRAGEN ODER KROISTOF %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+delta_CA_F_0_TO = 0.5;       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ALEX NOCHMAL FRAGEN ODER KRISTOF %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %((1.5 * F_vorder + 0.75 * F_hinter)/Ergebnisse_Fluegel.F) *
-
+%Alte Methode
 
 delta_C_W_Fahrwerk_TO =  (7*10^-4 * ((Ergebnisse_Massen_FE2.M_TO^0.785)/Ergebnisse_Fluegel.F)) *(1 - 0.04 * ((CA_F_TO + delta_CA_F_0_TO *(1.5 * (Ergebnisse_Fluegel.F / F_klappen)-1))/(l_HFW/Ergebnisse_Fluegel.l_m)))^2;
 

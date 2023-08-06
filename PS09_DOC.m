@@ -95,7 +95,7 @@ Fuel = Tripfuel(R)
 
 MAX_Fuel=fuel_range(specs.max_range_basis_km);
 
-C2 = FC_pa(1,end)*(P_F*Fuel+(nutzlast(R/1000)).*P_H + P_LDG.*(Ergebnisse_Massen_FE2.M_OE+Fuel) + f_ATC(2).*R.*sqrt(((Ergebnisse_Massen_FE2.M_OE+Fuel)./1000)./50) + C_MRO) % PS09 Formel 4 Routen abhängige kosten
+C2 = FC_pa(1,end)*(P_F*Fuel+(nutzlast(R/1000)).* P_H + P_LDG.*(Ergebnisse_Massen_FE2.M_OE+Fuel) + f_ATC(2).*R.*sqrt(((Ergebnisse_Massen_FE2.M_OE+Fuel)./1000)./50) + C_MRO) % PS09 Formel 4 Routen abhängige kosten
 
 %Komponnenten zum Plotten       
 ko_1=P_F*Tripfuel(R_Std)+NRD.A(5,1);
@@ -127,7 +127,7 @@ SKO=R.*2.*nutzlast(R);
 format long g 
 
 DOC = C1 + C2 ;          %Gesamten kosten 
-DOC_END=DOC(1,end)
+DOC_END = DOC(1,end)
 
 SMC = DOC./SKO;
 

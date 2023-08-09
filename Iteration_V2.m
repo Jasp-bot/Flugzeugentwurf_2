@@ -58,8 +58,10 @@ Eingabewert_Iteration = 1; % Startwert
     % FE1 PS9 Widerstand
     [Startwerte_Iteration_FE1] = Berechnungen_PS10_Widerstand(Eingabewert_Iteration);
     
+progressBar = waitbar(0, 'Bearbeite...');
+schritte = 50;
     % FE2 Ieration
-    for jbiwsvber = 1:5
+    for jbiwsvber = 1:schritte
     dx_FE2 = 1;
         while dx_FE2 > 0.0000001
             zaehlvar_FE2 = zaehlvar_FE2 + 1;
@@ -122,6 +124,19 @@ Eingabewert_Iteration = 1; % Startwert
     Berechnung_PS9_Leitwerke;
     % FE1 PS9 Widerstand
     [Startwerte_Iteration_FE1] = Berechnungen_PS10_Widerstand(Eingabewert_Iteration);
+
+    load Ergebnisse_Massen_FE2.mat;
+
+    Massen_Matrix(:,jbiwsvber) = [Ergebnisse_Massen_FE2.M_TO;...
+                                  Ergebnisse_Massen_FE2.M_OE;...
+                                  Ergebnisse_Massen_FE2.M_DE;...
+                                  Ergebnisse_Massen_FE2.M_ZF;...
+                                  Ergebnisse_Massen_FE2.M_F;...
+                                  Ergebnisse_Massen_FE2.M_Z_Tripfuel;...
+                                  Ergebnisse_Massen_FE2.M_F_ALT;];
+    progress =  jbiwsvber / schritte;
+    waitbar(progress, progressBar, sprintf('Bearbeite... %d%%', round(progress*100)));
+    save Ergebnisse_iteration_V2.mat Massen_Matrix
     end
 
 %     Berechnung_FE2_PS1_M_Mf;

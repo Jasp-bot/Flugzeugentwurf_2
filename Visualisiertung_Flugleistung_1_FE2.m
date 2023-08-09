@@ -18,11 +18,11 @@ close all
 % wert zwischen 1 und 0 wählen 
 % 1 = wird displayed || 0 = wird nicht displayed
 
-Aufgabe_1 = 0;  % Horizontalflugdiagramme fuer CL, CR, DEC
-Aufgabe_2 = 1;  % SET, SEP, SR, fuer CR
+Aufgabe_1 = 1;  % Horizontalflugdiagramme fuer CL, CR, DEC
+Aufgabe_2 = 0;  % SET, SEP, SR, fuer CR
 Aufgabe_3 = 0;  % Optimalgeschwindigheiten CR
 Aufgabe_4 = 0;  % Spez Flugdauer SE fuer DEC
-Aufgabe_5 = 0;  % Flugbereichsdiagramme fuer CR, DEC
+Aufgabe_5 = 1;  % Flugbereichsdiagramme fuer CR, DEC
 
 Disp_vec = [Aufgabe_1, Aufgabe_2, Aufgabe_3, Aufgabe_4, Aufgabe_5];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -57,6 +57,7 @@ end
 % Linienarten definieren
 lineStyles = {'--', '-', '-.', '-', '--', '-', '-.', '-', '--', '-', '-.', '-' }; % Gestrichelt, Gepunktet
 
+ hoehe_CR = round(unitsratio('m','ft')*(specs.flight_level*10^2));
 %% Aufgabe 1
 if Disp_vec(1,1) == 1
     %% Horizontalflugdiagramm CR
@@ -295,9 +296,9 @@ if Disp_vec(1,5) == 1
         '.-m', 'DisplayName', 'v_{MO}');
     
     % 
-    pl(9) = plot(Ergebnisse_Flugleistung_1.v_min_HFD, Ergebnisse_Flugleistung_1.hoehe_m.',...
+    pl(9) = plot(Ergebnisse_Flugleistung_1.v_min_HFD, Ergebnisse_Flugleistung_1.hoehe_m(1,1:length(Ergebnisse_Flugleistung_1.v_min_HFD)).',...
         'g', 'DisplayName', 'v_{min}');
-    pl(10) = plot(Ergebnisse_Flugleistung_1.v_max_HFD, Ergebnisse_Flugleistung_1.hoehe_m,...
+    pl(10) = plot(Ergebnisse_Flugleistung_1.v_max_HFD, Ergebnisse_Flugleistung_1.hoehe_m(1,1:length(Ergebnisse_Flugleistung_1.v_min_HFD)),...
         '--g', 'DisplayName', 'v_{max}');
     
     pl(11) = plot((specs.Ma_CR * ISA.a(hoehe_CR)), hoehe_CR,...
@@ -348,9 +349,9 @@ if Disp_vec(1,5) == 1
         '.-m', 'DisplayName', 'v_{MO}');
     
     
-    pl_DEC(9) = plot(Ergebnisse_Flugleistung_1.v_min_HFD_DEC, Ergebnisse_Flugleistung_1.hoehe_m.',...
+    pl_DEC(9) = plot(Ergebnisse_Flugleistung_1.v_min_HFD_DEC, Ergebnisse_Flugleistung_1.hoehe_m(1,1:length(Ergebnisse_Flugleistung_1.v_min_HFD_DEC)).',...
         'g', 'DisplayName', 'v_{min}');
-    pl_DEC(10) = plot(Ergebnisse_Flugleistung_1.v_max_HFD_DEC, Ergebnisse_Flugleistung_1.hoehe_m,...
+    pl_DEC(10) = plot(Ergebnisse_Flugleistung_1.v_max_HFD_DEC, Ergebnisse_Flugleistung_1.hoehe_m(1,1:length(Ergebnisse_Flugleistung_1.v_min_HFD_DEC)),...
         '--g', 'DisplayName', 'v_{max}');
     
     pl_DEC(11) = plot((specs.Ma_CR * ISA.a(hoehe_CR)), hoehe_CR,...

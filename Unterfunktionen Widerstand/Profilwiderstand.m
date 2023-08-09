@@ -57,7 +57,7 @@ c_w_p_eta = c_w_p_min_Re + 0.03 .* ...
 
 % PS4 S.3, Formel 10 %%% Sieht alles noch sehr inkorekt aus
 c_w_p = trapz((((c_w_p_eta .*  ((Ergebnisse_Fluegel.Fluegeltiefen_eta_oR)/ (Ergebnisse_Fluegel.l_m))) * 10^(-3)).')); % Achtung Potenz kann inkoreckt sein +0.005
-c_w_p_test = simps((((c_w_p_eta .*  ((Ergebnisse_Fluegel.Fluegeltiefen_eta_oR)/ (Ergebnisse_Fluegel.l_m))) * 10^(-3)).')); % Achtung Potenz kann inkoreckt sein
+c_w_p_test =0; %simps((((c_w_p_eta .*  ((Ergebnisse_Fluegel.Fluegeltiefen_eta_oR)/ (Ergebnisse_Fluegel.l_m))) * 10^(-3)).')); % Achtung Potenz kann inkoreckt sein
 
 % end
 

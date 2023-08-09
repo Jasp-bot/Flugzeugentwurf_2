@@ -48,7 +48,7 @@ specs.flight_level = 340;
 
 % Triebwerksdaten 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-specs.Schubfaktor = 1.4;       % Muss veraendert werden um schub anzuheben (zur veraenderung desn schub-gewichtsverhaeltnisses)
+specs.Schubfaktor = 1.15;       % Muss veraendert werden um schub anzuheben (zur veraenderung desn schub-gewichtsverhaeltnisses)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 specs.bypass = 10;                                  % Bypassverhaeltnis 
 specs.n_TW = 2;      % Anzahl Triebwerke

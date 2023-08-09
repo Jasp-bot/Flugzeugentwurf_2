@@ -305,21 +305,32 @@ TAS_SE_H_DEC_vec(n_datensatz,:) = [v_TAS_j_DEC(n_datensatz, Hochpunkte.SE_DEC_x(
 
 %% Fuer Flugbereichsdiagramm
 % berechnung v_min v_max aus Horizontalflugdiagramm
+[y1(n_datensatz,:), x1(n_datensatz,:)] = min(S_G_erf_j(n_datensatz,:));
+if y1(n_datensatz,:) < S_G_vorh_j(n_datensatz, x1(n_datensatz));
 
-intersection_ICA = InterX([v_EAS_j(1,:); S_G_erf_j(n_datensatz,:)],[v_EAS_j(1,:); S_G_vorh_j(n_datensatz,:)]);
-v_TAS_HFD(n_datensatz,:) = intersection_ICA(1,:) ./ sqrt(rho_rho0_H(n_datensatz,:));
-S_G_inter_HFD(n_datensatz,:) = intersection_ICA(2,:);
-% clear intersection_ICA
+    intersection_ICA = InterX([v_EAS_j(1,:); S_G_erf_j(n_datensatz,:)],[v_EAS_j(1,:); S_G_vorh_j(n_datensatz,:)]);
+    v_TAS_HFD(n_datensatz,:) = intersection_ICA(1,:) ./ sqrt(rho_rho0_H(n_datensatz,:));
+    S_G_inter_HFD(n_datensatz,:) = intersection_ICA(2,:);
+    % clear intersection_ICA
+end
 
-intersection_CL = InterX([v_EAS_j_CL(1,:); S_G_erf_j_CL(n_datensatz,:)],[v_EAS_j_CL(1,:); S_G_vorh_j_CL(n_datensatz,:)]);
-v_TAS_HFD_CL(n_datensatz,:) = intersection_CL(1,:) ./ sqrt(rho_rho0_H(n_datensatz,:));
-S_G_inter_HFD_CL(n_datensatz,:) = intersection_CL(2,:);
-% clear intersection_CL
+[y2(n_datensatz,:), x2(n_datensatz,:)] = min(S_G_erf_j_CL(n_datensatz,:));
+if y2(n_datensatz,:) < S_G_vorh_j_CL(n_datensatz, x2(n_datensatz));
 
-intersection_DEC = InterX([v_EAS_j(1,:); S_G_erf_j(n_datensatz,:)],[v_EAS_j(1,:); S_G_vorh_j(n_datensatz,:)]);
-v_TAS_HFD_DEC(n_datensatz,:) = intersection_DEC(1,:) ./ sqrt(rho_rho0_H(n_datensatz,:));
-S_G_inter_HFD_DEC(n_datensatz,:) = intersection_DEC(2,:);
-% clear intersection_DEC
+    intersection_CL = InterX([v_EAS_j_CL(1,:); S_G_erf_j_CL(n_datensatz,:)],[v_EAS_j_CL(1,:); S_G_vorh_j_CL(n_datensatz,:)]);
+    v_TAS_HFD_CL(n_datensatz,:) = intersection_CL(1,:) ./ sqrt(rho_rho0_H(n_datensatz,:));
+    S_G_inter_HFD_CL(n_datensatz,:) = intersection_CL(2,:);
+    % clear intersection_CL
+end
+
+[y3(n_datensatz,:), x3(n_datensatz,:)] = min(S_G_erf_j_DEC(n_datensatz,:));
+if y3(n_datensatz,:) < S_G_vorh_j_DEC(n_datensatz, x3(n_datensatz));
+
+    intersection_DEC = InterX([v_EAS_j_DEC(1,:); S_G_erf_j_DEC(n_datensatz,:)],[v_EAS_j_DEC(1,:); S_G_vorh_j_DEC(n_datensatz,:)]);
+    v_TAS_HFD_DEC(n_datensatz,:) = intersection_DEC(1,:) ./ sqrt(rho_rho0_H(n_datensatz,:));
+    S_G_inter_HFD_DEC(n_datensatz,:) = intersection_DEC(2,:);
+    % clear intersection_DEC
+end
 
 n_datensatz;
 

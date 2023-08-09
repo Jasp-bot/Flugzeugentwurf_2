@@ -45,6 +45,9 @@ if Eingabewert_Iteration == 0
     Eta_LDG_vec = [1/6; 1/Startwerte_Iteration.CA_CW_LDG; 1/8];
     landeanvorderung.Eta_LDG = Eta_LDG_vec(2,1); % E = 7
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    c_A_max_LDG_vec = (2.2:0.1:2.8).'; % Spaltenvektor mit Werten für c_A_max_LDG [9x1]
+    landeanvorderung.c_A_max_LDG = c_A_max_LDG_vec(3,1); % c_A_max_LDG 2.3
+
 elseif Eingabewert_Iteration == 1
     clear Startwerte_Iteration;
     load Ergebnisse_Widerstand_FE2.mat;
@@ -59,6 +62,7 @@ elseif Eingabewert_Iteration == 1
     % LDG
     landeanvorderung.Eta_LDG = 1/ (HA2.CA_max_ldg_fw/ HA2.CW_max_ldg_fw); % E = 7
     Eta_LDG_vec = [1/6; landeanvorderung.Eta_LDG; 1/8];
+    landeanvorderung.c_A_max_LDG = HA2.CA_max_ldg_fw;
 end
 
 k_CR = 0.98;                                        % G_ICA / G_To
@@ -153,9 +157,7 @@ h_50 = unitsratio('m','ft')*50; % zu überfliegende Sicherheitshoehe bei Landung
 
 b_m_vec = -(0.3:0.01:0.4)*specs.g; % Bremsverzögerung [1x11]
 landeanvorderung.b_m = b_m_vec(1,11); % = -3.9227   Bremsverzögerung
-c_A_max_LDG_vec = (2.2:0.1:2.8).'; % Spaltenvektor mit Werten für c_A_max_LDG [9x1]
 
-landeanvorderung.c_A_max_LDG = c_A_max_LDG_vec(3,1); % c_A_max_LDG 2.3
 
 rho_LDG = ISA.rho(1,1); % rho_B(round(h_50),1); wenn man genau sein will, Unterschied ist aber maginal
 

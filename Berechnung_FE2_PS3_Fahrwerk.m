@@ -71,14 +71,14 @@ S_FW = 1 + ((S_Reserve + 7)/100);
 n_FWB = 2; % Es handelt sich um Hauptfahrwerksbeine
 n_reifen_HFW = 8; % Anzahl Reifen insgesamt
 
-F_HFW_max = (G_to *((l_BFW + l_HFW) - l_HFW_min)) / (n_FWB * (l_BFW + l_HFW));
-F_HFW_max = F_HFW_max / 9.81;
+F_HFW_max = ((G_to/9.81) * ((l_BFW + l_HFW) - l_HFW_min)) / (n_FWB * (l_BFW + l_HFW));
+F_HFW_max = F_HFW_max;
 F_HFW_max_pfund = convmass(F_HFW_max,'kg','lbm');
 %F_HFW_max = convforce(F_HFW_max,"N","lbf");
 
 F_reifen_HFW_max = (F_HFW_max/n_reifen_HFW) * S_FW;
 
-F_reifen_HFW_max_pfund = convforce(F_reifen_HFW_max,'N','lbf');
+F_reifen_HFW_max_pfund = convmass(F_reifen_HFW_max,'kg','lbm');
 
 %F_reifen_HFW_max = convmass(F_reifen_HFW_max,'kg','lbm');
 

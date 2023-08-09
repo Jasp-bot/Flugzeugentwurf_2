@@ -18,11 +18,11 @@ close all
 % wert zwischen 1 und 0 wählen 
 % 1 = wird displayed || 0 = wird nicht displayed
 
-Aufgabe_1 = 1;  % Horizontalflugdiagramme fuer CL, CR, DEC
-Aufgabe_2 = 0;  % SET, SEP, SR, fuer CR
+Aufgabe_1 = 0;  % Horizontalflugdiagramme fuer CL, CR, DEC
+Aufgabe_2 = 1;  % SET, SEP, SR, fuer CR
 Aufgabe_3 = 0;  % Optimalgeschwindigheiten CR
 Aufgabe_4 = 0;  % Spez Flugdauer SE fuer DEC
-Aufgabe_5 = 1;  % Flugbereichsdiagramme fuer CR, DEC
+Aufgabe_5 = 0;  % Flugbereichsdiagramme fuer CR, DEC
 
 Disp_vec = [Aufgabe_1, Aufgabe_2, Aufgabe_3, Aufgabe_4, Aufgabe_5];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -60,11 +60,12 @@ lineStyles = {'--', '-', '-.', '-', '--', '-', '-.', '-', '--', '-', '-.', '-' }
 %% Aufgabe 1
 if Disp_vec(1,1) == 1
     %% Horizontalflugdiagramm CR
-    
+    FS_HFD = 18;
+    FontSize_Titel = 80;
     figure(1) % Horiontalflugdiagramm
     hold on
     grid on
-    title('Horizontalflugdiagramm G_{ICA}', 'FontSize',25);
+    title('Horizontalflugdiagramm G_{ICA}', FontSize=FontSize_Titel);
     ylabel('S/G', 'FontSize',20);
     xlabel('v_{EAS}', 'FontSize',20);
     xlim([0 300]);
@@ -77,10 +78,10 @@ if Disp_vec(1,1) == 1
         autoplot_2(n_plot,1) = plot(Ergebnisse_Flugleistung_1.v_EAS_j, Ergebnisse_Flugleistung_1.S_G_erf_j(n_plot*w,:), 'LineStyle', lineStyles{1,2}, 'Color', colors_1(n_plot*w, :)); %, 'LineStyle', lineStyles{1,n_plot});
         Legend{2*n_plot-1} =  '(S/G)_{erf} Hoehe ' + sprintf("%d",Ergebnisse_Flugleistung_1.hoehe_m(n_plot*w)) + 'm' ;
         Legend{2*n_plot} =  '(S/G)_{vorh} Hoehe ' + sprintf("%d",Ergebnisse_Flugleistung_1.hoehe_m(n_plot*w)) + 'm';
-        legend(Legend(1:n_plot*2),Location='eastoutside', FontSize=10);
+        legend(Legend(1:n_plot*2),Location='eastoutside', FontSize=FS_HFD);
     
     end
-    
+    set(gca, 'FontSize', FS_HFD);
     
     % plot(v_EAS_j(n_datensatz, :), eps_inkomp_j(n_datensatz, :), '--b');
     hold off
@@ -90,7 +91,7 @@ if Disp_vec(1,1) == 1
     
     hold on
     grid on
-    title('Horizontalflugdiagramm G_{TO}', 'FontSize',25);
+    title('Horizontalflugdiagramm G_{TO}', 'FontSize',FontSize_Titel);
     ylabel('S/G', 'FontSize',20);
     xlabel('v_{EAS}', 'FontSize',20);
     xlim([0 300]);
@@ -103,10 +104,10 @@ if Disp_vec(1,1) == 1
         autoplot_2(n_plot,1) = plot(Ergebnisse_Flugleistung_1.v_EAS_j_CL, Ergebnisse_Flugleistung_1.S_G_erf_j_CL(n_plot*w,:), 'LineStyle', lineStyles{1,2}, 'Color', colors_1(n_plot*w, :)); %, 'LineStyle', lineStyles{1,n_plot});
         Legend{2*n_plot-1} =  '(S/G)_{erf} Hoehe ' + sprintf("%d",Ergebnisse_Flugleistung_1.hoehe_m(n_plot*w)) + 'm' ;
         Legend{2*n_plot} =  '(S/G)_{vorh} Hoehe ' + sprintf("%d",Ergebnisse_Flugleistung_1.hoehe_m(n_plot*w)) + 'm';
-        legend(Legend(1:n_plot*2),Location='eastoutside', FontSize=10);
+        legend(Legend(1:n_plot*2),Location='eastoutside', FontSize=FS_HFD);
     
     end
-    
+    set(gca, 'FontSize', FS_HFD);
     hold off
     
     %% Horizontalflugdiagramm DEC
@@ -114,7 +115,7 @@ if Disp_vec(1,1) == 1
     
     hold on
     grid on
-    title('Horizontalflugdiagramm G_{LDG}', 'FontSize',25);
+    title('Horizontalflugdiagramm G_{LDG}', 'FontSize',FontSize_Titel);
     ylabel('S/G', 'FontSize',20);
     xlabel('v_{EAS}', 'FontSize',20);
     xlim([0 300]);
@@ -127,10 +128,10 @@ if Disp_vec(1,1) == 1
         autoplot_2(n_plot,1) = plot(Ergebnisse_Flugleistung_1.v_EAS_j_DEC, Ergebnisse_Flugleistung_1.S_G_erf_j_DEC(n_plot*w,:), 'LineStyle', lineStyles{1,2}, 'Color', colors_1(n_plot*w, :)); %, 'LineStyle', lineStyles{1,n_plot});
         Legend{2*n_plot-1} =  '(S/G)_{erf} Hoehe ' + sprintf("%d",Ergebnisse_Flugleistung_1.hoehe_m(n_plot*w)) + 'm' ;
         Legend{2*n_plot} =  '(S/G)_{vorh} Hoehe ' + sprintf("%d",Ergebnisse_Flugleistung_1.hoehe_m(n_plot*w)) + 'm';
-        legend(Legend(1:n_plot*2),Location='eastoutside', FontSize=10);
+        legend(Legend(1:n_plot*2),Location='eastoutside', FontSize=FS_HFD);
     
     end
-    
+    set(gca, 'FontSize', FS_HFD);
     
     hold off
 
@@ -146,7 +147,7 @@ if Disp_vec(1,2) == 1
     ylabel('SET','FontSize',20);
     xlabel('v_{TAS}','FontSize',20);
     xlim([0 350]);
-    ylim([0 0.1]);
+    ylim([0 0.12]);
     
     
     for n_plot = 1:numPlots/w
@@ -169,7 +170,7 @@ if Disp_vec(1,2) == 1
     ylabel('SEP','FontSize',20);
     xlabel('v_{TAS}','FontSize',20);
     xlim([0 350]);
-    ylim([0 15]);
+    ylim([0 20]);
     
     
     for n_plot = 1:numPlots/w
@@ -192,7 +193,7 @@ if Disp_vec(1,2) == 1
     ylabel('SR in m/kg','FontSize',20);
     xlabel('v_{TAS} in m/s','FontSize',20);
     xlim([0 300]);
-    ylim([0 250]);
+    ylim([0 200]);
     
     for n_plot = 1:numPlots/w
         autoplot4_1(n_plot,1) = plot(Ergebnisse_Flugleistung_1.v_TAS_j(n_plot*w, :), Ergebnisse_Flugleistung_1.SR(n_plot*w, :), 'Color',colors_2(n_plot*w,:), 'LineStyle','-');

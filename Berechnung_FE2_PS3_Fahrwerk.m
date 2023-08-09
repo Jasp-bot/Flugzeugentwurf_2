@@ -281,6 +281,7 @@ tires_bugfahrwerk = tires(idz,:)
 
 
 %% Speichern
+choice = 12;
 
 Gear.F_BFW_max = F_BFW_max;
 
@@ -296,13 +297,13 @@ Gear.F_HFW_max = F_HFW_max_pfund;
 
 Gear.F_reifen_HFW_max = F_reifen_HFW_max_pfund;
 
-Gear.Reifen_HFW = tires_edit_HFW.Size(end);
+Gear.Reifen_HFW = tires_edit_HFW.Size(choice);
 
 Gear.Reifen_BFW = tires_bugfahrwerk.Size(1);
 
-Gear.durchmesser = tires_edit_HFW.OutsideDiameterMax(49);
+Gear.durchmesser = tires_edit_HFW.OutsideDiameterMax(choice);
 
-Gear.breite = tires_edit_HFW.SectionWidthMax(49);
+Gear.breite = tires_edit_HFW.SectionWidthMax(choice);
 
 save Fahrwerk.mat Gear
 

@@ -192,3 +192,13 @@ plot(HA2.c_A_F_LDG_FW(HA2.index2),HA2.gleitzahl_LDG_FW,'greenx')
 
 
 legend("Clean Konfiguration im Cruise Zustand","Takeoff mit 20° Klappenausschlag","Takeoff mit 20° Klappenausschlag und Fahrwerk","Landing mit 45° Klappenausschlag","Landing mit 45° Klappenausschlag und Fahrwerk","Gleitzahlvorgabe aus der Startanforderung","Gleitzahlvorgabe aus der Landeanforderung","Gleitzahl mit Klappensystem und Fahrwerk TO","Gleitzahl mit Klappensystem und Fahrwerk LDG",'Location', 'southeast')
+
+
+
+
+%% PIE Chart
+figure(4)
+pie(HA2.data, HA2.label)
+% Speichern
+title('Verhältnis der Widerstandsanteile in der Startkonfiguration')
+grid on

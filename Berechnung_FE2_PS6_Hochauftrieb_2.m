@@ -458,8 +458,8 @@ F_vorder = durchmesser*breite*4;   % Gleiche Werte weil vorne und hinten gleich 
 F_hinter = durchmesser*breite*4;
 
 l_HFW = 5; % Ríchtiger Wert aus CG?
-delta_CA_F_0_LDG = 0.9;    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-delta_CA_F_0_TO = 0.5;       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ALEX NOCHMAL FRAGEN ODER KRISTOF %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+delta_CA_F_0_LDG = 0.7;    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+delta_CA_F_0_TO = 0.3;       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ALEX NOCHMAL FRAGEN ODER KRISTOF %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %((1.5 * F_vorder + 0.75 * F_hinter)/Ergebnisse_Fluegel.F) *
@@ -481,7 +481,12 @@ delta_CW_klappen_LDG_fahrwerk = delta_CW_VF + delta_C_W_Ind + delta_C_W_Inf + de
 delta_CW_klappen_TO_fahrwerk = delta_CW_VF + delta_C_W_Ind_TO + delta_C_W_Inf_TO + delta_C_W_P_TO + delta_C_W_Fahrwerk_TO;
 
 
-% Speichern
+% Pie Charts
+HA2.data = [delta_C_W_P_phi_TO*100, delta_C_W_Ind_TO*100, delta_C_W_Inf_TO*100, delta_CW_VF*100, delta_C_W_Fahrwerk_TO*100];
+HA2.label = {'Profilwiderstand', 'Induzierter Widerstand', 'Inteferenzwiderstand', 'Vorflügelwiderstand', 'Fahrwerkswiderstand'};
+
+
+
 
 HA2.delta_CW_klappen_LDG = delta_CW_klappen_LDG;
 

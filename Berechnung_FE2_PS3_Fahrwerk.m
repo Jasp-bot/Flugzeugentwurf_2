@@ -71,14 +71,14 @@ S_FW = 1 + ((S_Reserve + 7)/100);
 n_FWB = 2; % Es handelt sich um Hauptfahrwerksbeine
 n_reifen_HFW = 8; % Anzahl Reifen insgesamt
 
-F_HFW_max = (G_to *((l_BFW + l_HFW) - l_HFW_min)) / (n_FWB * (l_BFW + l_HFW));
-F_HFW_max = F_HFW_max / 9.81;
+F_HFW_max = ((G_to/9.81) * ((l_BFW + l_HFW) - l_HFW_min)) / (n_FWB * (l_BFW + l_HFW));
+F_HFW_max = F_HFW_max;
 F_HFW_max_pfund = convmass(F_HFW_max,'kg','lbm');
 %F_HFW_max = convforce(F_HFW_max,"N","lbf");
 
 F_reifen_HFW_max = (F_HFW_max/n_reifen_HFW) * S_FW;
 
-F_reifen_HFW_max_pfund = convforce(F_reifen_HFW_max,'N','lbf');
+F_reifen_HFW_max_pfund = convmass(F_reifen_HFW_max,'kg','lbm');
 
 %F_reifen_HFW_max = convmass(F_reifen_HFW_max,'kg','lbm');
 
@@ -235,20 +235,20 @@ grid on
 %% Belastungen
 
 %min stat. Belastung -> hintere Lage
-F_BFW_min = (G_to * ((l_BFW+l_HFW)-l_BFW_max))/(l_BFW + l_HFW);
-F_BFW_min = convforce(F_BFW_min,'N','lbf');
+F_BFW_min = ((G_to/9.81) * ((l_BFW+l_HFW)-l_BFW_max))/(l_BFW + l_HFW);
+F_BFW_min = convmass(F_BFW_min,'kg','lbm');
 
 %Max stat. Belastung -> Vordere Lage
-F_BFW_max = (G_to * ((l_BFW + l_HFW)-l_BFW_min))/(l_BFW + l_HFW);
-F_BFW_max = convforce(F_BFW_max,'N','lbf');
+F_BFW_max = ((G_to/9.81) * ((l_BFW + l_HFW)-l_BFW_min))/(l_BFW + l_HFW);
+F_BFW_max = convmass(F_BFW_max,'kg','lbm');
 
 %F_BFW_max = convmass(F_BFW_max,'kg','lbm')
 
 %Max dyn. Bremslast -> Abhängig von durchmesser Reifen
 %Outisde Diameter MIN verwenden!
 d_reifen = convlength(d_reifen_aus_HFW,'in','m');%tires_edit_HFW.OutsideDiameterMin(big_idx);
-F_BFW_dyn = convforce(F_BFW_max,'lbf','N') + ((10 * (delta_z + 0.5 * d_reifen)*G_to/9.81) / (32.2 * (l_BFW + l_HFW)));
-F_BFW_dyn = convforce(F_BFW_dyn,'N','lbf');
+F_BFW_dyn = F_BFW_max + ((10 * (delta_z + 0.5 * d_reifen)*G_to/9.81) / (32.2 * (l_BFW + l_HFW)));
+%F_BFW_dyn = convforce(F_BFW_dyn,'N','lbf');
 
 F_BFW_Dyn_transf = F_BFW_dyn/1.5;
 
@@ -265,10 +265,10 @@ F_reifen_BFW_dyn = S_FW * (F_BFW_dyn/n_BFW_reifen);
 % Statische Belastung muss zwischen 6% und 20% des Abfluggewichts liegen
 % NIEMALS Über/unterschreiten -> OPtimaler ist 8-15
 
-if ((convforce(F_BFW_max,'lbf','N')/9.81 <= 0.20 * G_to/9.81) && (convforce(F_BFW_min,'lbf','N')/9.81 <= 0.06 * G_to/9.81))
+if ((convmass(F_BFW_max,'lbm','kg') <= 0.20 * (G_to/9.81)) && (convmass(F_BFW_min,'lbm','kg') <= 0.06 * (G_to/9.81)))
     disp("Innerhalb Limits 1");
     
-    if (convforce(F_BFW_min,'lbf','N')/9.81 >= 0.08 * G_to/9.81) && ((convforce(F_BFW_max,'lbf','N')/9.81 <= 0.15 * G_to/9.81))
+    if (convmass(F_BFW_min,'lbm','kg') >= 0.08 * (G_to/9.81)) && ((convmass(F_BFW_max,'lbm','kg') <= 0.17 * (G_to/9.81)))
         disp("Innerhalb Limits 2");
     else
         disp("Außerhalb Limits 2");
@@ -281,6 +281,7 @@ tires_bugfahrwerk = tires(idz,:)
 
 
 %% Speichern
+choice = 12;
 
 Gear.F_BFW_max = F_BFW_max;
 
@@ -296,13 +297,13 @@ Gear.F_HFW_max = F_HFW_max_pfund;
 
 Gear.F_reifen_HFW_max = F_reifen_HFW_max_pfund;
 
-Gear.Reifen_HFW = tires_edit_HFW.Size(49);
+Gear.Reifen_HFW = tires_edit_HFW.Size(choice);
 
 Gear.Reifen_BFW = tires_bugfahrwerk.Size(1);
 
-Gear.durchmesser = tires_edit_HFW.OutsideDiameterMax(49);
+Gear.durchmesser = tires_edit_HFW.OutsideDiameterMax(choice);
 
-Gear.breite = tires_edit_HFW.SectionWidthMax(49);
+Gear.breite = tires_edit_HFW.SectionWidthMax(choice);
 
 save Fahrwerk.mat Gear
 

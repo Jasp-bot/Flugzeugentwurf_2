@@ -42,7 +42,7 @@ R_Std=9000;
 
 
 %Variabeln
-R= linspace(400, specs.max_range_basis_km+5000, 40)     %Reichweite
+R= linspace(400, specs.max_range_basis_km+3500, 20)     %Reichweite
 %R=5000;
 
 
@@ -88,14 +88,14 @@ C_MRO = C_MRO_ENG + C_MRO_AF_PER + C_MRO_AF_MAT;
 
 
 
-Fuel = Tripfuel(R)
+Fuel = Tripfuel(R);
 %Fuel=Ergebnisse_Massen_FE2.M_TO*(1./exp((R*14*2*0.05*specs.g)/v_h)+1)
 
-[SFC1,SFC2,SFC3]=SFC(hoehe_CR,specs.Ma_CR,specs.bypass)
+[SFC1,SFC2,SFC3]=SFC(hoehe_CR,specs.Ma_CR,specs.bypass);
 
 MAX_Fuel=fuel_range(specs.max_range_basis_km);
 
-C2 = FC_pa(1,end)*(P_F*Fuel+(nutzlast(R/1000)).*P_H + P_LDG.*(Ergebnisse_Massen_FE2.M_OE+Fuel) + f_ATC(2).*R.*sqrt(((Ergebnisse_Massen_FE2.M_OE+Fuel)./1000)./50) + C_MRO) % PS09 Formel 4 Routen abhängige kosten
+C2 = FC_pa(1,end)*(P_F*Fuel+(nutzlast(R/1000)).* P_H + P_LDG.*(Ergebnisse_Massen_FE2.M_OE+Fuel) + f_ATC(2).*R.*sqrt(((Ergebnisse_Massen_FE2.M_OE+Fuel)./1000)./50) + C_MRO); % PS09 Formel 4 Routen abhängige kosten
 
 %Komponnenten zum Plotten       
 ko_1=P_F*Tripfuel(R_Std)+NRD.A(5,1);
@@ -104,7 +104,7 @@ ko_3=P_LDG*(Ergebnisse_Massen_FE2.M_OE+Tripfuel(R_Std/1000));
 ko_4=f_ATC(3)*(R(1,end))*sqrt(((Ergebnisse_Massen_FE2.M_OE+Tripfuel(R_Std/1000))/1000)/50);
 ko_5=C_MRO(1,end);
 
-SKO=R.*2.*nutzlast(R);
+SKO=R.*2.*(PAX(R)/1000);
 
    % for ZWW=1:length(R)
    %      if R(1,ZWW) < specs.max_range_basis_km
@@ -127,16 +127,21 @@ SKO=R.*2.*nutzlast(R);
 format long g 
 
 DOC = C1 + C2 ;          %Gesamten kosten 
-DOC_END=DOC(1,end)
+DOC_END = DOC(1,end)
 
 SMC = DOC./SKO;
 
-I_CAR =R.* I_FR.*(Fracht(R));          %% Cargo correction normalerweise hinter ERGEBNISS MASSEN ZF: " - (311 * 80) "
 
+for u=1:length(R)
+Cargoo(1,u)=Fracht(R(1,u))
+
+end
+
+I_CAR =R.* I_FR.*Cargoo;          %% Cargo correction normalerweise hinter ERGEBNISS MASSEN ZF: " - (311 * 80) "
+
+
+%%
 n_PAX_CAR = I_CAR / I_PAX(1);
-
-LENNI=14000*10000*0.0005
-
 
 %Polution Pro Max langem Flug
 Fuel_P=fuel_range(specs.max_range_basis_km)/specs.n_pax;
@@ -189,6 +194,7 @@ xlabel('Reichweite in km')
 ylabel('€/km')
 hold on
 xlim([0,15000])
+
 grid on
 % Noch zweite Funktion plotten !
 
@@ -244,19 +250,23 @@ end
 
 function [PAX] = PAX(Reichweite)        %%Lennis EIgentum 
     load Ergebnisse_Flugleistung_2.mat
-    x = [NRD.A(1,1), NRD.B(1,1), NRD.C(1,1), NRD.D(1,1)];   %%Wieder die Reichweiten
-    y = [440, 440, 440*(NRD.C(1,2)/(specs.m_pax+specs.m_cargo)), 0];  %%Prozent wie viel Payload noch drin ist
+    load Projekt_specs.mat
+    x = [NRD.A(1,1), NRD.B(1,1),Frachtweg,NRD.C(1,1), NRD.D(1,1)];   %%Wieder die Reichweiten
+    y = [440, 440,440, 440*(NRD.C(2,1)/(specs.m_pax+specs.m_cargo)), 0];  %%Prozent wie viel Payload noch drin ist
 
 
-    if Reichweite <= x(2)
+     if Reichweite <= x(2)
         PAX = ((x(2) - Reichweite) / (x(2) - x(1))) * y(1) + ((Reichweite - x(1)) / (x(2) - x(1))) * y(2);
     elseif Reichweite <= x(3)
         PAX = ((x(3) - Reichweite) / (x(3) - x(2))) * y(2) + ((Reichweite - x(2)) / (x(3) - x(2))) * y(3);
     elseif Reichweite <= x(4)
         PAX = ((x(4) - Reichweite) / (x(4) - x(3))) * y(3) + ((Reichweite - x(3)) / (x(4) - x(3))) * y(4);
+    elseif Reichweite <= x(5)
+        PAX = ((x(5) - Reichweite) / (x(5) - x(4))) * y(4) + ((Reichweite - x(4)) / (x(5) - x(4))) * y(5);
     else
-        PAX = NaN; % Für Werte außerhalb des definierten Bereichs
+        PAX = 0; % Für Werte außerhalb des definierten Bereichs
     end
+
 
 end
 
@@ -269,7 +279,7 @@ load Ergebnisse_Flugleistung_2.mat
     elseif Reichweite <= NRD.D(1,1)
         nutzlast = ((NRD.D(1,1) - Reichweite) / (NRD.D(1,1) - NRD.C(1,1))) * NRD.C(2,1) + ((Reichweite - NRD.C(1,1)) / (NRD.D(1,1) - NRD.C(1,1))) * NRD.D(2,1);
     else
-        nutzlast = NaN; % Für Werte außerhalb des definierten Bereichs
+        nutzlast = 0; % Für Werte außerhalb des definierten Bereichs
     end
 
 end
@@ -296,8 +306,8 @@ function [Fracht] = Fracht(Reichweite)          %%Lennis
     load Projekt_specs.mat
     load Ergebnisse_Massen_FE2.mat
    
-    x = [NRD.A(1,1), NRD.B(1,1), NRD.C(1,1), NRD.D(1,1)];
-    y = [14000, 14000, 14000*(NRD.C(2,1)/(specs.m_pax+specs.m_cargo)), 0];
+    x = [NRD.A(1,1), NRD.B(1,1), Frachtweg, NRD.D(1,1)];
+    y = [14000, 14000, 0, 0];
     
     % Stückweise definierte Funktion
     
@@ -325,8 +335,8 @@ load Ergebnisse_stat_Flaechenbelastung_Fluegelflaeche.mat;
 load Ergebnisse_Fluegel_Tank_NP.mat;
 load Ergebnisse_Leitwerke.mat;
 
-% Laden der oben erstellten daten zur schnelleren benutzung muss angepasst 
-% werden wenn genaueres zu den Hochauftriebshilfen bekannt ist 
+% Laden der oben erstellten daten zur schnelleren benutzung muss angepasst
+% werden wenn genaueres zu den Hochauftriebshilfen bekannt ist
 load Data_PS1_High_lift_divice_Torenbeek.mat;   
 
 
@@ -340,7 +350,8 @@ M_Zero_Fuel_initial = Ergebnis_basis_m.m_OE + specs.m_pax_all_eco + specs.m_carg
 Zaehlvariabele = 0;
 delta_M_to = 100;       % Anfangswert
 
-% Unter der annahme, dass 50% der Strukturmasse aus CFK gefertigt werden und CFK 40% leichter ist als ALU
+% Unter der annahme, dass 50% der Strukturmasse aus CFK gefertigt werden
+% und CFK 40% leichter ist als ALU
 Technologiefaktor_ALU_CFK = 0.5 * 0.4;
 
 
@@ -379,7 +390,7 @@ Technologiefaktor_ALU_CFK = 0.5 * 0.4;
     % SFC bestimmen für CL
     [FF.sfc_CL_daNh, FF.sfc_CL_1PERh, FF.sfc_CL_1PERs] = SFC(hoehe_CL, ((2/3) * specs.Ma_CR), specs.bypass);
     
-    % Formel 7 PS1 (umgestellte Formel 6 PS1 um mf3 zu erhalten) 
+    % Formel 7 PS1 (umgestellte Formel 6 PS1 um mf3 zu erhalten)
     FF.mf3 = exp(-FF.t_CL * FF.sfc_CL_1PERs * FF.S_G_CL);
     
     %% Cruise
@@ -444,9 +455,9 @@ Technologiefaktor_ALU_CFK = 0.5 * 0.4;
     FF.mf10 = 1; % hat kristof gesagt
     
     %%%%%%%%%%%%%%%%%%%%%%%%  mfi muss noch mal überprüft werden, ich habe
-    %%%%%%%%%%%%%%%%%%%%%%%%  jetzt mit alles Massenanteilen gerechnet, von 0
-    %%%%%%%%%%%%%%%%%%%%%%%%  bis 10 nicht von 2 bis 10. Muss eventuell nochmal
-    %%%%%%%%%%%%%%%%%%%%%%%%  angepasst werden
+    %%%%%%%%%%%%%%%%%%%%%%%%  jetzt mit alles Massenanteilen gerechnet, von
+    %%%%%%%%%%%%%%%%%%%%%%%%  0 bis 10 nicht von 2 bis 10. Muss eventuell
+    %%%%%%%%%%%%%%%%%%%%%%%%  nochmal angepasst werden
     % Matrix für Produkt auf mf0 bis mf10
     FF.mfi = [FF.mf0, FF.mf1, FF.mf2, FF.mf3,FF.mf4, FF.mf5, FF.mf6, FF.mf7,FF.mf8, FF.mf9, FF.mf10]; 
     
@@ -464,8 +475,15 @@ Technologiefaktor_ALU_CFK = 0.5 * 0.4;
     Fuel= (1-FF.mf4) * M_TO_initial;          %M_take_off_initial.M_fuel
 end
 
+function [Frachtwegout] = Frachtweg(x)
 
+x =0;
+Frachtweg=10000;
+while x<14000
+x = nutzlast(0)-nutzlast(Frachtweg);
+ 
+Frachtweg =Frachtweg+1;  
+end
+Frachtwegout=Frachtweg-1;
 
-
-
-
+end

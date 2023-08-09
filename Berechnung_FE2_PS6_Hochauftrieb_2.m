@@ -116,7 +116,7 @@ F_rumpf_Ecken = 2 * ((Ergebnisse_Fluegel.b)/2)*trapz(X2,Fluegel2);  % Rumpf Ecke
 
 F_rumpf_dreieck = Flaeche_im_Rumpf_oberes_dreieck;              % Dreieck im Rumpf aus CG von Ole
 
-F_rumpf = F_rumpf_Ecken + F_rumpf_rechteck %+F_rumpf_dreieck ;   % CHANGE: Dreieck entfernt, weil in den Flügel etas fällt das dreieck eh -> Fläche vergrößert -> Lunch for free!
+F_rumpf = F_rumpf_Ecken + F_rumpf_rechteck; %+F_rumpf_dreieck ;   % CHANGE: Dreieck entfernt, weil in den Flügel etas fällt das dreieck eh -> Fläche vergrößert -> Lunch for free!
 
 % Somit F_k - F Rumpf = Klappenfläche
 
@@ -364,6 +364,7 @@ delta_CM_HKK_TO = dcMk_dcmK * delta_Cm_HKK_TO + spannweite_flaps * ((Ergebnisse_
 CA_MAX_TO = ( CA_F_max_VFFK_TO + ( (CM0 + delta_CM_HKK_TO)/( r_h/l_mue ) ) ) / (1 - ( deltaXSP_l_mue )/( r_h/l_mue ));
 CA_MAX_LDG = ( CA_F_max_VFFK   + ( (CM0 + delta_CM_HKK_LDG)/( r_h/l_mue ) ) ) / (1 - ( deltaXSP_l_mue )/( r_h/l_mue ));
 
+%Maximale durch Flugzeug erreichbar
 HA2.CA_MAX_TO = CA_MAX_TO;
 HA2.CA_MAX_LDG = CA_MAX_LDG;
 
@@ -457,12 +458,13 @@ F_vorder = durchmesser*breite*4;   % Gleiche Werte weil vorne und hinten gleich 
 F_hinter = durchmesser*breite*4;
 
 l_HFW = 5; % Ríchtiger Wert aus CG?
-delta_CA_F_0_LDG = 0.9;    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-delta_CA_F_0_TO = 0.5;       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ALEX NOCHMAL FRAGEN ODER KROISTOF %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+delta_CA_F_0_LDG = 0.7;    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+delta_CA_F_0_TO = 0.3;       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ALEX NOCHMAL FRAGEN ODER KRISTOF %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %((1.5 * F_vorder + 0.75 * F_hinter)/Ergebnisse_Fluegel.F) *
-
+%Alte Methode -> Über reifenfläche funktionieert nicht gut deshalb
+%statistische Methode!
 
 delta_C_W_Fahrwerk_TO =  (7*10^-4 * ((Ergebnisse_Massen_FE2.M_TO^0.785)/Ergebnisse_Fluegel.F)) *(1 - 0.04 * ((CA_F_TO + delta_CA_F_0_TO *(1.5 * (Ergebnisse_Fluegel.F / F_klappen)-1))/(l_HFW/Ergebnisse_Fluegel.l_m)))^2;
 
@@ -479,7 +481,12 @@ delta_CW_klappen_LDG_fahrwerk = delta_CW_VF + delta_C_W_Ind + delta_C_W_Inf + de
 delta_CW_klappen_TO_fahrwerk = delta_CW_VF + delta_C_W_Ind_TO + delta_C_W_Inf_TO + delta_C_W_P_TO + delta_C_W_Fahrwerk_TO;
 
 
-% Speichern
+% Pie Charts
+HA2.data = [delta_C_W_P_phi_TO*100, delta_C_W_Ind_TO*100, delta_C_W_Inf_TO*100, delta_CW_VF*100, delta_C_W_Fahrwerk_TO*100];
+HA2.label = {'Profilwiderstand', 'Induzierter Widerstand', 'Inteferenzwiderstand', 'Vorflügelwiderstand', 'Fahrwerkswiderstand'};
+
+
+
 
 HA2.delta_CW_klappen_LDG = delta_CW_klappen_LDG;
 
@@ -523,7 +530,7 @@ desiredLength = 1001;
 shortenedVector = linspace(originalVector(1), originalVector(end), desiredLength);
 HA2.c_A_F_TO = shortenedVector;
 
-[x_vector_sum, x_vector] = Landung(v_eingang, hoehe_LDG, HA2.c_A_F_TO);
+[x_vector_sum, ~] = Landung(v_eingang, hoehe_LDG, HA2.c_A_F_TO);
 
 HA2.TO_CW = x_vector_sum(8,:) + delta_CW_klappen_TO; 
 
@@ -536,7 +543,7 @@ desiredLength = 1001;
 shortenedVector = linspace(originalVector(1), originalVector(end), desiredLength);
 HA2.c_A_F_TO_FW = shortenedVector;
 
-[x_vector_sum, x_vector] = Landung(v_eingang, hoehe_LDG, HA2.c_A_F_TO_FW);
+[x_vector_sum, ~] = Landung(v_eingang, hoehe_LDG, HA2.c_A_F_TO_FW);
 
 HA2.TO_CW_FW = x_vector_sum(8,:) + delta_CW_klappen_TO_fahrwerk; 
 
@@ -550,7 +557,7 @@ desiredLength = 1001;
 shortenedVector = linspace(originalVector(1), originalVector(end), desiredLength);
 HA2.c_A_F_LDG = shortenedVector;
 
-[x_vector_sum, x_vector] = Landung(v_eingang, hoehe_LDG, HA2.c_A_F_LDG);
+[x_vector_sum, ~] = Landung(v_eingang, hoehe_LDG, HA2.c_A_F_LDG);
 
 HA2.LDG_CW = x_vector_sum(8,:) + delta_CW_klappen_LDG; 
 
@@ -563,7 +570,7 @@ desiredLength = 1001;
 shortenedVector = linspace(originalVector(1), originalVector(end), desiredLength);
 HA2.c_A_F_LDG_FW = shortenedVector;
 
-[x_vector_sum, x_vector] = Landung(v_eingang, hoehe_LDG, HA2.c_A_F_LDG_FW);
+[x_vector_sum, ~] = Landung(v_eingang, hoehe_LDG, HA2.c_A_F_LDG_FW);
 
 HA2.LDG_CW_FW = x_vector_sum(8,:) + delta_CW_klappen_LDG_fahrwerk; 
 
@@ -608,6 +615,28 @@ HA2.CA_max_TO = HA2.c_A_F_TO(end);
 HA2.CW_max_ldg_fw = HA2.LDG_CW_FW(end);
 HA2.CA_max_ldg_fw = HA2.c_A_F_LDG_FW(end);
 
+
+%% Ausgabe Gleitzahl für Iteration
+%E_TO -> Nimmt CA für takeoff aus startanforderung und findet bei dem CA die Gleitzahl mit klappen 
+
+E_1 = (HA2.c_A_F_TO_FW./HA2.TO_CW_FW);
+
+absDiff = abs(HA2.c_A_F_TO_FW - startschub.c_A_max_thrust_match);
+[~, index] = min(absDiff);
+
+HA2.gleitzahl_TO_FW = E_1(index);
+
+%E_LDG ->
+
+E_2 = (HA2.c_A_F_LDG_FW./HA2.LDG_CW_FW);
+absDiff2 = abs(HA2.c_A_F_LDG_FW - landeanvorderung.c_A_max_LDG);
+[~, index2] = min(absDiff2);
+
+HA2.gleitzahl_LDG_FW = E_2(index2);
+
+%Speichern für PLot
+HA2.index = index;
+HA2.index2= index2;
 
 
 %% Speichern

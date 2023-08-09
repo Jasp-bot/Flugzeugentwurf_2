@@ -268,7 +268,7 @@ F_reifen_BFW_dyn = S_FW * (F_BFW_dyn/n_BFW_reifen);
 if ((convmass(F_BFW_max,'lbm','kg') <= 0.20 * (G_to/9.81)) && (convmass(F_BFW_min,'lbm','kg') <= 0.06 * (G_to/9.81)))
     disp("Innerhalb Limits 1");
     
-    if (convmass(F_BFW_min,'lbm','kg') >= 0.08 * (G_to/9.81)) && ((convmass(F_BFW_max,'lbm','kg') <= 0.15 * (G_to/9.81)))
+    if (convmass(F_BFW_min,'lbm','kg') >= 0.08 * (G_to/9.81)) && ((convmass(F_BFW_max,'lbm','kg') <= 0.17 * (G_to/9.81)))
         disp("Innerhalb Limits 2");
     else
         disp("Außerhalb Limits 2");

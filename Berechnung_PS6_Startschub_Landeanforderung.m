@@ -57,12 +57,12 @@ elseif Eingabewert_Iteration == 1
     % CR
     schub_CR.Eta = 1/ Ergebnisse_Widerstand_FE2.cW_cA_off_D;
     % TO
-    startschub.Eta_To_thustmatch = 1 / (HA2.CA_max_TO/ HA2.CW_max_TO);
+    startschub.Eta_To_thustmatch = 1 / HA2.gleitzahl_TO_FW;
     startschub.Eta_To = [1/8; 1/9; startschub.Eta_To_thustmatch];%10.558;];% 1/11; 1/12];
     % LDG
-    landeanvorderung.Eta_LDG = 1/ (HA2.CA_max_ldg_fw/ HA2.CW_max_ldg_fw); % E = 7
+    landeanvorderung.Eta_LDG = 1/ HA2.gleitzahl_LDG_FW; % E = 7
     Eta_LDG_vec = [1/6; landeanvorderung.Eta_LDG; 1/8];
-    landeanvorderung.c_A_max_LDG = HA2.CA_max_ldg_fw;
+    landeanvorderung.c_A_max_LDG = HA2.c_A_F_LDG_FW(HA2.index2); %HA2.CA_max_ldg_fw * 0.7;
 end
 
 k_CR = 0.98;                                        % G_ICA / G_To

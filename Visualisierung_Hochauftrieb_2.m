@@ -1,3 +1,5 @@
+%% Visualisierung Hochauftrieb ?
+
 clc
 clear all
 close all

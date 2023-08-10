@@ -59,7 +59,7 @@ Eingabewert_Iteration = 1; % Startwert
     [Startwerte_Iteration_FE1] = Berechnungen_PS10_Widerstand(Eingabewert_Iteration);
     
 progressBar = waitbar(0, 'Bearbeite...');
-schritte = 50;
+schritte = 10;
     % FE2 Ieration
     for jbiwsvber = 1:schritte
     dx_FE2 = 1;
@@ -138,6 +138,7 @@ schritte = 50;
     waitbar(progress, progressBar, sprintf('Bearbeite... %d%%', round(progress*100)));
     save Ergebnisse_iteration_V2.mat Massen_Matrix
     end
+
 
 %     Berechnung_FE2_PS1_M_Mf;
    

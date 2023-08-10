@@ -3,7 +3,7 @@ clc
 clear all
 close all
 
-Berechnung_FE2_PS8_Flugleistung2_NRD;
+% Berechnung_FE2_PS8_Flugleistung2_NRD;
 
 load Projekt_specs.mat;
 load Ergebnisse_Flugleistung_2.mat;

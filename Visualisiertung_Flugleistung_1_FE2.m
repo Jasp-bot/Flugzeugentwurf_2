@@ -22,7 +22,7 @@ Aufgabe_1 = 1;  % Horizontalflugdiagramme fuer CL, CR, DEC
 Aufgabe_2 = 0;  % SET, SEP, SR, fuer CR
 Aufgabe_3 = 0;  % Optimalgeschwindigheiten CR
 Aufgabe_4 = 0;  % Spez Flugdauer SE fuer DEC
-Aufgabe_5 = 1;  % Flugbereichsdiagramme fuer CR, DEC
+Aufgabe_5 = 0;  % Flugbereichsdiagramme fuer CR, DEC
 
 Disp_vec = [Aufgabe_1, Aufgabe_2, Aufgabe_3, Aufgabe_4, Aufgabe_5];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -56,19 +56,19 @@ end
 
 % Linienarten definieren
 lineStyles = {'--', '-', '-.', '-', '--', '-', '-.', '-', '--', '-', '-.', '-' }; % Gestrichelt, Gepunktet
-
+FS_HFD = 18;
  hoehe_CR = round(unitsratio('m','ft')*(specs.flight_level*10^2));
 %% Aufgabe 1
 if Disp_vec(1,1) == 1
     %% Horizontalflugdiagramm CR
-    FS_HFD = 18;
+    
     FontSize_Titel = 80;
     figure(1) % Horiontalflugdiagramm
     hold on
     grid on
-    title('Horizontalflugdiagramm G_{ICA}', FontSize=FontSize_Titel);
-    ylabel('S/G', 'FontSize',20);
-    xlabel('v_{EAS}', 'FontSize',20);
+    title('Horizontalflugdiagramm G_{ICA}, D = 0.8', FontSize=FontSize_Titel);
+    ylabel('S/G in [-]', 'FontSize',20);
+    xlabel('v_{EAS} in [m/s]', 'FontSize',20);
     xlim([0 300]);
     ylim([0 1]);
     
@@ -77,7 +77,7 @@ if Disp_vec(1,1) == 1
     
         autoplot_1(n_plot,1) = plot(Ergebnisse_Flugleistung_1.v_EAS_j, Ergebnisse_Flugleistung_1.S_G_vorh_j(n_plot*w,:), 'LineStyle', lineStyles{1,1}, 'Color', colors_1(n_plot*w, :)); %'LineStyle', lineStyles{1,n_plot});
         autoplot_2(n_plot,1) = plot(Ergebnisse_Flugleistung_1.v_EAS_j, Ergebnisse_Flugleistung_1.S_G_erf_j(n_plot*w,:), 'LineStyle', lineStyles{1,2}, 'Color', colors_1(n_plot*w, :)); %, 'LineStyle', lineStyles{1,n_plot});
-        Legend{2*n_plot-1} =  '(S/G)_{erf} Hoehe ' + sprintf("%d",Ergebnisse_Flugleistung_1.hoehe_m(n_plot*w)) + 'm' ;
+        Legend{2*n_plot-1} =  '(S/G)_{erf}   Hoehe ' + sprintf("%d",Ergebnisse_Flugleistung_1.hoehe_m(n_plot*w)) + 'm' ;
         Legend{2*n_plot} =  '(S/G)_{vorh} Hoehe ' + sprintf("%d",Ergebnisse_Flugleistung_1.hoehe_m(n_plot*w)) + 'm';
         legend(Legend(1:n_plot*2),Location='eastoutside', FontSize=FS_HFD);
     
@@ -92,9 +92,9 @@ if Disp_vec(1,1) == 1
     
     hold on
     grid on
-    title('Horizontalflugdiagramm G_{TO}', 'FontSize',FontSize_Titel);
-    ylabel('S/G', 'FontSize',20);
-    xlabel('v_{EAS}', 'FontSize',20);
+    title('Horizontalflugdiagramm G_{TO}, D = 0.9', 'FontSize',FontSize_Titel);
+    ylabel('S/G in [-]', 'FontSize',20);
+    xlabel('v_{EAS} in [m/s]', 'FontSize',20);
     xlim([0 300]);
     ylim([0 1]);
     
@@ -103,7 +103,7 @@ if Disp_vec(1,1) == 1
     
         autoplot_1(n_plot,1) = plot(Ergebnisse_Flugleistung_1.v_EAS_j_CL, Ergebnisse_Flugleistung_1.S_G_vorh_j_CL(n_plot*w,:), 'LineStyle', lineStyles{1,1}, 'Color', colors_1(n_plot*w, :)); %'LineStyle', lineStyles{1,n_plot});
         autoplot_2(n_plot,1) = plot(Ergebnisse_Flugleistung_1.v_EAS_j_CL, Ergebnisse_Flugleistung_1.S_G_erf_j_CL(n_plot*w,:), 'LineStyle', lineStyles{1,2}, 'Color', colors_1(n_plot*w, :)); %, 'LineStyle', lineStyles{1,n_plot});
-        Legend{2*n_plot-1} =  '(S/G)_{erf} Hoehe ' + sprintf("%d",Ergebnisse_Flugleistung_1.hoehe_m(n_plot*w)) + 'm' ;
+        Legend{2*n_plot-1} =  '(S/G)_{erf}   Hoehe ' + sprintf("%d",Ergebnisse_Flugleistung_1.hoehe_m(n_plot*w)) + 'm' ;
         Legend{2*n_plot} =  '(S/G)_{vorh} Hoehe ' + sprintf("%d",Ergebnisse_Flugleistung_1.hoehe_m(n_plot*w)) + 'm';
         legend(Legend(1:n_plot*2),Location='eastoutside', FontSize=FS_HFD);
     
@@ -116,9 +116,9 @@ if Disp_vec(1,1) == 1
     
     hold on
     grid on
-    title('Horizontalflugdiagramm G_{LDG}', 'FontSize',FontSize_Titel);
-    ylabel('S/G', 'FontSize',20);
-    xlabel('v_{EAS}', 'FontSize',20);
+    title('Horizontalflugdiagramm G_{LDG}, D = 0.8', 'FontSize',FontSize_Titel);
+    ylabel('S/G in [-]', 'FontSize',20);
+    xlabel('v_{EAS} in [m/s]', 'FontSize',20);
     xlim([0 300]);
     ylim([0 1]);
     
@@ -127,7 +127,7 @@ if Disp_vec(1,1) == 1
     
         autoplot_1(n_plot,1) = plot(Ergebnisse_Flugleistung_1.v_EAS_j_DEC, Ergebnisse_Flugleistung_1.S_G_vorh_j_DEC(n_plot*w,:), 'LineStyle', lineStyles{1,1}, 'Color', colors_1(n_plot*w, :)); %'LineStyle', lineStyles{1,n_plot});
         autoplot_2(n_plot,1) = plot(Ergebnisse_Flugleistung_1.v_EAS_j_DEC, Ergebnisse_Flugleistung_1.S_G_erf_j_DEC(n_plot*w,:), 'LineStyle', lineStyles{1,2}, 'Color', colors_1(n_plot*w, :)); %, 'LineStyle', lineStyles{1,n_plot});
-        Legend{2*n_plot-1} =  '(S/G)_{erf} Hoehe ' + sprintf("%d",Ergebnisse_Flugleistung_1.hoehe_m(n_plot*w)) + 'm' ;
+        Legend{2*n_plot-1} =  '(S/G)_{erf}   Hoehe ' + sprintf("%d",Ergebnisse_Flugleistung_1.hoehe_m(n_plot*w)) + 'm' ;
         Legend{2*n_plot} =  '(S/G)_{vorh} Hoehe ' + sprintf("%d",Ergebnisse_Flugleistung_1.hoehe_m(n_plot*w)) + 'm';
         legend(Legend(1:n_plot*2),Location='eastoutside', FontSize=FS_HFD);
     
@@ -144,19 +144,19 @@ if Disp_vec(1,2) == 1
     figure(2) % SET
     hold on 
     grid on
-    title('Spezifischer Schubüberschuss G_{ICA}', 'FontSize',25)
-    ylabel('SET','FontSize',20);
-    xlabel('v_{TAS}','FontSize',20);
+    title('Spezifischer Schubüberschuss G_{TO}, D = 0.9', 'FontSize',25)
+    ylabel('SET in [rad]','FontSize',20);
+    xlabel('v_{TAS} in [-]','FontSize',20);
     xlim([0 350]);
-    ylim([0 0.12]);
-    
+    ylim([0 0.1]);
+    set(gca, 'FontSize', FS_HFD);
     
     for n_plot = 1:numPlots/w
-        autoplot2_1(n_plot,1) = plot(Ergebnisse_Flugleistung_1.v_TAS_j(n_plot*w,:), Ergebnisse_Flugleistung_1.SET(n_plot*w,:), 'LineStyle', lineStyles{1,2}, 'Color', colors_1(n_plot*w, :)); 
-        autoplot2_2(n_plot,1) = plot(Ergebnisse_Flugleistung_1.v_TAS_j(n_plot*w, Ergebnisse_Flugleistung_1.Hochpunkte.SET_x(n_plot*w,1)), Ergebnisse_Flugleistung_1.Hochpunkte.SET_y(n_plot*w,:), '*b');     
+        autoplot2_1(n_plot,1) = plot(Ergebnisse_Flugleistung_1.v_TAS_j_CL(n_plot*w,:), Ergebnisse_Flugleistung_1.SET_CL(n_plot*w,:), 'LineStyle', lineStyles{1,2}, 'Color', colors_1(n_plot*w, :)); 
+        autoplot2_2(n_plot,1) = plot(Ergebnisse_Flugleistung_1.v_TAS_j_CL(n_plot*w, Ergebnisse_Flugleistung_1.Hochpunkte.SET_CL_x(n_plot*w,1)), Ergebnisse_Flugleistung_1.Hochpunkte.SET_CL_y(n_plot*w,:), '*b');     
         Legend2{2*n_plot-1} =  'SET in rad, Hoehe ' + sprintf("%d",Ergebnisse_Flugleistung_1.hoehe_m(n_plot*w)) + 'm' ;
-        Legend2{2*n_plot} =  '' + sprintf("%d",Ergebnisse_Flugleistung_1.hoehe_m(n_plot*w)) + 'm';
-        legend(Legend2(1:n_plot*2),Location = 'eastoutside', FontSize=10);
+        Legend2{2*n_plot} = '';
+        legend(Legend2(1:n_plot*2),Location = 'northeast', FontSize=20);
     
     end
     
@@ -167,19 +167,19 @@ if Disp_vec(1,2) == 1
     figure(3)
     hold on 
     grid on
-    title('Spezifischer Überschussleistung G_{ICA}', 'FontSize',25)
-    ylabel('SEP','FontSize',20);
-    xlabel('v_{TAS}','FontSize',20);
+    title('Spezifischer Überschussleistung G_{TO}, D = 0.9', 'FontSize',25)
+    ylabel('SEP in [m/s]','FontSize',20);
+    xlabel('v_{TAS} in [m/s]','FontSize',20);
     xlim([0 350]);
-    ylim([0 20]);
-    
+    ylim([0 16]);
+    set(gca, 'FontSize', FS_HFD);
     
     for n_plot = 1:numPlots/w
-        autoplot3_1(n_plot,1) = plot(Ergebnisse_Flugleistung_1.v_TAS_j(n_plot*w, :), Ergebnisse_Flugleistung_1.SEP(n_plot*w, :), 'Color',colors_2(n_plot*w,:), 'LineStyle','-');
-        autoplot3_2(n_plot,1) = plot(Ergebnisse_Flugleistung_1.v_TAS_j(n_plot*w, Ergebnisse_Flugleistung_1.Hochpunkte.SEP_x(n_plot*w,1)), Ergebnisse_Flugleistung_1.Hochpunkte.SEP_y(n_plot*w,1), '*b');
+        autoplot3_1(n_plot,1) = plot(Ergebnisse_Flugleistung_1.v_TAS_j_CL(n_plot*w, :), Ergebnisse_Flugleistung_1.SEP_CL(n_plot*w, :), 'Color',colors_2(n_plot*w,:), 'LineStyle','-');
+        autoplot3_2(n_plot,1) = plot(Ergebnisse_Flugleistung_1.v_TAS_j_CL(n_plot*w, Ergebnisse_Flugleistung_1.Hochpunkte.SEP_CL_x(n_plot*w,1)), Ergebnisse_Flugleistung_1.Hochpunkte.SEP_CL_y(n_plot*w,1), '*b');
         Legend3{n_plot*2-1} = 'SEP in m/s, Hoehe ' + sprintf("%d",Ergebnisse_Flugleistung_1.hoehe_m(n_plot*w)) + 'm' ;
         Legend3{n_plot*2} ='';
-        legend(Legend3(1:n_plot*2), Location = 'eastoutside', FontSize=16)
+        legend(Legend3(1:n_plot*2), Location = 'northeast', FontSize=20)
     end
     
     hold off
@@ -190,18 +190,19 @@ if Disp_vec(1,2) == 1
     
     hold on 
     grid on
-    title('Spezifische Reichweite G_{ICA}','FontSize',25)
-    ylabel('SR in m/kg','FontSize',20);
-    xlabel('v_{TAS} in m/s','FontSize',20);
-    xlim([0 300]);
-    ylim([0 200]);
-    
+    title('Spezifische Reichweite G_{TO}, D = 0.9','FontSize',25)
+    ylabel('SR in [m/kg]','FontSize',20);
+    xlabel('v_{TAS} in [m/s]','FontSize',20);
+    xlim([50 300]);
+    ylim([0 150]);
+    set(gca, 'FontSize', FS_HFD);
+
     for n_plot = 1:numPlots/w
-        autoplot4_1(n_plot,1) = plot(Ergebnisse_Flugleistung_1.v_TAS_j(n_plot*w, :), Ergebnisse_Flugleistung_1.SR(n_plot*w, :), 'Color',colors_2(n_plot*w,:), 'LineStyle','-');
-        autoplot4_2(n_plot,1) = plot(Ergebnisse_Flugleistung_1.v_TAS_j(n_plot*w, Ergebnisse_Flugleistung_1.Hochpunkte.SR_x(n_plot*w,1)), Ergebnisse_Flugleistung_1.Hochpunkte.SR_y(n_plot*w,1), '*k');
+        autoplot4_1(n_plot,1) = plot(Ergebnisse_Flugleistung_1.v_TAS_j_CL(n_plot*w, :), Ergebnisse_Flugleistung_1.SR_CL(n_plot*w, :), 'Color',colors_2(n_plot*w,:), 'LineStyle','-');
+        autoplot4_2(n_plot,1) = plot(Ergebnisse_Flugleistung_1.v_TAS_j_CL(n_plot*w, Ergebnisse_Flugleistung_1.Hochpunkte.SR_CL_x(n_plot*w,1)), Ergebnisse_Flugleistung_1.Hochpunkte.SR_CL_y(n_plot*w,1), '*k');
         Legend4{n_plot*2-1} = 'SR in m/kg Hoehe ' + sprintf("%d",Ergebnisse_Flugleistung_1.hoehe_m(n_plot*w)) + 'm' ;
         Legend4{n_plot*2} = '';
-        legend(Legend4(1:n_plot*2), Location='eastoutside', FontSize=16)
+        legend(Legend4(1:n_plot*2), Location='northwest', FontSize=20)
     
     end
     
@@ -216,18 +217,19 @@ if Disp_vec(1,3) == 1
     hold on 
     grid on 
     
-    title('Optimalgeschwindigkeiten bei G_{LDG}','FontSize',25)
+    title('Optimalgeschwindigkeiten bei G_{ICA}, D = 0.8','FontSize',25)
     
-    ylabel('H in m','FontSize',20);
-    xlabel('v_{TAS} in m/s','FontSize',20);
-    xlim([0 350]);
-    
+    ylabel('H in [m]','FontSize',20);
+    xlabel('v_{TAS} in [m/s]','FontSize',20);
+    xlim([100 300]);
+    set(gca, 'FontSize', FS_HFD);
     
     plot(Ergebnisse_Flugleistung_1.TAS_SR_H_vec(:,1), Ergebnisse_Flugleistung_1.TAS_SR_H_vec(:,3),'k');
     plot(Ergebnisse_Flugleistung_1.TAS_SEP_H_vec(:,1), Ergebnisse_Flugleistung_1.TAS_SEP_H_vec(:,3),'b');
     plot(Ergebnisse_Flugleistung_1.TAS_SET_H_vec(:,1), Ergebnisse_Flugleistung_1.TAS_SET_H_vec(:,3),'r');
-    
-    legend('SR', 'SEP', 'SET', 'FontSize',15)
+    plot((specs.Ma_CR * ISA.a(hoehe_CR)), hoehe_CR, '*r');
+
+    legend('SR', 'SEP', 'SET', 'DP', 'FontSize', 30, Location='east')
     
     hold off
 
@@ -239,18 +241,18 @@ if Disp_vec(1,4) == 1
     figure(5) 
     hold on 
     grid on 
-    title('Spezifische Flugdauer G_{ICA}','FontSize',25)
-    ylabel('SE in s/kg','FontSize',20);
-    xlabel('v_{TAS} in m/s','FontSize',20);
+    title('Spezifische Flugdauer G_{LDG}, D = 0.8','FontSize',25)
+    ylabel('SE in [s/kg]','FontSize',20);
+    xlabel('v_{TAS} in [m/s]','FontSize',20);
     xlim([0 350]);
-    ylim([0 1.5]);
-    
+    ylim([0 1.1]);
+    set(gca, 'FontSize', FS_HFD);
     for n_plot = 1:numPlots/w
     autoplot5_1(n_plot,1) = plot(Ergebnisse_Flugleistung_1.v_TAS_j_DEC(n_plot*w, :) , Ergebnisse_Flugleistung_1.SE_DEC(n_plot*w,:), 'Color',colors_2(n_plot*w,:), 'LineStyle','-' );
     autoplot5_2(n_plot,1) = plot(Ergebnisse_Flugleistung_1.v_TAS_j_DEC(n_plot*w, Ergebnisse_Flugleistung_1.Hochpunkte.SE_DEC_x(n_plot*w,1)), Ergebnisse_Flugleistung_1.Hochpunkte.SE_DEC_y(n_plot*w,1), '*k');
     Legend5{n_plot*2-1} = ' in s/kg, Hoehe ' + sprintf("%d",Ergebnisse_Flugleistung_1.hoehe_m(n_plot*w)) + 'm' ;
     Legend5{n_plot*2} = '';
-    legend(Legend5(1:n_plot*2), Location='eastoutside', FontSize=16)
+    legend(Legend5(1:n_plot*2), Location='northeast', FontSize=20)
     
     end
     hold off
@@ -269,9 +271,9 @@ if Disp_vec(1,5) == 1
     hold on
     grid on
     
-    title('Flugbereichsdiagramm Reiseflug', FontSize=25)
-    xlabel('v_{TAS} in m/s', FontSize=20);
-    ylabel('H in m', FontSize=20);
+    title('Flugbereichsdiagramm im Reiseflug', FontSize=25)
+    xlabel('v_{TAS} in [m/s]', FontSize=20);
+    ylabel('H in [m]', FontSize=20);
     xlim([0 450]);
     ylim([Ergebnisse_Flugleistung_1.hoehe_m(1,1), 12500]);
 
@@ -282,15 +284,15 @@ if Disp_vec(1,5) == 1
         'r', 'DisplayName', 'v_s_{min}');
     pl(3) = plot(Ergebnisse_Flugleistung_1.v_BO, Ergebnisse_Flugleistung_1.hoehe_m,...
         'm', 'DisplayName', 'Ma_{BO}');
-    
+
     pl(4) = plot(Ergebnisse_Flugleistung_1.TAS_SR_H_vec(:,1), Ergebnisse_Flugleistung_1.TAS_SR_H_vec(:,3),...
-        '.-k', 'DisplayName', 'SR_{max}');
+        '.-k', 'DisplayName', 'SR_{opt}');
     pl(5) = plot(Ergebnisse_Flugleistung_1.TAS_SEP_H_vec(:,1), Ergebnisse_Flugleistung_1.TAS_SEP_H_vec(:,3),...
-        '.-b', 'DisplayName', 'SEP_{max}');
+        '.-b', 'DisplayName', 'SEP_{opt}');
     pl(6) = plot(Ergebnisse_Flugleistung_1.TAS_SET_H_vec(:,1), Ergebnisse_Flugleistung_1.TAS_SET_H_vec(:,3),...
-        '.-r', 'DisplayName', 'SET_{max}');
+        '.-r', 'DisplayName', 'SET_{opt}');
     pl(7) = plot(Ergebnisse_Flugleistung_1.TAS_SE_H_vec(:,1), Ergebnisse_Flugleistung_1.TAS_SE_H_vec(:,3),...
-        '.-g', 'DisplayName', 'SE_{max}');
+        '.-g', 'DisplayName', 'SE_{opt}');
     
     pl(8) = plot(Ergebnisse_Flugleistung_1.v_MO, Ergebnisse_Flugleistung_1.hoehe_m,...
         '.-m', 'DisplayName', 'v_{MO}');
@@ -310,10 +312,12 @@ if Disp_vec(1,5) == 1
     pl(13) = plot([0 500],...
         [Ergebnisse_Flugleistung_1.H_Kabienendruck_CR, Ergebnisse_Flugleistung_1.H_Kabienendruck_CR],...
         'k', 'DisplayName', 'H_{p,max}');
-    
+    pl(14) = plot(Ergebnisse_Flugleistung_1.v_Ma_MO, Ergebnisse_Flugleistung_1.hoehe_m,...
+        '--m', 'DisplayName', 'Ma_{MO}');
+
 %     legend('v_s_{1g}', 'v_s_{min}', 'Ma_{BO}', 'SR_{max}', 'SEP_{max}', 'SET_{max}', 'SE_{max}', 'v_{MO}', 'v_{min}', 'v_{max}', 'DP', 'H_{ops_{max}}', 'H_{p,max}', 'FontSize',15 ,Location='eastoutside');
-    legend('FontSize',15 ,Location='eastoutside')
-    
+    legend('FontSize',20 ,Location='eastoutside')
+    set(gca, 'FontSize', FS_HFD);
     hold off
     
     
@@ -324,8 +328,8 @@ if Disp_vec(1,5) == 1
     grid on
     
     title('Flugbereichsdiagramm im Landefall', FontSize=25)
-    xlabel('v_{TAS} in m/s', FontSize=20);
-    ylabel('H in m', FontSize=20);
+    xlabel('v_{TAS} in [m/s]', FontSize=20);
+    ylabel('H in [m]', FontSize=20);
     xlim([0 450]);
     ylim([Ergebnisse_Flugleistung_1.hoehe_m(1,1), 12500]);
 
@@ -337,13 +341,13 @@ if Disp_vec(1,5) == 1
         'm', 'DisplayName', 'Ma_{BO}');
     
     pl_DEC(4) = plot(Ergebnisse_Flugleistung_1.TAS_SR_H_DEC_vec(:,1), Ergebnisse_Flugleistung_1.TAS_SR_H_DEC_vec(:,3),...
-        '.-k', 'DisplayName', 'SR_{max}');
+        '.-k', 'DisplayName', 'SR_{opt}');
     pl_DEC(5) = plot(Ergebnisse_Flugleistung_1.TAS_SEP_H_DEC_vec(:,1), Ergebnisse_Flugleistung_1.TAS_SEP_H_DEC_vec(:,3),...
-        '.-b', 'DisplayName', 'SEP_{max}');
+        '.-b', 'DisplayName', 'SEP_{opt}');
     pl_DEC(6) = plot(Ergebnisse_Flugleistung_1.TAS_SET_H_DEC_vec(:,1), Ergebnisse_Flugleistung_1.TAS_SET_H_DEC_vec(:,3),...
-        '.-r', 'DisplayName', 'SET_{max}');
+        '.-r', 'DisplayName', 'SET_{opt}');
     pl_DEC(7) = plot(Ergebnisse_Flugleistung_1.TAS_SE_H_DEC_vec(:,1), Ergebnisse_Flugleistung_1.TAS_SE_H_DEC_vec(:,3),...
-        '.-g', 'DisplayName', 'SE_{max}');
+        '.-g', 'DisplayName', 'SE_{opt}');
     
     pl_DEC(8) = plot(Ergebnisse_Flugleistung_1.v_MO_DEC, Ergebnisse_Flugleistung_1.hoehe_m,...
         '.-m', 'DisplayName', 'v_{MO}');
@@ -363,10 +367,12 @@ if Disp_vec(1,5) == 1
     pl_DEC(13) = plot([0 500],...
         [Ergebnisse_Flugleistung_1.H_Kabienendruck_DEC, Ergebnisse_Flugleistung_1.H_Kabienendruck_DEC],...
         'k', 'DisplayName', 'H_{p,max}');
-    
-%     legend('v_s_{1g}', 'v_s_{min}', 'Ma_{BO}', 'SR_{max}', 'SEP_{max}', 'SET_{max}', 'SE_{max}', 'v_{MO}', 'v_{min}', 'v_{max}', 'DP', 'H_{ops_{max}}', 'H_{p,max}', 'FontSize',15 ,Location='eastoutside');
-    legend('FontSize',15 ,Location='eastoutside');
+    pl_DEC(14) = plot(Ergebnisse_Flugleistung_1.v_Ma_MO, Ergebnisse_Flugleistung_1.hoehe_m,...
+        '--m', 'DisplayName', 'Ma_{MO}');
 
+%     legend('v_s_{1g}', 'v_s_{min}', 'Ma_{BO}', 'SR_{max}', 'SEP_{max}', 'SET_{max}', 'SE_{max}', 'v_{MO}', 'v_{min}', 'v_{max}', 'DP', 'H_{ops_{max}}', 'H_{p,max}', 'FontSize',15 ,Location='eastoutside');
+    legend('FontSize',20 ,Location='eastoutside');
+    set(gca, 'FontSize', FS_HFD);
     hold off
 
 

@@ -62,12 +62,12 @@ autoplot(numPlots+3, 1) = plot(schnittpunkt_off_D_c_A_CR(1,1), schnittpunkt_off_
 % schoen machen des Plots 
 
 legend(autoplot(1:n_plot+3),{'SLW', '+ HLW', '+ Interferenz', '+ Rumpf', '+ Triebwerk', '+ Trimmung', '+ Abwind', '+ Profil', '+ ind. Widerstand', '+ Wellenwiderstand', '+Off-Design', 'Schnittpunkt von Design / Off-Design', 'C_{A,CR}'},...
-    'Location','southeast','FontSize',10)%15);
+    'Location','eastoutside','FontSize',30)%15);
 
-title('Kumulative Widerstandspolare','FontSize',25)
-xlabel('c_W','FontSize',20);
-ylabel('c_A','FontSize',20);
-
+title('Kumulative Widerstandspolare','FontSize',40)
+xlabel('c_W','FontSize',25);
+ylabel('c_A','FontSize',25);
+set(gca, 'FontSize', 20);
 hold off;
 
 % 
@@ -96,7 +96,7 @@ figure(3)
 hold on
 grid on 
 
-title('Reziproke Gleitzahlpolare','FontSize',25)
+title('Reziproke Gleitzahlpolare','FontSize',40)
 xlabel('c_A','FontSize',20);
 ylabel('c_A / c_W','FontSize',20);
 xlim([0 1])
@@ -107,8 +107,8 @@ plot(Ergebnisse_Widerstand_FE2.c_A_F, Ergebnisse_Widerstand_FE2.Gleitverhaeltnis
 plot(Ergebnisse_Widerstand_FE2.c_A_F_off_D, Ergebnisse_Widerstand_FE2.Gleitverhaeltnis_off_D);      % Offdesignpolare
 plot(Ergebnisse_Widerstand_FE2.c_A_F(1,max_x), max_y, '*k');        % Green Dot / optimales Gleitverhaeltnis
 
-legend('Design', 'Offdesign', 'Maximales Gleitverhältnis', 'FontSize',25, Location='eastoutside')
-
+legend('Design', 'Offdesign', 'Maximales Gleitverhältnis', 'FontSize',30, Location='eastoutside')
+set(gca, 'FontSize', 20);
 hold off;
 
 

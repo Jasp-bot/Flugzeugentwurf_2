@@ -572,7 +572,7 @@ NRD.m_RF_C_ECO = m_RF_C_ECO;
 NRD.m_RF_D_ECO = m_RF_D_ECO;
 
 
-
+NRD.m_F_max_ECO = m_F_max_ECO;
 
 Ergebnisse_Flugleistung_2.Steigflug = Steigflug;
 Ergebnisse_Flugleistung_2.FFneu = FFneu;

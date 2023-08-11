@@ -370,6 +370,7 @@ M_BO = m_BOP/sqrt(cos(Ergebnisse_Fluegel.phi_25_max));
 v_BO = M_BO .* a_H;
 v_MO = Anteile_einzel_Massen_FE2.Airplane_Structure.Fuselage_group.M_Rumpf.v_D_EAS .* sqrt(ISA.rho_0./ ISA.rho(hoehe_m));
 
+v_Ma_MO = specs.Ma_MO .* a_H;
 
 % test v min
 intersection = InterX([v_EAS_j(1,:); S_G_erf_j(1,:)],[v_EAS_j(1,:); S_G_vorh_j(1,:)]);
@@ -434,7 +435,7 @@ for z2 = 1 : length(TAS_SEP_H_vec)
        zaehler1 = length(TAS_SEP_H_vec);
     end
 end
-H_Dienstgipfel_CR = hoehe_m(1,zaehler1);
+H_Dienstgipfel_CR = H_Dienstgipfel_DEC; %hoehe_m(1,zaehler1);
 % Maximale Kabinendruckhoehe soll 1000m oder 1000ft ueber H_Dienstgipfel
 % liegen
 H_Kabienendruck_CR = H_Dienstgipfel_DEC + (unitsratio('m','ft').* 1500); 
@@ -526,6 +527,7 @@ Ergebnisse_Flugleistung_1.m_BOP = m_BOP;
 Ergebnisse_Flugleistung_1.M_BO = M_BO;
 Ergebnisse_Flugleistung_1.v_BO = v_BO;
 Ergebnisse_Flugleistung_1.v_MO = v_MO;
+Ergebnisse_Flugleistung_1.v_Ma_MO = v_Ma_MO;
 Ergebnisse_Flugleistung_1.v_min_HFD = v_min_HFD;
 Ergebnisse_Flugleistung_1.v_max_HFD = v_max_HFD;
 Ergebnisse_Flugleistung_1.H_Dienstgipfel_CR = H_Dienstgipfel_CR;
@@ -543,6 +545,7 @@ Ergebnisse_Flugleistung_1.H_Kabienendruck_DEC = H_Kabienendruck_DEC;
 % 
 Ergebnisse_Flugleistung_1.S0 = S0;
 Ergebnisse_Flugleistung_1.S0_GTO = S0_GTO;
+
 
 save Ergebnisse_FLugleistung_1.mat Ergebnisse_Flugleistung_1
 
